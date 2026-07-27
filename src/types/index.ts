@@ -1,0 +1,98 @@
+export type ProjectCategory =
+  | "LLM"
+  | "RAG"
+  | "Computer Vision"
+  | "NLP"
+  | "Recommendation Systems"
+  | "Data Engineering"
+  | "MLOps"
+  | "Agentic AI"
+  | "Machine Learning"
+  | "Deep Learning";
+
+export type ProjectLevel = "Foundational" | "Intermediate" | "Advanced";
+
+export interface CaseStudy {
+  overview: string;
+  problemStatement: string;
+  businessValue: string[];
+  architecture: string;
+  systemDesign: string[];
+  pipeline: string[];
+  screenshots: { label: string; caption: string }[];
+  challenges: string[];
+  tradeoffs: string[];
+  lessons: string[];
+  futureWork: string[];
+}
+
+export interface Project {
+  id: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  year: string;
+  level: ProjectLevel;
+  categories: ProjectCategory[];
+  problem: string;
+  solution: string;
+  tech: string[];
+  results: string[];
+  github?: string;
+  demo?: string;
+  featured: boolean;
+  accent: string; // gradient hint, e.g. "from-emerald-500 to-teal-400"
+  caseStudy: CaseStudy;
+}
+
+export interface Experience {
+  id: string;
+  company: string;
+  role: string;
+  duration: string;
+  location?: string;
+  summary: string;
+  responsibilities: string[];
+  achievements: string[];
+  tech: string[];
+  current?: boolean;
+}
+
+export interface Skill {
+  name: string;
+  years: number;
+  projects: string[];
+  description: string;
+  level: 1 | 2 | 3 | 4 | 5;
+}
+
+export interface SkillCategory {
+  name: string;
+  icon: string; // lucide icon name
+  skills: Skill[];
+}
+
+export interface Certification {
+  id: string;
+  title: string;
+  issuer: string;
+  skills: string[];
+  link?: string;
+  year?: string;
+}
+
+export interface EducationItem {
+  id: string;
+  school: string;
+  degree: string;
+  detail: string;
+  period: string;
+  highlight?: string;
+}
+
+export interface SocialLink {
+  label: string;
+  href: string;
+  icon: string;
+  handle: string;
+}

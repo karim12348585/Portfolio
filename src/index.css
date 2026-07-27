@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design tokens — Emerald / Teal on charcoal (dark-first)
+   ============================================================ */
+@layer base {
+  :root,
+  .dark {
+    --bg: 10 11 10; /* #0a0b0a */
+    --panel: 15 18 16; /* #0f1210 */
+    --panel-2: 20 24 21; /* #141815 */
+    --line: 28 36 32; /* #1c2420 */
+    --fg: 236 244 240; /* near white */
+    --muted: 148 163 156; /* muted gray-green */
+    --faint: 100 116 110;
+    --accent: 16 185 129; /* emerald #10b981 */
+    --accent-soft: 45 212 191; /* teal #2dd4bf */
+    color-scheme: dark;
+  }
+
+  .light {
+    --bg: 250 251 250;
+    --panel: 255 255 255;
+    --panel-2: 244 247 245;
+    --line: 224 230 226;
+    --fg: 15 23 20;
+    --muted: 82 96 90;
+    --faint: 130 145 138;
+    --accent: 5 150 105; /* emerald-600 for contrast on light */
+    --accent-soft: 13 148 136; /* teal-600 */
+    color-scheme: light;
+  }
+
+  * {
+    border-color: rgb(var(--line));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.25);
+    color: rgb(var(--fg));
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--line));
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--faint));
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgb(var(--panel) / 0.6);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgb(var(--line) / 0.8);
+  }
+
+  .card {
+    @apply rounded-2xl border border-line bg-panel shadow-soft;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      120deg,
+      rgb(var(--fg)) 20%,
+      rgb(var(--accent-soft)) 60%,
+      rgb(var(--accent)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .accent-gradient-text {
+    @apply bg-accent-gradient bg-clip-text text-transparent;
+  }
+
+  .btn-glow {
+    box-shadow: 0 8px 30px rgb(var(--accent) / 0.28);
+  }
+
+  .section {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-line bg-panel/60 px-3 py-1 text-xs font-medium tracking-wide text-muted;
+  }
+}
+
+@layer utilities {
+  .grid-lines {
+    background-image:
+      linear-gradient(rgb(var(--line) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--line) / 0.35) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
