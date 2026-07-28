@@ -78,6 +78,9 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.title}
           </Link>
         </h3>
+        {project.duration && (
+          <p className="mt-1 text-xs text-faint">{project.duration}</p>
+        )}
 
         <div className="mt-3 space-y-2.5 text-sm">
           <p className="flex gap-2 text-muted">

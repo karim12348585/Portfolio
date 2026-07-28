@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -13,6 +14,7 @@ import {
   GraduationCap,
   Rocket,
   Image as ImageIcon,
+  Maximize2,
 } from "lucide-react";
 import { getProjectBySlug, projects } from "@/data/projects";
 import { PageTransition } from "@/layout/PageTransition";
@@ -20,6 +22,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CodeSource } from "@/components/CodeSource";
 import { GradientMesh } from "@/components/GradientMesh";
+import { Lightbox, type LightboxImage } from "@/components/Lightbox";
 import { projectTypeStyles } from "@/utils/projectType";
 import { NotFound } from "./NotFound";
 import { cn } from "@/utils/cn";
@@ -88,6 +91,7 @@ function Steps({ steps }: { steps: string[] }) {
 export function ProjectDetail() {
   const { slug } = useParams();
   const project = slug ? getProjectBySlug(slug) : undefined;
+  const [zoom, setZoom] = useState<LightboxImage | null>(null);
 
   if (!project) return <NotFound />;
 
@@ -142,6 +146,12 @@ export function ProjectDetail() {
                 />
                 {project.type}
               </span>
+              {project.duration && (
+                <>
+                  <span className="text-line">·</span>
+                  {project.duration}
+                </>
+              )}
             </span>
             <div className="flex items-center gap-2">
               <CodeSource
@@ -201,14 +211,23 @@ export function ProjectDetail() {
                 {cs.diagrams.map((d) => (
                   <figure
                     key={d.src}
-                    className="overflow-hidden rounded-2xl border border-line bg-white"
+                    className="group overflow-hidden rounded-2xl border border-line bg-white"
                   >
-                    <img
-                      src={d.src}
-                      alt={d.caption}
-                      loading="lazy"
-                      className="w-full"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setZoom({ src: d.src, caption: d.caption })}
+                      className="relative block w-full cursor-zoom-in"
+                    >
+                      <img
+                        src={d.src}
+                        alt={d.caption}
+                        loading="lazy"
+                        className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      />
+                      <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                        <Maximize2 size={15} />
+                      </span>
+                    </button>
                     <figcaption className="bg-panel-2 px-4 py-3 text-xs text-faint">
                       {d.caption}
                     </figcaption>
@@ -238,15 +257,26 @@ export function ProjectDetail() {
               {cs.screenshots.map((sc) => (
                 <figure
                   key={sc.label}
-                  className="overflow-hidden rounded-2xl border border-line bg-panel-2"
+                  className="group overflow-hidden rounded-2xl border border-line bg-panel-2"
                 >
                   {sc.src ? (
-                    <img
-                      src={sc.src}
-                      alt={sc.label}
-                      loading="lazy"
-                      className="aspect-video w-full object-cover object-top"
-                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setZoom({ src: sc.src!, caption: sc.caption })
+                      }
+                      className="relative block w-full cursor-zoom-in overflow-hidden"
+                    >
+                      <img
+                        src={sc.src}
+                        alt={sc.label}
+                        loading="lazy"
+                        className="aspect-video w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
+                      />
+                      <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                        <Maximize2 size={15} />
+                      </span>
+                    </button>
                   ) : (
                     <div
                       className={cn(
@@ -337,6 +367,8 @@ export function ProjectDetail() {
           />
         </Link>
       </div>
+
+      <Lightbox image={zoom} onClose={() => setZoom(null)} />
     </PageTransition>
   );
 }

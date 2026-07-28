@@ -36,6 +36,8 @@ export interface Project {
   tagline: string;
   year: string;
   type: ProjectType;
+  /** Short duration/context note, e.g. "End-of-Studies · 5 months". */
+  duration?: string;
   categories: ProjectCategory[];
   problem: string;
   solution: string;

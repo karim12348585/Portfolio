@@ -9,6 +9,7 @@ export const projects: Project[] = [
       "Autonomous multi-agent system for end-to-end root cause analysis of Jenkins pipeline failures.",
     year: "2026",
     type: "Industrial",
+    duration: "End-of-Studies · 5 months",
     categories: ["Agentic AI", "LLM", "RAG", "MLOps"],
     problem:
       "Data-pipeline failures in Jenkins buried engineers under thousands of raw log lines, making root cause analysis slow, manual, and inconsistent across an enterprise team.",
@@ -106,6 +107,7 @@ export const projects: Project[] = [
       "Enterprise-scale code understanding and PR analysis grounded in Jira context via the ReAct framework.",
     year: "2025",
     type: "Industrial",
+    duration: "Summer internship · 2 months",
     categories: ["Agentic AI", "LLM", "RAG"],
     problem:
       "Reviewing pull requests across large enterprise repositories requires understanding both the code and the business intent behind it — context that is scattered across the codebase and Jira tickets.",
