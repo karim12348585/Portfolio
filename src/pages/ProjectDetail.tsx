@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
-  Github,
   ExternalLink,
   Target,
   TrendingUp,
@@ -19,7 +18,9 @@ import { getProjectBySlug, projects } from "@/data/projects";
 import { PageTransition } from "@/layout/PageTransition";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { CodeSource } from "@/components/CodeSource";
 import { GradientMesh } from "@/components/GradientMesh";
+import { projectTypeStyles } from "@/utils/projectType";
 import { NotFound } from "./NotFound";
 import { cn } from "@/utils/cn";
 
@@ -124,18 +125,30 @@ export function ProjectDetail() {
           <p className="mt-4 max-w-2xl text-lg text-muted">{project.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="text-sm text-faint">
-              {project.year} · {project.level}
+            <span className="inline-flex items-center gap-2 text-sm text-faint">
+              {project.year}
+              <span className="text-line">·</span>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                  projectTypeStyles[project.type].badge,
+                )}
+              >
+                <span
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-full",
+                    projectTypeStyles[project.type].dot,
+                  )}
+                />
+                {project.type}
+              </span>
             </span>
-            <div className="flex gap-2">
-              {project.github && (
-                <a href={project.github} target="_blank" rel="noreferrer">
-                  <Button size="sm" variant="secondary">
-                    <Github size={15} />
-                    Code
-                  </Button>
-                </a>
-              )}
+            <div className="flex items-center gap-2">
+              <CodeSource
+                href={project.github}
+                confidential={project.codeConfidential}
+                variant="button"
+              />
               {project.demo && (
                 <a href={project.demo} target="_blank" rel="noreferrer">
                   <Button size="sm" variant="outline">
@@ -183,12 +196,33 @@ export function ProjectDetail() {
 
           <Block icon={Boxes} title="Architecture">
             <p>{cs.architecture}</p>
-            <div className="mt-5 rounded-2xl border border-dashed border-line bg-panel-2 p-8 text-center">
-              <Boxes size={28} className="mx-auto text-accent" />
-              <p className="mt-3 text-sm text-faint">
-                Architecture diagram placeholder — drop a diagram image here.
-              </p>
-            </div>
+            {cs.diagrams && cs.diagrams.length > 0 ? (
+              <div className="mt-5 space-y-4">
+                {cs.diagrams.map((d) => (
+                  <figure
+                    key={d.src}
+                    className="overflow-hidden rounded-2xl border border-line bg-white"
+                  >
+                    <img
+                      src={d.src}
+                      alt={d.caption}
+                      loading="lazy"
+                      className="w-full"
+                    />
+                    <figcaption className="bg-panel-2 px-4 py-3 text-xs text-faint">
+                      {d.caption}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-5 rounded-2xl border border-dashed border-line bg-panel-2 p-8 text-center">
+                <Boxes size={28} className="mx-auto text-accent" />
+                <p className="mt-3 text-sm text-faint">
+                  Architecture diagram placeholder — drop a diagram image here.
+                </p>
+              </div>
+            )}
           </Block>
 
           <Block icon={Workflow} title="System Design">
@@ -206,16 +240,25 @@ export function ProjectDetail() {
                   key={sc.label}
                   className="overflow-hidden rounded-2xl border border-line bg-panel-2"
                 >
-                  <div
-                    className={cn(
-                      "flex aspect-video items-center justify-center bg-gradient-to-br",
-                      project.accent,
-                    )}
-                  >
-                    <span className="rounded-full bg-black/20 px-3 py-1 text-xs font-medium text-black/80 backdrop-blur">
-                      {sc.label}
-                    </span>
-                  </div>
+                  {sc.src ? (
+                    <img
+                      src={sc.src}
+                      alt={sc.label}
+                      loading="lazy"
+                      className="aspect-video w-full object-cover object-top"
+                    />
+                  ) : (
+                    <div
+                      className={cn(
+                        "flex aspect-video items-center justify-center bg-gradient-to-br",
+                        project.accent,
+                      )}
+                    >
+                      <span className="rounded-full bg-black/20 px-3 py-1 text-xs font-medium text-black/80 backdrop-blur">
+                        {sc.label}
+                      </span>
+                    </div>
+                  )}
                   <figcaption className="px-4 py-3 text-xs text-faint">
                     {sc.caption}
                   </figcaption>

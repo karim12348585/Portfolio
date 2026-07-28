@@ -10,16 +10,19 @@ export type ProjectCategory =
   | "Machine Learning"
   | "Deep Learning";
 
-export type ProjectLevel = "Foundational" | "Intermediate" | "Advanced";
+export type ProjectType = "Academic" | "Industrial";
 
 export interface CaseStudy {
   overview: string;
   problemStatement: string;
   businessValue: string[];
   architecture: string;
+  /** Optional architecture/workflow diagram images. */
+  diagrams?: { src: string; caption: string }[];
   systemDesign: string[];
   pipeline: string[];
-  screenshots: { label: string; caption: string }[];
+  /** `src` renders a real image; otherwise a gradient placeholder is shown. */
+  screenshots: { label: string; caption: string; src?: string }[];
   challenges: string[];
   tradeoffs: string[];
   lessons: string[];
@@ -32,13 +35,15 @@ export interface Project {
   title: string;
   tagline: string;
   year: string;
-  level: ProjectLevel;
+  type: ProjectType;
   categories: ProjectCategory[];
   problem: string;
   solution: string;
   tech: string[];
   results: string[];
   github?: string;
+  /** When true, the source is proprietary — show a red "confidential" GitHub badge. */
+  codeConfidential?: boolean;
   demo?: string;
   featured: boolean;
   accent: string; // gradient hint, e.g. "from-emerald-500 to-teal-400"

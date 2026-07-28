@@ -3,19 +3,11 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { projects } from "@/data/projects";
-import type { ProjectLevel } from "@/types";
+import { projectTypeStyles } from "@/utils/projectType";
+import { cn } from "@/utils/cn";
 
-const levelRank: Record<ProjectLevel, number> = {
-  Foundational: 0,
-  Intermediate: 1,
-  Advanced: 2,
-};
-
-// Progression: earliest / most foundational → latest / most advanced.
-const ordered = [...projects].sort((a, b) => {
-  const byYear = a.year.localeCompare(b.year);
-  return byYear !== 0 ? byYear : levelRank[a.level] - levelRank[b.level];
-});
+// Chronological progression: earliest → latest.
+const ordered = [...projects].sort((a, b) => a.year.localeCompare(b.year));
 
 export function ProjectTimeline() {
   return (
@@ -43,8 +35,23 @@ export function ProjectTimeline() {
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-accent/40 bg-bg text-xs font-bold text-accent">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="text-xs text-faint">
-                  {p.year} · {p.level}
+                <span className="inline-flex items-center gap-1.5 text-xs text-faint">
+                  {p.year}
+                  <span className="text-line">·</span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1",
+                      projectTypeStyles[p.type].text,
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        projectTypeStyles[p.type].dot,
+                      )}
+                    />
+                    {p.type}
+                  </span>
                 </span>
               </div>
               <Link

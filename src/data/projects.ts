@@ -8,7 +8,7 @@ export const projects: Project[] = [
     tagline:
       "Autonomous multi-agent system for end-to-end root cause analysis of Jenkins pipeline failures.",
     year: "2026",
-    level: "Advanced",
+    type: "Industrial",
     categories: ["Agentic AI", "LLM", "RAG", "MLOps"],
     problem:
       "Data-pipeline failures in Jenkins buried engineers under thousands of raw log lines, making root cause analysis slow, manual, and inconsistent across an enterprise team.",
@@ -30,7 +30,7 @@ export const projects: Project[] = [
       "Human-in-the-loop feedback + evaluation harness (latency & cost metrics)",
       "Live agent-reasoning streaming in Terminal and React UIs",
     ],
-    github: "https://github.com/karim12348585",
+    codeConfidential: true,
     featured: true,
     accent: "from-emerald-500 to-teal-400",
     caseStudy: {
@@ -46,6 +46,13 @@ export const projects: Project[] = [
       ],
       architecture:
         "A LangGraph state machine orchestrates three agents — RCA, Investigator, and Remediation — over a shared, typed state object. Conditional edges route control based on confidence and evidence sufficiency, with self-correction loops when an agent's hypothesis fails validation. MCP servers expose internal repositories, configuration files, and SQL Server data as controlled tools.",
+      diagrams: [
+        {
+          src: "/projects/dataops-copilot/workflow.png",
+          caption:
+            "End-to-end workflow across the parsing, agents, memory, MCP, and human-feedback layers.",
+        },
+      ],
       systemDesign: [
         "RCA agent forms an initial hypothesis from compressed logs.",
         "Investigator agent gathers supporting evidence via MCP tools (repos, configs, SQL).",
@@ -62,9 +69,10 @@ export const projects: Project[] = [
         "Persist outcome back into golden-case memory",
       ],
       screenshots: [
-        { label: "Agent reasoning stream", caption: "Live token-by-token agent reasoning in the React UI." },
-        { label: "Root cause report", caption: "Structured RCA output with evidence and proposed remediation." },
-        { label: "Evaluation dashboard", caption: "LLM-as-a-Judge scores with latency and cost metrics." },
+        { label: "Live progress", caption: "Live agent progress streaming through each RCA step in the React UI.", src: "/projects/dataops-copilot/live-progress.png" },
+        { label: "After analysis", caption: "Completed root-cause analysis with findings and evidence.", src: "/projects/dataops-copilot/after-analysis.png" },
+        { label: "Fix suggestion", caption: "Validated remediation and proposed fix for the failure.", src: "/projects/dataops-copilot/fix.png" },
+        { label: "Log parser", caption: "Two-layer parser compressing raw Jenkins logs before reasoning.", src: "/projects/dataops-copilot/parser.png" },
       ],
       challenges: [
         "Log volume overwhelmed context windows — solved with a two-layer, structure-aware compression stage.",
@@ -82,6 +90,8 @@ export const projects: Project[] = [
         "Compression at the input boundary is often cheaper and more effective than a bigger model.",
       ],
       futureWork: [
+        "Specialization of the Investigator agent for deeper, domain-specific evidence gathering.",
+        "Generalization beyond Jenkins to broader CI/CD pipelines.",
         "Expand MCP tool coverage to more data sources.",
         "Add automated remediation for low-risk, high-confidence cases.",
         "Fine-tune a smaller model on golden cases to cut inference cost further.",
@@ -95,7 +105,7 @@ export const projects: Project[] = [
     tagline:
       "Enterprise-scale code understanding and PR analysis grounded in Jira context via the ReAct framework.",
     year: "2025",
-    level: "Advanced",
+    type: "Industrial",
     categories: ["Agentic AI", "LLM", "RAG"],
     problem:
       "Reviewing pull requests across large enterprise repositories requires understanding both the code and the business intent behind it — context that is scattered across the codebase and Jira tickets.",
@@ -116,7 +126,7 @@ export const projects: Project[] = [
       "Code structure modelled as a Neo4j knowledge graph",
       "PR analysis grounded in the originating Jira ticket",
     ],
-    github: "https://github.com/karim12348585",
+    codeConfidential: true,
     featured: true,
     accent: "from-teal-400 to-cyan-400",
     caseStudy: {
@@ -176,7 +186,7 @@ export const projects: Project[] = [
     tagline:
       "GraphRAG code-debugging agent for automated bug detection and test-case generation.",
     year: "2025",
-    level: "Advanced",
+    type: "Academic",
     categories: ["Agentic AI", "RAG", "LLM"],
     problem:
       "Automated testing tools struggle to reason about how a bug propagates through a codebase, and generic RAG loses the structural relationships between functions.",
@@ -251,7 +261,7 @@ export const projects: Project[] = [
     tagline:
       "Scrapes job descriptions, extracts in-demand skills with LLMs, and generates personalized upskilling roadmaps.",
     year: "2024",
-    level: "Intermediate",
+    type: "Academic",
     categories: ["NLP", "LLM", "Machine Learning", "Data Engineering"],
     problem:
       "Job seekers struggle to know which skills the market actually demands and how their own resume measures up against it.",
@@ -324,7 +334,7 @@ export const projects: Project[] = [
     tagline:
       "Fine-tuned Vision Transformer with LoRA and explainability, reaching 95% test accuracy.",
     year: "2024",
-    level: "Intermediate",
+    type: "Academic",
     categories: ["Computer Vision", "Deep Learning"],
     problem:
       "Distinguishing AI-generated faces from real photographs is increasingly hard and increasingly important for trust and safety.",
@@ -398,7 +408,7 @@ export const projects: Project[] = [
     tagline:
       "Ranks candidates against a role using Gemini and SBERT embeddings with similarity scoring and feedback.",
     year: "2023",
-    level: "Foundational",
+    type: "Academic",
     categories: ["NLP", "LLM", "Machine Learning"],
     problem:
       "Screening large volumes of resumes against a job description is tedious, subjective, and inconsistent.",

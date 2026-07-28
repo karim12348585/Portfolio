@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Github, Target, Lightbulb } from "lucide-react";
+import { ArrowUpRight, Target, Lightbulb } from "lucide-react";
 import type { Project } from "@/types";
 import { Badge } from "@/components/ui/Badge";
+import { CodeSource } from "@/components/CodeSource";
+import { projectTypeStyles } from "@/utils/projectType";
 import { cn } from "@/utils/cn";
 
 export function ProjectCard({ project }: { project: Project }) {
@@ -38,9 +40,20 @@ export function ProjectCard({ project }: { project: Project }) {
           </span>
         </div>
         <div className="absolute left-4 top-4 flex gap-2">
-          <Badge className="border-black/10 bg-black/20 text-black/80 backdrop-blur">
-            {project.level}
-          </Badge>
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur",
+              projectTypeStyles[project.type].overlay,
+            )}
+          >
+            <span
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                projectTypeStyles[project.type].dot,
+              )}
+            />
+            {project.type}
+          </span>
         </div>
         <div className="absolute right-4 top-4 rounded-full bg-black/20 px-2.5 py-1 text-xs font-medium text-black/80 backdrop-blur">
           {project.year}
@@ -101,17 +114,11 @@ export function ProjectCard({ project }: { project: Project }) {
             Case study
             <ArrowUpRight size={15} />
           </Link>
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noreferrer"
-              className="text-muted transition-colors hover:text-fg"
-              aria-label="GitHub repository"
-            >
-              <Github size={17} />
-            </a>
-          )}
+          <CodeSource
+            href={project.github}
+            confidential={project.codeConfidential}
+            variant="icon"
+          />
         </div>
       </div>
     </motion.article>
