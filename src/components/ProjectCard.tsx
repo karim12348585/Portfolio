@@ -78,8 +78,18 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.title}
           </Link>
         </h3>
-        {project.duration && (
-          <p className="mt-1 text-xs text-faint">{project.duration}</p>
+        {(project.company || project.duration) && (
+          <p className="mt-1 text-xs">
+            {project.company && (
+              <span className="font-medium text-fg/80">{project.company}</span>
+            )}
+            {project.company && project.duration && (
+              <span className="text-faint"> · </span>
+            )}
+            {project.duration && (
+              <span className="text-faint">{project.duration}</span>
+            )}
+          </p>
         )}
 
         <div className="mt-3 space-y-2.5 text-sm">

@@ -5,17 +5,36 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 import { projectFilters } from "@/constants";
 import { cn } from "@/utils/cn";
-import type { ProjectCategory } from "@/types";
+import type { ProjectCategory, ProjectType } from "@/types";
+
+type TypeFilter = "All" | ProjectType;
+
+const typeTabs: { key: TypeFilter; label: string; pill: string }[] = [
+  { key: "All", label: "All work", pill: "bg-accent-gradient" },
+  { key: "Industrial", label: "Industrial", pill: "bg-emerald-500" },
+  { key: "Academic", label: "Academic", pill: "bg-violet-500" },
+];
 
 export function FeaturedProjects() {
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("All");
   const [filter, setFilter] = useState<ProjectCategory | "All">("All");
 
   const filtered = useMemo(
     () =>
-      filter === "All"
-        ? projects
-        : projects.filter((p) => p.categories.includes(filter)),
-    [filter],
+      projects.filter(
+        (p) =>
+          (typeFilter === "All" || p.type === typeFilter) &&
+          (filter === "All" || p.categories.includes(filter)),
+      ),
+    [typeFilter, filter],
+  );
+
+  const counts = useMemo(
+    () => ({
+      Industrial: projects.filter((p) => p.type === "Industrial").length,
+      Academic: projects.filter((p) => p.type === "Academic").length,
+    }),
+    [],
   );
 
   return (
@@ -23,12 +42,49 @@ export function FeaturedProjects() {
       <SectionHeading
         eyebrow="Featured Projects"
         title="Systems that ship, not just notebooks"
-        description="Production-minded AI projects — each with a full engineering case study covering architecture, tradeoffs, and results."
+        description="Real-world AI systems from industry internships and applied research — each with a full engineering case study."
       />
 
-      {/* Filters */}
-      <div className="mt-10 flex flex-wrap justify-center gap-2">
-        <LayoutGroup>
+      {/* Industrial vs Academic segmented toggle */}
+      <div className="mt-10 flex justify-center">
+        <div className="inline-flex rounded-full border border-line bg-panel-2 p-1">
+          <LayoutGroup id="type-toggle">
+            {typeTabs.map((tab) => {
+              const active = typeFilter === tab.key;
+              const count =
+                tab.key === "All"
+                  ? projects.length
+                  : counts[tab.key as ProjectType];
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setTypeFilter(tab.key)}
+                  className={cn(
+                    "relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors sm:px-5",
+                    active ? "text-black" : "text-muted hover:text-fg",
+                  )}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="type-pill"
+                      className={cn("absolute inset-0 -z-10 rounded-full", tab.pill)}
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  {tab.label}
+                  <span className={cn("ml-1.5 text-xs", active ? "text-black/60" : "text-faint")}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </LayoutGroup>
+        </div>
+      </div>
+
+      {/* Category filters */}
+      <div className="mt-5 flex flex-wrap justify-center gap-2">
+        <LayoutGroup id="cat-filter">
           {projectFilters.map((f) => {
             const active = filter === f;
             return (
@@ -67,7 +123,7 @@ export function FeaturedProjects() {
 
       {filtered.length === 0 && (
         <p className="mt-12 text-center text-muted">
-          No projects in this category yet.
+          No projects match these filters yet.
         </p>
       )}
     </section>

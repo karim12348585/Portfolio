@@ -68,6 +68,42 @@ function BulletList({ items }: { items: string[] }) {
   );
 }
 
+/** Compact bordered card used in the reflection grid to keep the page scannable. */
+function MiniCard({
+  icon: Icon,
+  title,
+  items,
+}: {
+  icon: React.ElementType;
+  title: string;
+  items: string[];
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.4 }}
+      className="rounded-2xl border border-line bg-panel p-5 sm:p-6"
+    >
+      <div className="mb-4 flex items-center gap-2.5">
+        <div className="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent">
+          <Icon size={16} />
+        </div>
+        <h3 className="font-semibold tracking-tight">{title}</h3>
+      </div>
+      <ul className="space-y-2.5 text-sm leading-relaxed text-muted">
+        {items.map((it) => (
+          <li key={it} className="flex gap-2.5">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-gradient" />
+            <span>{it}</span>
+          </li>
+        ))}
+      </ul>
+    </motion.div>
+  );
+}
+
 function Steps({ steps }: { steps: string[] }) {
   return (
     <div className="flex flex-wrap items-stretch gap-3">
@@ -129,9 +165,7 @@ export function ProjectDetail() {
           <p className="mt-4 max-w-2xl text-lg text-muted">{project.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 text-sm text-faint">
-              {project.year}
-              <span className="text-line">·</span>
+            <span className="inline-flex flex-wrap items-center gap-2 text-sm text-faint">
               <span
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
@@ -146,6 +180,15 @@ export function ProjectDetail() {
                 />
                 {project.type}
               </span>
+              {project.company && (
+                <>
+                  <span className="font-medium text-fg/80">
+                    {project.company}
+                  </span>
+                  <span className="text-line">·</span>
+                </>
+              )}
+              {project.year}
               {project.duration && (
                 <>
                   <span className="text-line">·</span>
@@ -196,13 +239,74 @@ export function ProjectDetail() {
             <p>{cs.overview}</p>
           </Block>
 
-          <Block icon={Target} title="Problem Statement">
-            <p>{cs.problemStatement}</p>
-          </Block>
+          {/* Screenshots — visual proof, high up for credibility */}
+          {cs.screenshots.some((s) => s.src) && (
+            <Block icon={ImageIcon} title="See it in action">
+              <p className="-mt-1 mb-5 text-sm text-faint">
+                Real captures from the running system — click any to enlarge.
+              </p>
+              <div className="grid gap-5 sm:grid-cols-2">
+                {cs.screenshots.map((sc) => (
+                  <figure
+                    key={sc.label}
+                    className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+                  >
+                    <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
+                      <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
+                      <span className="ml-2 truncate text-[11px] font-medium text-faint">
+                        {sc.label}
+                      </span>
+                    </div>
+                    {sc.src ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setZoom({ src: sc.src!, caption: sc.caption })
+                        }
+                        className="relative block w-full cursor-zoom-in overflow-hidden"
+                      >
+                        <img
+                          src={sc.src}
+                          alt={sc.label}
+                          loading="lazy"
+                          className="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                        />
+                        <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                          <Maximize2 size={15} />
+                        </span>
+                      </button>
+                    ) : (
+                      <div
+                        className={cn(
+                          "flex aspect-[16/10] items-center justify-center bg-gradient-to-br",
+                          project.accent,
+                        )}
+                      >
+                        <span className="rounded-full bg-black/20 px-3 py-1 text-xs font-medium text-black/80 backdrop-blur">
+                          {sc.label}
+                        </span>
+                      </div>
+                    )}
+                    <figcaption className="px-4 py-3 text-xs text-faint">
+                      {sc.caption}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </Block>
+          )}
 
-          <Block icon={TrendingUp} title="Business Value">
-            <BulletList items={cs.businessValue} />
-          </Block>
+          {/* Problem + value side by side to cut text density */}
+          <div className="grid gap-x-10 gap-y-12 md:grid-cols-2">
+            <Block icon={Target} title="The Problem">
+              <p>{cs.problemStatement}</p>
+            </Block>
+            <Block icon={TrendingUp} title="Business Value">
+              <BulletList items={cs.businessValue} />
+            </Block>
+          </div>
 
           <Block icon={Boxes} title="Architecture">
             <p>{cs.architecture}</p>
@@ -252,66 +356,25 @@ export function ProjectDetail() {
             <Steps steps={cs.pipeline} />
           </Block>
 
-          <Block icon={ImageIcon} title="Screenshots">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {cs.screenshots.map((sc) => (
-                <figure
-                  key={sc.label}
-                  className="group overflow-hidden rounded-2xl border border-line bg-panel-2"
-                >
-                  {sc.src ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setZoom({ src: sc.src!, caption: sc.caption })
-                      }
-                      className="relative block w-full cursor-zoom-in overflow-hidden"
-                    >
-                      <img
-                        src={sc.src}
-                        alt={sc.label}
-                        loading="lazy"
-                        className="aspect-video w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
-                      />
-                      <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                        <Maximize2 size={15} />
-                      </span>
-                    </button>
-                  ) : (
-                    <div
-                      className={cn(
-                        "flex aspect-video items-center justify-center bg-gradient-to-br",
-                        project.accent,
-                      )}
-                    >
-                      <span className="rounded-full bg-black/20 px-3 py-1 text-xs font-medium text-black/80 backdrop-blur">
-                        {sc.label}
-                      </span>
-                    </div>
-                  )}
-                  <figcaption className="px-4 py-3 text-xs text-faint">
-                    {sc.caption}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </Block>
-
-          <Block icon={ListChecks} title="Engineering Challenges">
-            <BulletList items={cs.challenges} />
-          </Block>
-
-          <Block icon={Scale} title="Tradeoffs">
-            <BulletList items={cs.tradeoffs} />
-          </Block>
-
-          <Block icon={GraduationCap} title="Lessons Learned">
-            <BulletList items={cs.lessons} />
-          </Block>
-
-          <Block icon={Rocket} title="Future Improvements">
-            <BulletList items={cs.futureWork} />
-          </Block>
+          {/* Reflection — compact 2-col grid keeps the page scannable */}
+          <div className="grid gap-5 sm:grid-cols-2">
+            <MiniCard
+              icon={ListChecks}
+              title="Engineering Challenges"
+              items={cs.challenges}
+            />
+            <MiniCard icon={Scale} title="Tradeoffs" items={cs.tradeoffs} />
+            <MiniCard
+              icon={GraduationCap}
+              title="Lessons Learned"
+              items={cs.lessons}
+            />
+            <MiniCard
+              icon={Rocket}
+              title="Future Improvements"
+              items={cs.futureWork}
+            />
+          </div>
         </div>
 
         {/* Sticky sidebar */}

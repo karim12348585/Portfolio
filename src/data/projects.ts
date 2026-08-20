@@ -9,6 +9,7 @@ export const projects: Project[] = [
       "Autonomous multi-agent system for end-to-end root cause analysis of Jenkins pipeline failures.",
     year: "2026",
     type: "Industrial",
+    company: "KPIT Engineering",
     duration: "End-of-Studies · 5 months",
     categories: ["Agentic AI", "LLM", "RAG", "MLOps"],
     problem:
@@ -107,6 +108,7 @@ export const projects: Project[] = [
       "Enterprise-scale code understanding and PR analysis grounded in Jira context via the ReAct framework.",
     year: "2025",
     type: "Industrial",
+    company: "KPIT Engineering",
     duration: "Summer internship · 2 months",
     categories: ["Agentic AI", "LLM", "RAG"],
     problem:
