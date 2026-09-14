@@ -11,8 +11,8 @@ type TypeFilter = "All" | ProjectType;
 
 const typeTabs: { key: TypeFilter; label: string; pill: string }[] = [
   { key: "All", label: "All work", pill: "bg-accent-gradient" },
-  { key: "Industrial", label: "Industrial", pill: "bg-emerald-500" },
-  { key: "Academic", label: "Academic", pill: "bg-violet-500" },
+  { key: "Industrial", label: "Industrial", pill: "bg-amber-500" },
+  { key: "Academic", label: "Academic", pill: "bg-sky-500" },
 ];
 
 export function FeaturedProjects() {

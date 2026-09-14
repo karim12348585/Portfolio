@@ -34,13 +34,13 @@ export function SectionHeading({
           {eyebrow}
         </span>
       )}
-      <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+      <h2 className="max-w-3xl text-balance text-4xl leading-[1.05] tracking-tight sm:text-5xl">
         {title}
       </h2>
       {description && (
         <p
           className={cn(
-            "max-w-2xl text-pretty text-base text-muted sm:text-lg",
+            "max-w-2xl text-pretty font-sans text-base leading-relaxed text-muted sm:text-[1.0625rem]",
             align === "center" ? "mx-auto" : "",
           )}
         >

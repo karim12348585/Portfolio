@@ -27,6 +27,7 @@ const config: Config = {
           "Segoe UI",
           "sans-serif",
         ],
+        display: ["Instrument Serif", "ui-serif", "Georgia", "serif"],
         mono: [
           "ui-monospace",
           "SFMono-Regular",

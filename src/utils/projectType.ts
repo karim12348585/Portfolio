@@ -12,20 +12,23 @@ interface TypeStyle {
   overlay: string;
 }
 
-/** Distinct color per project category. Industrial = emerald, Academic = violet. */
+/**
+ * Distinct colour per project category. Industrial carries the brand amber;
+ * Academic uses a cool slate-blue so the two read apart at a glance.
+ */
 export const projectTypeStyles: Record<ProjectType, TypeStyle> = {
   Industrial: {
     label: "Industrial",
-    badge: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
-    text: "text-emerald-400",
-    dot: "bg-emerald-400",
-    overlay: "border-emerald-300/40 bg-emerald-950/40 text-emerald-100",
+    badge: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+    text: "text-amber-400",
+    dot: "bg-amber-400",
+    overlay: "border-amber-300/40 bg-stone-950/55 text-amber-100",
   },
   Academic: {
     label: "Academic",
-    badge: "border-violet-400/30 bg-violet-400/10 text-violet-300",
-    text: "text-violet-400",
-    dot: "bg-violet-400",
-    overlay: "border-violet-300/40 bg-violet-950/40 text-violet-100",
+    badge: "border-sky-400/30 bg-sky-400/10 text-sky-300",
+    text: "text-sky-400",
+    dot: "bg-sky-400",
+    overlay: "border-sky-300/40 bg-stone-950/55 text-sky-100",
   },
 };

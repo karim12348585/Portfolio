@@ -50,7 +50,7 @@ export interface Project {
   codeConfidential?: boolean;
   demo?: string;
   featured: boolean;
-  accent: string; // gradient hint, e.g. "from-emerald-500 to-teal-400"
+  accent: string; // gradient hint, e.g. "from-amber-500 to-orange-400"
   caseStudy: CaseStudy;
 }
 

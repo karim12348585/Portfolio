@@ -43,7 +43,7 @@ export function ParticleField({ className }: { className?: string }) {
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const density = Math.min(70, Math.floor((width * height) / 22000));
+      const density = Math.min(52, Math.floor((width * height) / 30000));
       nodes = Array.from({ length: density }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -71,8 +71,8 @@ export function ParticleField({ className }: { className?: string }) {
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const dist = Math.hypot(dx, dy);
-          if (dist < 130) {
-            const alpha = (1 - dist / 130) * 0.35;
+          if (dist < 108) {
+            const alpha = (1 - dist / 108) * 0.20;
             ctx.strokeStyle = `rgb(${rgb} / ${alpha})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -85,7 +85,7 @@ export function ParticleField({ className }: { className?: string }) {
 
       // nodes
       for (const n of nodes) {
-        ctx.fillStyle = `rgb(${rgb} / 0.6)`;
+        ctx.fillStyle = `rgb(${rgb} / 0.42)`;
         ctx.beginPath();
         ctx.arc(n.x, n.y, 1.6, 0, Math.PI * 2);
         ctx.fill();

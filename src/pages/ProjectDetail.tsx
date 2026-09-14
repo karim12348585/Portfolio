@@ -283,7 +283,7 @@ export function ProjectDetail() {
                         <Maximize2 size={15} />
                       </span>
                     </button>
-                    <figcaption className="px-4 py-3 text-xs text-faint">
+                    <figcaption className="px-4 py-3 text-xs text-muted">
                       {sc.caption}
                     </figcaption>
                   </figure>
@@ -325,7 +325,7 @@ export function ProjectDetail() {
                         <Maximize2 size={15} />
                       </span>
                     </button>
-                    <figcaption className="px-4 py-3 text-xs text-faint">
+                    <figcaption className="px-4 py-3 text-xs text-muted">
                       {d.caption}
                     </figcaption>
                   </figure>

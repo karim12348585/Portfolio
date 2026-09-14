@@ -3,33 +3,37 @@
 @tailwind utilities;
 
 /* ============================================================
-   Design tokens — Emerald / Teal on charcoal (dark-first)
+   Design tokens — Warm slate + amber (dark-first, editorial)
    ============================================================ */
 @layer base {
   :root,
   .dark {
-    --bg: 10 11 10; /* #0a0b0a */
-    --panel: 15 18 16; /* #0f1210 */
-    --panel-2: 20 24 21; /* #141815 */
-    --line: 28 36 32; /* #1c2420 */
-    --fg: 236 244 240; /* near white */
-    --muted: 148 163 156; /* muted gray-green */
-    --faint: 100 116 110;
-    --accent: 16 185 129; /* emerald #10b981 */
-    --accent-soft: 45 212 191; /* teal #2dd4bf */
+    --bg: 12 10 9; /* stone-950, warm near-black */
+    --panel: 24 21 17;
+    --panel-2: 32 27 23;
+    --line: 47 40 33;
+    --fg: 250 247 242; /* warm near-white */
+    --muted: 172 165 156; /* warm grey */
+    --faint: 130 122 113;
+    --accent: 245 158 11; /* amber-500 */
+    --accent-soft: 251 191 36; /* amber-400 */
+    --highlight: 255 255 255; /* inner top highlight on surfaces */
+    --highlight-strength: 0.055;
     color-scheme: dark;
   }
 
   .light {
-    --bg: 250 251 250;
+    --bg: 250 249 246;
     --panel: 255 255 255;
-    --panel-2: 244 247 245;
-    --line: 224 230 226;
-    --fg: 15 23 20;
-    --muted: 82 96 90;
-    --faint: 130 145 138;
-    --accent: 5 150 105; /* emerald-600 for contrast on light */
-    --accent-soft: 13 148 136; /* teal-600 */
+    --panel-2: 245 242 237;
+    --line: 231 225 216;
+    --fg: 28 25 23; /* stone-900 */
+    --muted: 87 83 78;
+    --faint: 124 117 109;
+    --accent: 180 83 9; /* amber-700, readable on light */
+    --accent-soft: 217 119 6; /* amber-600 */
+    --highlight: 255 255 255;
+    --highlight-strength: 0.9;
     color-scheme: light;
   }
 
@@ -48,12 +52,20 @@
     overflow-x: hidden;
   }
 
+  /* Editorial display face for headlines */
+  h1,
+  h2,
+  .display {
+    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
   ::selection {
-    background: rgb(var(--accent) / 0.25);
+    background: rgb(var(--accent) / 0.28);
     color: rgb(var(--fg));
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -72,21 +84,38 @@
 
 @layer components {
   .glass {
-    background: rgb(var(--panel) / 0.6);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border: 1px solid rgb(var(--line) / 0.8);
+    background: rgb(var(--panel) / 0.72);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgb(var(--line) / 0.9);
+    box-shadow:
+      inset 0 1px 0 rgb(var(--highlight) / var(--highlight-strength)),
+      0 10px 40px rgb(0 0 0 / 0.30);
+  }
+
+  /* Layered surface with a top inner highlight — gives cards real material depth */
+  .surface {
+    background: linear-gradient(
+      180deg,
+      rgb(var(--panel-2)) 0%,
+      rgb(var(--panel)) 60%
+    );
+    border: 1px solid rgb(var(--line));
+    box-shadow:
+      inset 0 1px 0 rgb(var(--highlight) / var(--highlight-strength)),
+      0 1px 2px rgb(0 0 0 / 0.20),
+      0 12px 32px -12px rgb(0 0 0 / 0.45);
   }
 
   .card {
-    @apply rounded-2xl border border-line bg-panel shadow-soft;
+    @apply surface rounded-2xl;
   }
 
   .text-gradient {
     background: linear-gradient(
       120deg,
-      rgb(var(--fg)) 20%,
-      rgb(var(--accent-soft)) 60%,
+      rgb(var(--fg)) 25%,
+      rgb(var(--accent-soft)) 75%,
       rgb(var(--accent)) 100%
     );
     -webkit-background-clip: text;
@@ -99,7 +128,9 @@
   }
 
   .btn-glow {
-    box-shadow: 0 8px 30px rgb(var(--accent) / 0.28);
+    box-shadow:
+      0 1px 0 rgb(var(--highlight) / 0.25) inset,
+      0 10px 30px -8px rgb(var(--accent) / 0.55);
   }
 
   .section {
@@ -107,17 +138,29 @@
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-line bg-panel/60 px-3 py-1 text-xs font-medium tracking-wide text-muted;
+    @apply inline-flex items-center gap-2 rounded-full border border-line bg-panel-2/70 px-3 py-1 text-xs font-medium tracking-wide text-muted backdrop-blur;
+  }
+
+  /* Hairline rule that fades at both ends — separates sections quietly */
+  .rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--line)) 15%,
+      rgb(var(--line)) 85%,
+      transparent
+    );
   }
 }
 
 @layer utilities {
   .grid-lines {
     background-image:
-      linear-gradient(rgb(var(--line) / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--line) / 0.35) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+      linear-gradient(rgb(var(--line) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--line) / 0.4) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -127,9 +170,12 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

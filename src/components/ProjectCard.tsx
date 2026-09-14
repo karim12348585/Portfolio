@@ -124,7 +124,7 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.tech.slice(0, 4).map((t) => (
             <span
               key={t}
-              className="rounded-md border border-line bg-panel-2 px-2 py-0.5 text-[11px] text-faint"
+              className="rounded-md border border-line bg-panel-2 px-2 py-0.5 text-[11px] text-muted"
             >
               {t}
             </span>
