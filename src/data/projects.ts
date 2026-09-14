@@ -149,13 +149,6 @@ export const projects: Project[] = [
       ],
       architecture:
         "A ReAct agent (reason → act → observe) drives tool use over a hybrid retrieval layer: Neo4j holds the code knowledge graph (files, symbols, dependencies, call edges), Chroma holds semantic embeddings, and AST parsing feeds both. LangGraph coordinates multi-step reasoning, and every tool call is surfaced in the UI so the review is auditable rather than a black box.",
-      diagrams: [
-        {
-          src: "/projects/agentic-code-intelligence/knowledge-graph.png",
-          caption:
-            "The repository modelled in Neo4j — packages CONTAIN modules, modules IMPORT dependencies, and classes CALL their methods.",
-        },
-      ],
       systemDesign: [
         "AST parser extracts symbols, calls, and dependencies from source.",
         "Neo4j stores the structural knowledge graph for traversal queries.",
@@ -177,6 +170,12 @@ export const projects: Project[] = [
           caption:
             "A full review of PR #2: quality/security/coverage scores, the agent's 5-step ReAct trace with live tool calls, and a summary with strengths, issues and recommendations at 94% confidence.",
           src: "/projects/agentic-code-intelligence/pr-review-dashboard.png",
+        },
+        {
+          label: "Neo4j knowledge graph",
+          caption:
+            "The repository modelled in Neo4j — packages CONTAIN modules, modules IMPORT dependencies, and classes CALL their methods.",
+          src: "/projects/agentic-code-intelligence/knowledge-graph.png",
         },
       ],
       challenges: [
