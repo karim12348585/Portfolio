@@ -3,9 +3,8 @@ import { useLocation } from "react-router-dom";
 import { PageTransition } from "@/layout/PageTransition";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
-import { Skills } from "@/sections/Skills";
 import { FeaturedProjects } from "@/sections/FeaturedProjects";
-import { ProjectTimeline } from "@/sections/ProjectTimeline";
+import { Expertise } from "@/sections/Expertise";
 import { Experience } from "@/sections/Experience";
 import { Certifications } from "@/sections/Certifications";
 import { Resume } from "@/sections/Resume";
@@ -27,10 +26,9 @@ export function Home() {
     <PageTransition>
       <Hero />
       <About />
-      <Skills />
       <Experience />
       <FeaturedProjects />
-      <ProjectTimeline />
+      <Expertise />
       <Certifications />
       <Resume />
       <Contact />

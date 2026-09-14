@@ -2,9 +2,9 @@ import type { ProjectCategory } from "@/types";
 
 export const navLinks = [
   { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
+  { id: "skills", label: "Skills" },
   { id: "certifications", label: "Certifications" },
   { id: "resume", label: "Résumé" },
   { id: "contact", label: "Contact" },

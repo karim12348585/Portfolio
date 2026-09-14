@@ -5,9 +5,12 @@ import type { Project } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { CodeSource } from "@/components/CodeSource";
 import { projectTypeStyles } from "@/utils/projectType";
+import { getHeroImage } from "@/utils/projectImage";
 import { cn } from "@/utils/cn";
 
 export function ProjectCard({ project }: { project: Project }) {
+  const hero = getHeroImage(project);
+
   return (
     <motion.article
       layout
@@ -22,23 +25,37 @@ export function ProjectCard({ project }: { project: Project }) {
         to={`/projects/${project.slug}`}
         className="relative block aspect-[16/9] overflow-hidden"
       >
-        <div
-          className={cn(
-            "absolute inset-0 bg-gradient-to-br opacity-90",
-            project.accent,
-          )}
-        />
-        <div className="absolute inset-0 grid-lines opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-panel/90 via-transparent to-transparent" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-black text-black/15">
-            {project.title
-              .split(" ")
-              .map((w) => w[0])
-              .join("")
-              .slice(0, 3)}
-          </span>
-        </div>
+        {hero ? (
+          <>
+            <img
+              src={hero.src}
+              alt={project.title}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-panel via-panel/25 to-black/25" />
+          </>
+        ) : (
+          <>
+            <div
+              className={cn(
+                "absolute inset-0 bg-gradient-to-br opacity-90",
+                project.accent,
+              )}
+            />
+            <div className="absolute inset-0 grid-lines opacity-30" />
+            <div className="absolute inset-0 bg-gradient-to-t from-panel/90 via-transparent to-transparent" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-6xl font-black text-black/15">
+                {project.title
+                  .split(" ")
+                  .map((w) => w[0])
+                  .join("")
+                  .slice(0, 3)}
+              </span>
+            </div>
+          </>
+        )}
         <div className="absolute left-4 top-4 flex gap-2">
           <span
             className={cn(
@@ -55,7 +72,7 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.type}
           </span>
         </div>
-        <div className="absolute right-4 top-4 rounded-full bg-black/20 px-2.5 py-1 text-xs font-medium text-black/80 backdrop-blur">
+        <div className="absolute right-4 top-4 rounded-full border border-white/15 bg-black/45 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
           {project.year}
         </div>
       </Link>

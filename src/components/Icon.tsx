@@ -17,6 +17,8 @@ import {
   Gauge,
   Users,
   Sigma,
+  Filter,
+  Network,
   type LucideProps,
 } from "lucide-react";
 import type { ComponentType } from "react";
@@ -44,6 +46,8 @@ const registry: Record<string, ComponentType<LucideProps>> = {
   Gauge,
   Users,
   Sigma,
+  Filter,
+  Network,
 };
 
 interface IconProps extends LucideProps {

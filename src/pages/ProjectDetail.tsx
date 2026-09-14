@@ -8,7 +8,6 @@ import {
   Target,
   TrendingUp,
   Boxes,
-  Workflow,
   ListChecks,
   Scale,
   GraduationCap,
@@ -24,6 +23,7 @@ import { CodeSource } from "@/components/CodeSource";
 import { GradientMesh } from "@/components/GradientMesh";
 import { Lightbox, type LightboxImage } from "@/components/Lightbox";
 import { projectTypeStyles } from "@/utils/projectType";
+import { getHeroImage } from "@/utils/projectImage";
 import { NotFound } from "./NotFound";
 import { cn } from "@/utils/cn";
 
@@ -104,26 +104,6 @@ function MiniCard({
   );
 }
 
-function Steps({ steps }: { steps: string[] }) {
-  return (
-    <div className="flex flex-wrap items-stretch gap-3">
-      {steps.map((s, i) => (
-        <div key={s} className="flex items-center gap-3">
-          <div className="rounded-xl border border-line bg-panel-2 px-4 py-3 text-sm text-fg/90">
-            <span className="mr-2 text-xs font-bold text-accent">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            {s}
-          </div>
-          {i < steps.length - 1 && (
-            <ArrowRight size={16} className="shrink-0 text-faint" />
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function ProjectDetail() {
   const { slug } = useParams();
   const project = slug ? getProjectBySlug(slug) : undefined;
@@ -134,6 +114,21 @@ export function ProjectDetail() {
   const cs = project.caseStudy;
   const idx = projects.findIndex((p) => p.id === project.id);
   const next = projects[(idx + 1) % projects.length];
+
+  // Only render reflection cards that actually have content.
+  const reflections = [
+    { icon: ListChecks, title: "Engineering Challenges", items: cs.challenges },
+    { icon: Scale, title: "Tradeoffs", items: cs.tradeoffs },
+    { icon: GraduationCap, title: "Lessons Learned", items: cs.lessons },
+    { icon: Rocket, title: "Future Improvements", items: cs.futureWork },
+  ].filter((r) => r.items.length > 0);
+
+  // Lead with a real image (shared with the project cards). The gallery below
+  // still shows every visual, including the one used as the hero.
+  const allDiagrams = cs.diagrams ?? [];
+  const heroImage: LightboxImage | null = getHeroImage(project);
+  const galleryShots = cs.screenshots;
+  const hasGallery = galleryShots.length > 0;
 
   return (
     <PageTransition>
@@ -213,22 +208,23 @@ export function ProjectDetail() {
             </div>
           </div>
 
-          {/* Banner */}
-          <div
-            className={cn(
-              "relative mt-10 flex aspect-[21/9] items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br",
-              project.accent,
-            )}
-          >
-            <div className="absolute inset-0 grid-lines opacity-25" />
-            <span className="text-7xl font-black text-black/15 sm:text-8xl">
-              {project.title
-                .split(" ")
-                .map((w) => w[0])
-                .join("")
-                .slice(0, 3)}
-            </span>
-          </div>
+          {/* Hero image — a real capture, not a monogram */}
+          {heroImage && (
+            <button
+              type="button"
+              onClick={() => setZoom(heroImage)}
+              className="group relative mt-10 block w-full cursor-zoom-in overflow-hidden rounded-3xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+            >
+              <img
+                src={heroImage.src}
+                alt={project.title}
+                className="aspect-[21/9] w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              />
+              <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                <Maximize2 size={16} />
+              </span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -236,17 +232,23 @@ export function ProjectDetail() {
       <div className="section grid gap-14 py-6 lg:grid-cols-[1fr_260px]">
         <div className="space-y-14">
           <Block icon={Target} title="Overview">
-            <p>{cs.overview}</p>
+            <p>{cs.problemStatement}</p>
+            <p className="mt-4">{cs.overview}</p>
           </Block>
 
-          {/* Screenshots — visual proof, high up for credibility */}
-          {cs.screenshots.some((s) => s.src) && (
+          {/* Screenshots + diagrams — visual proof, high up for credibility */}
+          {hasGallery && (
             <Block icon={ImageIcon} title="See it in action">
               <p className="-mt-1 mb-5 text-sm text-faint">
                 Real captures from the running system — click any to enlarge.
               </p>
-              <div className="grid gap-5 sm:grid-cols-2">
-                {cs.screenshots.map((sc) => (
+              <div
+                className={cn(
+                  "grid gap-5",
+                  galleryShots.length > 1 && "sm:grid-cols-2",
+                )}
+              >
+                {galleryShots.map((sc) => (
                   <figure
                     key={sc.label}
                     className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
@@ -259,68 +261,59 @@ export function ProjectDetail() {
                         {sc.label}
                       </span>
                     </div>
-                    {sc.src ? (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setZoom({ src: sc.src!, caption: sc.caption })
-                        }
-                        className="relative block w-full cursor-zoom-in overflow-hidden"
-                      >
-                        <img
-                          src={sc.src}
-                          alt={sc.label}
-                          loading="lazy"
-                          className="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                        />
-                        <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                          <Maximize2 size={15} />
-                        </span>
-                      </button>
-                    ) : (
-                      <div
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setZoom({ src: sc.src, caption: sc.caption })
+                      }
+                      className="relative block w-full cursor-zoom-in overflow-hidden"
+                    >
+                      <img
+                        src={sc.src}
+                        alt={sc.label}
+                        loading="lazy"
                         className={cn(
-                          "flex aspect-[16/10] items-center justify-center bg-gradient-to-br",
-                          project.accent,
+                          "w-full transition-transform duration-500 ease-out group-hover:scale-[1.04]",
+                          galleryShots.length > 1
+                            ? "aspect-[16/10] object-cover object-top"
+                            : "h-auto",
                         )}
-                      >
-                        <span className="rounded-full bg-black/20 px-3 py-1 text-xs font-medium text-black/80 backdrop-blur">
-                          {sc.label}
-                        </span>
-                      </div>
-                    )}
+                      />
+                      <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                        <Maximize2 size={15} />
+                      </span>
+                    </button>
                     <figcaption className="px-4 py-3 text-xs text-faint">
                       {sc.caption}
                     </figcaption>
                   </figure>
                 ))}
               </div>
+
             </Block>
           )}
 
-          {/* Problem + value side by side to cut text density */}
-          <div className="grid gap-x-10 gap-y-12 md:grid-cols-2">
-            <Block icon={Target} title="The Problem">
-              <p>{cs.problemStatement}</p>
-            </Block>
-            <Block icon={TrendingUp} title="Business Value">
-              <BulletList items={cs.businessValue} />
-            </Block>
-          </div>
-
-          <Block icon={Boxes} title="Architecture">
+          {/* Architecture + system design, with the diagram in context */}
+          <Block icon={Boxes} title="Architecture & System Design">
             <p>{cs.architecture}</p>
-            {cs.diagrams && cs.diagrams.length > 0 ? (
-              <div className="mt-5 space-y-4">
-                {cs.diagrams.map((d) => (
+
+            {allDiagrams.length > 0 && (
+              <div className="mt-6 space-y-5">
+                {allDiagrams.map((d) => (
                   <figure
                     key={d.src}
-                    className="group overflow-hidden rounded-2xl border border-line bg-white"
+                    className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
                   >
+                    <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
+                      <Boxes size={13} className="text-accent" />
+                      <span className="ml-1 truncate text-[11px] font-medium text-faint">
+                        Architecture diagram
+                      </span>
+                    </div>
                     <button
                       type="button"
                       onClick={() => setZoom({ src: d.src, caption: d.caption })}
-                      className="relative block w-full cursor-zoom-in"
+                      className="relative block w-full cursor-zoom-in bg-white"
                     >
                       <img
                         src={d.src}
@@ -332,49 +325,36 @@ export function ProjectDetail() {
                         <Maximize2 size={15} />
                       </span>
                     </button>
-                    <figcaption className="bg-panel-2 px-4 py-3 text-xs text-faint">
+                    <figcaption className="px-4 py-3 text-xs text-faint">
                       {d.caption}
                     </figcaption>
                   </figure>
                 ))}
               </div>
-            ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-line bg-panel-2 p-8 text-center">
-                <Boxes size={28} className="mx-auto text-accent" />
-                <p className="mt-3 text-sm text-faint">
-                  Architecture diagram placeholder — drop a diagram image here.
-                </p>
-              </div>
             )}
+
+            <div className="mt-6">
+              <BulletList items={cs.systemDesign} />
+            </div>
           </Block>
 
-          <Block icon={Workflow} title="System Design">
-            <BulletList items={cs.systemDesign} />
-          </Block>
-
-          <Block icon={Workflow} title="Pipeline">
-            <Steps steps={cs.pipeline} />
+          <Block icon={TrendingUp} title="Business Value">
+            <BulletList items={cs.businessValue} />
           </Block>
 
           {/* Reflection — compact 2-col grid keeps the page scannable */}
-          <div className="grid gap-5 sm:grid-cols-2">
-            <MiniCard
-              icon={ListChecks}
-              title="Engineering Challenges"
-              items={cs.challenges}
-            />
-            <MiniCard icon={Scale} title="Tradeoffs" items={cs.tradeoffs} />
-            <MiniCard
-              icon={GraduationCap}
-              title="Lessons Learned"
-              items={cs.lessons}
-            />
-            <MiniCard
-              icon={Rocket}
-              title="Future Improvements"
-              items={cs.futureWork}
-            />
-          </div>
+          {reflections.length > 0 && (
+            <div className="grid gap-5 sm:grid-cols-2">
+              {reflections.map((r) => (
+                <MiniCard
+                  key={r.title}
+                  icon={r.icon}
+                  title={r.title}
+                  items={r.items}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Sticky sidebar */}

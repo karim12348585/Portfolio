@@ -21,8 +21,8 @@ export interface CaseStudy {
   diagrams?: { src: string; caption: string }[];
   systemDesign: string[];
   pipeline: string[];
-  /** `src` renders a real image; otherwise a gradient placeholder is shown. */
-  screenshots: { label: string; caption: string; src?: string }[];
+  /** Real captures only — empty array hides the section (no placeholders). */
+  screenshots: { label: string; caption: string; src: string }[];
   challenges: string[];
   tradeoffs: string[];
   lessons: string[];
@@ -86,7 +86,10 @@ export interface Certification {
   title: string;
   issuer: string;
   skills: string[];
+  /** Public verification URL (e.g. a Credly badge). */
   link?: string;
+  /** Local path to the credential's badge artwork. */
+  badge?: string;
   year?: string;
 }
 

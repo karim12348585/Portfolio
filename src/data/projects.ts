@@ -105,7 +105,7 @@ export const projects: Project[] = [
     slug: "agentic-code-intelligence",
     title: "Agentic Code Intelligence",
     tagline:
-      "Enterprise-scale code understanding and PR analysis grounded in Jira context via the ReAct framework.",
+      "An autonomous PR reviewer that reads the codebase like an engineer — grounded in the Jira ticket behind every change.",
     year: "2025",
     type: "Industrial",
     company: "KPIT Engineering",
@@ -123,64 +123,152 @@ export const projects: Project[] = [
       "AST Parsing",
       "RAG",
       "Jira API",
+      "GPT-4 Turbo",
       "Python",
     ],
     results: [
-      "Autonomous, context-aware analysis across enterprise repositories",
-      "Code structure modelled as a Neo4j knowledge graph",
-      "PR analysis grounded in the originating Jira ticket",
+      "Delivers a complete PR review in ~2.3s across a transparent 5-step ReAct trace",
+      "Scores every PR on quality, security, maintainability, complexity and test coverage",
+      "Validates the implementation against the originating Jira ticket's requirements",
+      "Models the whole repository as a Neo4j knowledge graph (files → symbols → calls)",
+      "Orchestrates 6 tools over a 128k-token context window",
     ],
     codeConfidential: true,
     featured: true,
     accent: "from-teal-400 to-cyan-400",
     caseStudy: {
       overview:
-        "Built during my 2025 internship at KPIT Engineering, this system gives an LLM agent the ability to genuinely understand enterprise code — not just read files, but traverse structure, retrieve relevant context, and reason about a pull request against the Jira ticket that motivated it.",
+        "Built during my 2025 internship at KPIT Engineering, this system gives an LLM agent the ability to genuinely understand enterprise code — not just read a diff, but traverse the repository's structure, retrieve the relevant context, and judge a pull request against the Jira ticket that motivated it. The result is a review that reads like a senior engineer wrote it: scored, evidenced, and tied back to the requirement.",
       problemStatement:
-        "Generic LLM code review lacks grounding: it sees a diff but not the surrounding architecture or the business requirement. That produces shallow, sometimes misleading feedback on large codebases.",
+        "Generic LLM code review lacks grounding: it sees a diff but not the surrounding architecture or the business requirement. That produces shallow, sometimes misleading feedback on large codebases — and reviewers still burn hours re-gathering the same context by hand.",
       businessValue: [
-        "Faster, more relevant PR reviews grounded in real business intent.",
-        "Onboarding aid — the graph makes cross-repository structure explorable.",
-        "Reduces reviewer load on repetitive context-gathering.",
+        "Cuts review turnaround from hours of context-gathering to seconds of automated analysis.",
+        "Catches requirement drift by validating the code against the originating Jira ticket.",
+        "Surfaces security, complexity and coverage risks before they reach main.",
+        "Doubles as an onboarding aid — the knowledge graph makes an unfamiliar repo explorable.",
       ],
       architecture:
-        "A ReAct agent (reason → act → observe) drives tool use over a hybrid retrieval layer: Neo4j holds the code knowledge graph (files, symbols, dependencies), Chroma holds semantic embeddings, and AST parsing feeds both. LangGraph coordinates multi-step reasoning across repositories.",
+        "A ReAct agent (reason → act → observe) drives tool use over a hybrid retrieval layer: Neo4j holds the code knowledge graph (files, symbols, dependencies, call edges), Chroma holds semantic embeddings, and AST parsing feeds both. LangGraph coordinates multi-step reasoning, and every tool call is surfaced in the UI so the review is auditable rather than a black box.",
+      diagrams: [
+        {
+          src: "/projects/agentic-code-intelligence/knowledge-graph.png",
+          caption:
+            "The repository modelled in Neo4j — packages CONTAIN modules, modules IMPORT dependencies, and classes CALL their methods.",
+        },
+      ],
       systemDesign: [
         "AST parser extracts symbols, calls, and dependencies from source.",
         "Neo4j stores the structural knowledge graph for traversal queries.",
         "ChromaDB provides semantic code and ticket retrieval.",
-        "ReAct agent interleaves reasoning with graph and vector tool calls.",
-        "Jira integration injects ticket context into every analysis.",
+        "ReAct agent interleaves reasoning with graph and vector tool calls (6 tools).",
+        "Jira integration injects ticket requirements into the validation step.",
+        "Scoring layer rates quality, security, maintainability, complexity and coverage.",
       ],
       pipeline: [
-        "Parse repositories into ASTs",
-        "Build Neo4j knowledge graph + Chroma embeddings",
-        "Fetch originating Jira ticket",
-        "ReAct reasoning over graph + vectors",
-        "Emit context-aware PR analysis",
+        "Understand the request",
+        "Gather PR context (summary, diffs, commits, Jira ticket)",
+        "Analyze code changes against the knowledge graph",
+        "Validate against ticket requirements",
+        "Generate a scored review with findings and recommendations",
       ],
       screenshots: [
-        { label: "Knowledge graph", caption: "Neo4j view of code structure and dependencies." },
-        { label: "PR analysis", caption: "Agent output grounded in the linked Jira ticket." },
-        { label: "ReAct trace", caption: "Reason-act-observe steps with tool calls." },
+        {
+          label: "PR review dashboard",
+          caption:
+            "A full review of PR #2: quality/security/coverage scores, the agent's 5-step ReAct trace with live tool calls, and a summary with strengths, issues and recommendations at 94% confidence.",
+          src: "/projects/agentic-code-intelligence/pr-review-dashboard.png",
+        },
       ],
       challenges: [
         "Combining graph traversal with vector retrieval without the agent losing focus.",
         "Keeping the knowledge graph in sync with fast-moving repositories.",
         "Scoping context so the agent stays within token budgets on large repos.",
+        "Making the agent's reasoning legible — every tool call had to be traceable for reviewers to trust the verdict.",
       ],
       tradeoffs: [
         "Hybrid Neo4j + Chroma retrieval added complexity but captured both structure and semantics.",
         "ReAct's transparency was preferred over opaque single-shot prompting.",
+        "Chose 'approve with comments' over auto-merge — the agent advises, the engineer decides.",
       ],
       lessons: [
         "Structure (graph) and meaning (embeddings) are complementary — neither alone is enough for code.",
         "Grounding in the originating ticket dramatically improves review relevance.",
+        "Showing the reasoning trace is what converts a skeptical reviewer into a user.",
       ],
       futureWork: [
         "Incremental graph updates on each commit.",
         "Automated review comments posted back to the PR.",
+        "Multi-repository reasoning for changes that span services.",
       ],
+    },
+  },
+  {
+    id: "data-pipeline-monitoring",
+    slug: "data-pipeline-monitoring",
+    title: "Data Pipeline Monitoring & Alerting",
+    tagline:
+      "A modular data-quality watchdog that reconciles SQL Server against GitHub, Jenkins and Jira — and emails the team the moment they diverge.",
+    year: "2024",
+    type: "Industrial",
+    company: "PRIMATEC Engineering",
+    duration: "Summer internship · 2 months",
+    categories: ["Data Engineering", "MLOps"],
+    problem:
+      "Data quality issues between SQL Server and the external systems feeding it went unnoticed until someone manually spotted a wrong number downstream — by which point reports were already built on bad data.",
+    solution:
+      "A Python monitoring system that pulls from each source via SQLAlchemy and REST APIs, reconciles them with Pandas, and fires SMTP alerts in real time — behind a plug-in architecture that makes adding a new source trivial.",
+    tech: [
+      "Python",
+      "Pandas",
+      "SQL",
+      "SQLAlchemy",
+      "SQL Server",
+      "REST APIs",
+      "SMTP",
+      "Jenkins",
+      "Jira",
+    ],
+    results: [
+      "Reconciles SQL Server against GitHub, Jenkins and Jira automatically",
+      "Real-time email alerting the moment a data-quality rule breaks",
+      "Plug-in architecture — onboarding a new source is config, not a rewrite",
+      "Replaced manual spot-checks with scheduled, repeatable validation",
+    ],
+    codeConfidential: true,
+    featured: true,
+    accent: "from-cyan-500 to-teal-400",
+    caseStudy: {
+      overview:
+        "My first industry internship, at PRIMATEC Engineering: a Python-based data quality monitoring and alerting system. It continuously compares the company's SQL Server records against the external systems that feed them — GitHub, Jenkins and Jira — and notifies the team by email the moment the two diverge.",
+      problemStatement:
+        "SQL Server was the source of truth for data originating in several external systems, but nothing verified that they actually agreed. Discrepancies — a missing build record, a stale ticket status — surfaced only when a human noticed a wrong number downstream, long after the fact.",
+      businessValue: [
+        "Catches data-quality breaks in real time instead of days later.",
+        "Removes recurring manual spot-checks from the team's workload.",
+        "Onboarding a new data source becomes configuration, not development.",
+        "Creates an auditable trail of when and where data diverged.",
+      ],
+      architecture:
+        "A source-agnostic collector layer wraps each system behind a common interface — SQLAlchemy for SQL Server, REST clients for GitHub, Jenkins and Jira. Pandas normalizes each into comparable frames, a rule engine reconciles them, and any violation is dispatched through an SMTP notifier. New sources register into the collector layer without touching the comparison or alerting logic.",
+      systemDesign: [
+        "Collector layer: one adapter per source (SQLAlchemy / REST API).",
+        "Normalization: Pandas frames with a shared schema for comparison.",
+        "Rule engine: configurable data-quality checks across sources.",
+        "Alerting: SMTP notifications carrying the failing records.",
+        "Extensibility: new sources plug in via the adapter interface.",
+      ],
+      pipeline: [
+        "Pull records from SQL Server",
+        "Fetch counterparts from GitHub, Jenkins, Jira",
+        "Normalize into comparable Pandas frames",
+        "Run reconciliation rules",
+        "Email alert on any violation",
+      ],
+      screenshots: [],
+      challenges: [],
+      tradeoffs: [],
+      lessons: [],
+      futureWork: [],
     },
   },
   {
@@ -238,10 +326,7 @@ export const projects: Project[] = [
         "Execute in Docker sandbox",
         "Report bugs and passing tests",
       ],
-      screenshots: [
-        { label: "GraphRAG retrieval", caption: "Blended semantic + structural context." },
-        { label: "Sandbox run", caption: "Docker-isolated test execution results." },
-      ],
+      screenshots: [],
       challenges: [
         "Designing a retrieval score that balances semantic and graph proximity.",
         "Hardening the Docker sandbox against untrusted generated code.",
@@ -311,10 +396,7 @@ export const projects: Project[] = [
         "Compare to resume",
         "Generate personalized roadmap",
       ],
-      screenshots: [
-        { label: "Skill clusters", caption: "HDBSCAN clusters of in-demand skills." },
-        { label: "Roadmap", caption: "Personalized upskilling plan." },
-      ],
+      screenshots: [],
       challenges: [
         "Noisy, inconsistent skill naming across postings required LLM normalization.",
         "HDBSCAN parameter tuning to get meaningful clusters.",
@@ -385,10 +467,7 @@ export const projects: Project[] = [
         "Evaluate (95% accuracy)",
         "Explainability attribution",
       ],
-      screenshots: [
-        { label: "Saliency map", caption: "XAI highlighting decision regions." },
-        { label: "Training curves", caption: "Accuracy/loss across epochs." },
-      ],
+      screenshots: [],
       challenges: [
         "Avoiding overfitting on subtle generative artifacts.",
         "Making transformer decisions interpretable via XAI.",
@@ -451,10 +530,7 @@ export const projects: Project[] = [
         "Similarity scoring",
         "Feedback generation",
       ],
-      screenshots: [
-        { label: "Ranking view", caption: "Candidates scored against the role." },
-        { label: "Feedback", caption: "Personalized improvement suggestions." },
-      ],
+      screenshots: [],
       challenges: [
         "Combining lexical (Jaccard) and semantic (cosine) signals sensibly.",
         "Consistent structured extraction from varied resume formats.",

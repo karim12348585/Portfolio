@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Award, ExternalLink } from "lucide-react";
+import { Award, ExternalLink, ShieldCheck } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -24,12 +24,21 @@ export function Certifications() {
             transition={{ duration: 0.4, delay: i * 0.05 }}
           >
             <Card hover className="group flex h-full flex-col p-6">
-              <div className="flex items-start justify-between">
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent">
-                  <Award size={20} />
-                </div>
+              <div className="flex items-start justify-between gap-3">
+                {c.badge ? (
+                  <img
+                    src={c.badge}
+                    alt={`${c.title} badge`}
+                    loading="lazy"
+                    className="h-16 w-auto transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent">
+                    <Award size={20} />
+                  </div>
+                )}
                 {c.year && (
-                  <span className="text-xs text-faint">{c.year}</span>
+                  <span className="shrink-0 text-xs text-faint">{c.year}</span>
                 )}
               </div>
               <h3 className="mt-4 font-semibold leading-tight">{c.title}</h3>
@@ -49,9 +58,11 @@ export function Certifications() {
                   href={c.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100"
+                  className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-medium text-accent transition-colors hover:text-accent-soft"
                 >
-                  View credential <ExternalLink size={13} />
+                  <ShieldCheck size={14} />
+                  Verify credential
+                  <ExternalLink size={13} />
                 </a>
               )}
             </Card>
