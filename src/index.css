@@ -3,33 +3,35 @@
 @tailwind utilities;
 
 /* ============================================================
-   Design tokens — Emerald / Teal on charcoal (dark-first)
+   Design tokens — Indigo / Violet on near-black (dark-first)
    ============================================================ */
 @layer base {
   :root,
   .dark {
-    --bg: 10 11 10; /* #0a0b0a */
-    --panel: 15 18 16; /* #0f1210 */
-    --panel-2: 20 24 21; /* #141815 */
-    --line: 28 36 32; /* #1c2420 */
-    --fg: 236 244 240; /* near white */
-    --muted: 148 163 156; /* muted gray-green */
-    --faint: 100 116 110;
-    --accent: 16 185 129; /* emerald #10b981 */
-    --accent-soft: 45 212 191; /* teal #2dd4bf */
+    --bg: 9 9 13; /* #09090d */
+    --panel: 18 18 26;
+    --panel-2: 26 26 36;
+    --line: 42 42 56;
+    --fg: 237 237 245; /* near white, cool */
+    --muted: 154 154 172;
+    --faint: 112 112 132;
+    --accent: 99 102 241; /* indigo-500 */
+    --accent-soft: 167 139 250; /* violet-400 */
+    --accent-fg: 255 255 255; /* text that sits on top of the accent */
     color-scheme: dark;
   }
 
   .light {
-    --bg: 250 251 250;
+    --bg: 250 250 252;
     --panel: 255 255 255;
-    --panel-2: 244 247 245;
-    --line: 224 230 226;
-    --fg: 15 23 20;
-    --muted: 82 96 90;
-    --faint: 130 145 138;
-    --accent: 5 150 105; /* emerald-600 for contrast on light */
-    --accent-soft: 13 148 136; /* teal-600 */
+    --panel-2: 244 244 249;
+    --line: 226 226 236;
+    --fg: 24 24 32;
+    --muted: 84 84 100;
+    --faint: 122 122 140;
+    --accent: 79 70 229; /* indigo-600 for contrast on light */
+    --accent-soft: 124 58 237; /* violet-600 */
+    --accent-fg: 255 255 255;
     color-scheme: light;
   }
 
@@ -46,6 +48,15 @@
   body {
     @apply bg-bg text-fg font-sans antialiased;
     overflow-x: hidden;
+  }
+
+  /* Editorial display face for headlines */
+  h1,
+  h2 {
+    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: 0.015em;
+    word-spacing: 0.04em;
   }
 
   ::selection {

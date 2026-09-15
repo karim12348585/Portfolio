@@ -34,7 +34,7 @@ export const projects: Project[] = [
     ],
     codeConfidential: true,
     featured: true,
-    accent: "from-emerald-500 to-teal-400",
+    accent: "from-indigo-500 to-violet-400",
     caseStudy: {
       overview:
         "DataOps Copilot is my End-of-Studies project at KPIT Engineering: an autonomous multi-agent system that performs root cause analysis of Jenkins data-pipeline failures without a human having to read the logs first. It coordinates specialised agents through a stateful, conditionally-routed LangGraph workflow, retrieves enterprise context through the Model Context Protocol, and streams its reasoning live to the operator.",
@@ -135,7 +135,7 @@ export const projects: Project[] = [
     ],
     codeConfidential: true,
     featured: true,
-    accent: "from-teal-400 to-cyan-400",
+    accent: "from-violet-500 to-fuchsia-400",
     caseStudy: {
       overview:
         "Built during my 2025 internship at KPIT Engineering, this system gives an LLM agent the ability to genuinely understand enterprise code — not just read a diff, but traverse the repository's structure, retrieve the relevant context, and judge a pull request against the Jira ticket that motivated it. The result is a review that reads like a senior engineer wrote it: scored, evidenced, and tied back to the requirement.",
@@ -235,7 +235,7 @@ export const projects: Project[] = [
     ],
     codeConfidential: true,
     featured: true,
-    accent: "from-cyan-500 to-teal-400",
+    accent: "from-indigo-600 to-blue-500",
     caseStudy: {
       overview:
         "My first industry internship, at PRIMATEC Engineering: a Python-based data quality monitoring and alerting system. It continuously compares the company's SQL Server records against the external systems that feed them — GitHub, Jenkins and Jira — and notifies the team by email the moment the two diverge.",
@@ -299,7 +299,7 @@ export const projects: Project[] = [
     ],
     github: "https://github.com/karim12348585",
     featured: true,
-    accent: "from-emerald-400 to-green-500",
+    accent: "from-purple-500 to-indigo-400",
     caseStudy: {
       overview:
         "DeepTest Agent is an academic project exploring enterprise-scale AI testing: an agent that finds bugs and writes tests by combining semantic retrieval with a graph model of code structure, then verifies its own hypotheses by running code in a sandbox.",
@@ -370,7 +370,7 @@ export const projects: Project[] = [
     ],
     github: "https://github.com/karim12348585",
     featured: true,
-    accent: "from-teal-400 to-emerald-500",
+    accent: "from-violet-400 to-indigo-500",
     caseStudy: {
       overview:
         "An end-to-end NLP pipeline that answers a practical question: given today's job market, what should I learn next? It scrapes postings, extracts and clusters skills, then maps the gap against your resume into an actionable roadmap.",
@@ -440,7 +440,7 @@ export const projects: Project[] = [
     ],
     github: "https://github.com/karim12348585",
     featured: true,
-    accent: "from-green-500 to-teal-400",
+    accent: "from-fuchsia-500 to-violet-400",
     caseStudy: {
       overview:
         "A deep-learning project that fine-tunes a Vision Transformer to detect AI-generated faces, prioritising both accuracy and interpretability so the model's decisions can be trusted and audited.",
@@ -504,7 +504,7 @@ export const projects: Project[] = [
     ],
     github: "https://github.com/karim12348585",
     featured: true,
-    accent: "from-cyan-400 to-emerald-500",
+    accent: "from-blue-500 to-indigo-600",
     caseStudy: {
       overview:
         "An applicant-tracking-style system that scores resumes against a job description using both LLM extraction and sentence embeddings, then explains the score with concrete feedback.",

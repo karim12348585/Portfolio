@@ -34,7 +34,7 @@ export function SectionHeading({
           {eyebrow}
         </span>
       )}
-      <h2 className="max-w-2xl text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+      <h2 className="max-w-3xl text-balance text-4xl leading-[1.12] sm:text-5xl">
         {title}
       </h2>
       {description && (

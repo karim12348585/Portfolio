@@ -11,8 +11,8 @@ type TypeFilter = "All" | ProjectType;
 
 const typeTabs: { key: TypeFilter; label: string; pill: string }[] = [
   { key: "All", label: "All work", pill: "bg-accent-gradient" },
-  { key: "Industrial", label: "Industrial", pill: "bg-emerald-500" },
-  { key: "Academic", label: "Academic", pill: "bg-violet-500" },
+  { key: "Industrial", label: "Industrial", pill: "bg-violet-500" },
+  { key: "Academic", label: "Academic", pill: "bg-emerald-500" },
 ];
 
 export function FeaturedProjects() {
@@ -61,7 +61,7 @@ export function FeaturedProjects() {
                   onClick={() => setTypeFilter(tab.key)}
                   className={cn(
                     "relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors sm:px-5",
-                    active ? "text-black" : "text-muted hover:text-fg",
+                    active ? "text-accent-fg" : "text-muted hover:text-fg",
                   )}
                 >
                   {active && (
@@ -72,7 +72,7 @@ export function FeaturedProjects() {
                     />
                   )}
                   {tab.label}
-                  <span className={cn("ml-1.5 text-xs", active ? "text-black/60" : "text-faint")}>
+                  <span className={cn("ml-1.5 text-xs", active ? "text-accent-fg/60" : "text-faint")}>
                     {count}
                   </span>
                 </button>
@@ -94,7 +94,7 @@ export function FeaturedProjects() {
                 className={cn(
                   "relative rounded-full border px-4 py-1.5 text-sm transition-colors",
                   active
-                    ? "border-transparent text-black"
+                    ? "border-transparent text-accent-fg"
                     : "border-line text-muted hover:border-accent/40 hover:text-fg",
                 )}
               >

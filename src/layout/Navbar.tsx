@@ -8,6 +8,7 @@ import { useActiveSection } from "@/hooks/useActiveSection";
 import { scrollToId } from "@/utils/scroll";
 import { cn } from "@/utils/cn";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 
 const sectionIds = navLinks.map((l) => l.id);
@@ -54,11 +55,9 @@ export function Navbar() {
       >
         <button
           onClick={() => go(onHome ? "hero" : "hero")}
-          className="flex items-center gap-2 font-semibold tracking-tight"
+          className="group/logo flex items-center gap-2.5 font-semibold tracking-tight"
         >
-          <span className="grid h-7 w-7 place-items-center rounded-lg bg-accent-gradient text-xs font-bold text-black">
-            {profile.initials}
-          </span>
+          <Logo className="transition-transform duration-300 group-hover/logo:scale-110" />
           <span className="hidden sm:inline">{profile.name}</span>
         </button>
 

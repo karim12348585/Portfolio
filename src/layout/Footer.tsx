@@ -1,5 +1,6 @@
 import { profile, socials } from "@/data/profile";
 import { Icon } from "@/components/Icon";
+import { Logo } from "@/components/Logo";
 import { scrollToId } from "@/utils/scroll";
 import { navLinks } from "@/constants";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -18,10 +19,8 @@ export function Footer() {
       <div className="section py-14">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2 font-semibold">
-              <span className="grid h-7 w-7 place-items-center rounded-lg bg-accent-gradient text-xs font-bold text-black">
-                {profile.initials}
-              </span>
+            <div className="flex items-center gap-2.5 font-semibold">
+              <Logo />
               {profile.name}
             </div>
             <p className="mt-4 max-w-sm text-sm text-muted">

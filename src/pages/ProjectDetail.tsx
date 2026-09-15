@@ -48,7 +48,7 @@ function Block({
         <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent/10 text-accent">
           <Icon size={18} />
         </div>
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-xl font-semibold">{title}</h2>
       </div>
       <div className="text-[15px] leading-relaxed text-muted">{children}</div>
     </motion.section>
@@ -154,7 +154,7 @@ export function ProjectDetail() {
             ))}
           </div>
 
-          <h1 className="mt-4 max-w-3xl text-balance text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <h1 className="mt-4 max-w-3xl text-balance text-4xl leading-[1.12] sm:text-5xl">
             {project.title}
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted">{project.tagline}</p>
