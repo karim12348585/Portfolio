@@ -21,7 +21,7 @@ export const profile = {
   photo: "/karim.jpg",
   initials: "KS",
   stats: [
-    { label: "Industry experience", value: "6 mo" },
+    { label: "Industry experience", value: "9 mo" },
     { label: "Enterprise internships", value: "3" },
     { label: "AI systems shipped", value: "6+" },
     { label: "Skill domains", value: "10+" },
