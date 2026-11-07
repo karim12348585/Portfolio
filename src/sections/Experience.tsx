@@ -1,8 +1,16 @@
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Briefcase, Check, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  Briefcase,
+  Check,
+  FolderOpen,
+  Sparkles,
+} from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Badge } from "@/components/ui/Badge";
 import { experiences } from "@/data/experience";
+import { getProjectBySlug } from "@/data/projects";
 
 export function Experience() {
   return (
@@ -14,7 +22,11 @@ export function Experience() {
       />
 
       <div className="mt-14 space-y-6">
-        {experiences.map((exp, i) => (
+        {experiences.map((exp, i) => {
+          const project = exp.projectSlug
+            ? getProjectBySlug(exp.projectSlug)
+            : undefined;
+          return (
           <motion.div
             key={exp.id}
             initial={{ opacity: 0, y: 24 }}
@@ -47,6 +59,23 @@ export function Experience() {
                 </p>
                 <p className="mt-1 text-xs text-faint">{exp.duration}</p>
                 <p className="mt-4 text-sm text-muted">{exp.summary}</p>
+                {project && (
+                  <Link
+                    to={`/projects/${project.slug}`}
+                    className="group/cta mt-5 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/15"
+                  >
+                    <FolderOpen size={15} />
+                    <span>
+                      More details:{" "}
+                      <span className="text-fg">{project.title}</span> case
+                      study
+                    </span>
+                    <ArrowUpRight
+                      size={15}
+                      className="transition-transform group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5"
+                    />
+                  </Link>
+                )}
               </div>
 
               {/* Right: details */}
@@ -93,7 +122,8 @@ export function Experience() {
               </div>
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

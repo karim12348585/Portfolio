@@ -309,7 +309,9 @@ export const projects: Project[] = [
       "A Tunisian Derja assistant built on Gemma 4 E2B. It speaks real Tunisian with natural French code-switching, translates out of Derja, and won't make up live facts.",
     year: "2026",
     type: "Freelance",
-    company: "Client project",
+    company: "DJO",
+    companyUrl: "https://www.linkedin.com/company/djo-assist/",
+    duration: "Client project",
     categories: ["LLM", "NLP", "Deep Learning"],
     problem:
       "Arabic LLMs answer in Modern Standard Arabic, Egyptian or Moroccan. Tunisian Derja, with its French code-switching and Arabizi, is barely served, and small models confidently make up facts.",
@@ -343,7 +345,7 @@ export const projects: Project[] = [
     accent: "from-amber-500 to-rose-500",
     caseStudy: {
       overview:
-        "Tounsi Chat is a freelance project: a compact assistant that talks the way Tunisians actually talk. I adapted Google's Gemma 4 E2B in two stages. Continued pretraining teaches the model the language; instruction tuning teaches it to behave like a helpful, honest assistant. That means short replies when the question is short, French and English answers for French and English users, plain refusals when it has no live data, and calm, safe answers in a crisis. Every stage was benchmarked before it was merged.",
+        "Tounsi Chat is a freelance project built for DJO: a compact assistant that talks the way Tunisians actually talk. I adapted Google's Gemma 4 E2B in two stages. Continued pretraining teaches the model the language; instruction tuning teaches it to behave like a helpful, honest assistant. That means short replies when the question is short, French and English answers for French and English users, plain refusals when it has no live data, and calm, safe answers in a crisis. Every stage was benchmarked before it was merged.",
       problemStatement:
         "Tunisian Derja is spoken by about 12 million people but is a low-resource language for AI. It mixes Arabic with French, is often written in Latin script (Arabizi), and sits between dialects that general models blend together. Off-the-shelf models reply in MSA or Moroccan, and small models make up prices, match results and facts with confidence.",
       businessValue: [

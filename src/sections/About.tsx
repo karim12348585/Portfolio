@@ -2,13 +2,7 @@ import { motion } from "framer-motion";
 import { GraduationCap, Languages as LangIcon, Sparkle } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Card } from "@/components/ui/Card";
-import { Icon } from "@/components/Icon";
-import {
-  education,
-  languages,
-  interests,
-  values,
-} from "@/data/education";
+import { education, languages, interests } from "@/data/education";
 import { profile } from "@/data/profile";
 
 const fadeUp = {
@@ -60,7 +54,7 @@ export function About() {
           </Card>
         </motion.div>
 
-        {/* Right column: values + languages + interests */}
+        {/* Right column: languages + interests */}
         <div className="grid gap-5">
           <motion.div
             variants={fadeUp}
@@ -119,28 +113,6 @@ export function About() {
             </Card>
           </motion.div>
         </div>
-      </div>
-
-      {/* Core values */}
-      <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {values.map((v, idx) => (
-          <motion.div
-            key={v.title}
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ delay: idx * 0.05 }}
-          >
-            <Card hover className="h-full p-6">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent">
-                <Icon name={v.icon} size={19} />
-              </div>
-              <h3 className="mt-4 font-semibold">{v.title}</h3>
-              <p className="mt-1.5 text-sm text-muted">{v.description}</p>
-            </Card>
-          </motion.div>
-        ))}
       </div>
     </section>
   );

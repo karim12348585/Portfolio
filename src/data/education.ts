@@ -45,26 +45,3 @@ export const interests = [
   "Knowledge Graphs",
   "Open-Source AI",
 ];
-
-export const values = [
-  {
-    title: "Production-first",
-    description: "Research is only useful when it ships reliably and cheaply.",
-    icon: "Rocket",
-  },
-  {
-    title: "Grounded reasoning",
-    description: "Ground models in real context — data, structure, and evidence.",
-    icon: "Compass",
-  },
-  {
-    title: "Measure everything",
-    description: "Evaluation harnesses, cost and latency budgets, not vibes.",
-    icon: "Gauge",
-  },
-  {
-    title: "Human-in-the-loop",
-    description: "Keep people in control of consequential decisions.",
-    icon: "Users",
-  },
-];

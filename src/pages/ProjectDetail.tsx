@@ -23,6 +23,7 @@ import { PageTransition } from "@/layout/PageTransition";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CodeSource } from "@/components/CodeSource";
+import { CompanyName } from "@/components/CompanyName";
 import { NotebookLink } from "@/components/NotebookLink";
 import { GradientMesh } from "@/components/GradientMesh";
 import { Lightbox, type LightboxImage } from "@/components/Lightbox";
@@ -318,9 +319,7 @@ export function ProjectDetail() {
               </span>
               {project.company && (
                 <>
-                  <span className="font-medium text-fg/80">
-                    {project.company}
-                  </span>
+                  <CompanyName project={project} />
                   <span className="text-line">·</span>
                 </>
               )}

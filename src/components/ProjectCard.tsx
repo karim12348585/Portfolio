@@ -4,6 +4,7 @@ import { ArrowUpRight, Target, Lightbulb } from "lucide-react";
 import type { Project } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { CodeSource } from "@/components/CodeSource";
+import { CompanyName } from "@/components/CompanyName";
 import { NotebookLink } from "@/components/NotebookLink";
 import { projectTypeStyles } from "@/utils/projectType";
 import { getHeroImage } from "@/utils/projectImage";
@@ -102,7 +103,7 @@ export function ProjectCard({ project }: { project: Project }) {
         {(project.company || project.duration) && (
           <p className="mt-1 text-xs">
             {project.company && (
-              <span className="font-medium text-fg/80">{project.company}</span>
+              <CompanyName project={project} />
             )}
             {project.company && project.duration && (
               <span className="text-faint"> · </span>

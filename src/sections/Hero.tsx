@@ -94,7 +94,7 @@ export function Hero() {
 
             <motion.div
               variants={item}
-              className="mt-9 grid max-w-lg grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4"
+              className="mt-9 grid max-w-xl grid-cols-3 gap-x-6 gap-y-4 sm:grid-cols-5"
             >
               {profile.stats.map((s) => (
                 <div key={s.label}>

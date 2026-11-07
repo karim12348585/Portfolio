@@ -79,7 +79,7 @@ export function Contact() {
       <SectionHeading
         eyebrow="Contact"
         title="Let's build something intelligent"
-        description="Open to AI Engineer roles and collaborations. The fastest way to reach me is below."
+        description="Open to Data Scientist / AI Engineer roles and collaborations. The fastest way to reach me is below."
       />
 
       <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_1.2fr]">

@@ -55,8 +55,9 @@
   h2 {
     font-family: "Instrument Serif", ui-serif, Georgia, serif;
     font-weight: 400;
-    letter-spacing: 0.015em;
-    word-spacing: 0.04em;
+    /* Instrument Serif is a condensed face — open it up so it doesn't feel cramped */
+    letter-spacing: 0.035em;
+    word-spacing: 0.1em;
   }
 
   ::selection {

@@ -9,10 +9,10 @@ export const profile = {
     "I build production-ready AI systems that transform complex data into intelligent decisions.",
   intro:
     "Graduate AI Engineer specializing in LLMs, multi-agent systems, RAG, natural language processing, and applied machine learning — turning research into reliable, production-grade software.",
-  location: "Sfax, Tunisia",
+  location: "Tunis, Tunisia",
   email: "karimsouissi30@gmail.com",
   phone: "+216 28 445 955",
-  availability: "Open to AI Engineer roles",
+  availability: "Open to Data Scientist / AI Engineer roles",
   cvPath: "/karim-souissi-cv.pdf",
   // Formspree: create a form at https://formspree.io, then paste its endpoint here,
   // e.g. "https://formspree.io/f/xxxxxxxx". Empty string = fall back to mailto:.
@@ -23,6 +23,7 @@ export const profile = {
   stats: [
     { label: "Industry experience", value: "9 mo" },
     { label: "Enterprise internships", value: "3" },
+    { label: "Freelance experiences", value: "2" },
     { label: "AI systems shipped", value: "6+" },
     { label: "Skill domains", value: "10+" },
   ],

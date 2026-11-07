@@ -49,7 +49,8 @@ export function FeaturedProjects() {
 
       {/* Industrial vs Academic segmented toggle */}
       <div className="mt-10 flex justify-center">
-        <div className="inline-flex rounded-full border border-line bg-panel-2 p-1">
+        {/* `isolate` keeps the -z-10 active pill above this container's background */}
+        <div className="isolate inline-flex rounded-full border border-line bg-panel-2 p-1">
           <LayoutGroup id="type-toggle">
             {typeTabs.map((tab) => {
               const active = typeFilter === tab.key;

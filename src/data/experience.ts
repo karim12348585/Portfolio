@@ -5,7 +5,7 @@ export const experiences: Experience[] = [
     id: "kpit-eos",
     company: "KPIT Engineering",
     role: "AI Engineer Intern — DataOps Copilot (End-of-Studies Project)",
-    duration: "Feb 2026 – Present",
+    duration: "Feb 2026 – Jul 2026",
     summary:
       "Building an autonomous multi-agent system for end-to-end root cause analysis of Jenkins data-pipeline failures.",
     responsibilities: [
@@ -19,7 +19,7 @@ export const experiences: Experience[] = [
       "Added a human-in-the-loop feedback loop and an LLM-as-a-Judge evaluation harness with latency & cost metrics.",
     ],
     tech: ["LangGraph", "MCP", "FAISS", "Flask", "React", "SQL Server", "Python"],
-    current: true,
+    projectSlug: "dataops-copilot",
   },
   {
     id: "kpit-code",
@@ -38,6 +38,7 @@ export const experiences: Experience[] = [
       "Grounded pull request analysis in the originating Jira ticket.",
     ],
     tech: ["ReAct", "LangGraph", "Neo4j", "ChromaDB", "AST", "RAG", "Python"],
+    projectSlug: "agentic-code-intelligence",
   },
   {
     id: "primatec",
@@ -56,5 +57,6 @@ export const experiences: Experience[] = [
       "Created a plug-in architecture that made onboarding new sources trivial.",
     ],
     tech: ["Python", "Pandas", "SQL", "SQLAlchemy", "SMTP", "SQL Server"],
+    projectSlug: "data-pipeline-monitoring",
   },
 ];
