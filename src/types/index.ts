@@ -98,6 +98,10 @@ export interface Experience {
 
 export interface Skill {
   name: string;
+  /** Brand-logo key from <TechIcon />'s registry (real tool logo). */
+  brand?: string;
+  /** Lucide icon name for concepts without a logo. */
+  glyph?: string;
   years: number;
   projects: string[];
   description: string;
