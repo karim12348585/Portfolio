@@ -8,7 +8,8 @@ export type ProjectCategory =
   | "MLOps"
   | "Agentic AI"
   | "Machine Learning"
-  | "Deep Learning";
+  | "Deep Learning"
+  | "Graph ML";
 
 export type ProjectType = "Academic" | "Industrial";
 
@@ -48,6 +49,8 @@ export interface Project {
   github?: string;
   /** When true, the source is proprietary — show a red "confidential" GitHub badge. */
   codeConfidential?: boolean;
+  /** Notebook link — a Kaggle URL or a local .ipynb under /public. */
+  notebook?: string;
   demo?: string;
   featured: boolean;
   accent: string; // gradient hint, e.g. "from-indigo-500 to-violet-400"

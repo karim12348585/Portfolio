@@ -20,6 +20,7 @@ import { PageTransition } from "@/layout/PageTransition";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CodeSource } from "@/components/CodeSource";
+import { NotebookLink } from "@/components/NotebookLink";
 import { GradientMesh } from "@/components/GradientMesh";
 import { Lightbox, type LightboxImage } from "@/components/Lightbox";
 import { projectTypeStyles } from "@/utils/projectType";
@@ -197,6 +198,7 @@ export function ProjectDetail() {
                 confidential={project.codeConfidential}
                 variant="button"
               />
+              <NotebookLink href={project.notebook} variant="button" />
               {project.demo && (
                 <a href={project.demo} target="_blank" rel="noreferrer">
                   <Button size="sm" variant="outline">

@@ -19,6 +19,7 @@ export const projectFilters: (ProjectCategory | "All")[] = [
   "Computer Vision",
   "Machine Learning",
   "Deep Learning",
+  "Graph ML",
   "MLOps",
   "Data Engineering",
   "Recommendation Systems",

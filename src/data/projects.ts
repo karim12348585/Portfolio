@@ -75,6 +75,7 @@ export const projects: Project[] = [
         { label: "After analysis", caption: "Completed root-cause analysis with findings and evidence.", src: "/projects/dataops-copilot/after-analysis.png" },
         { label: "Fix suggestion", caption: "Validated remediation and proposed fix for the failure.", src: "/projects/dataops-copilot/fix.png" },
         { label: "Log parser", caption: "Two-layer parser compressing raw Jenkins logs before reasoning.", src: "/projects/dataops-copilot/parser.png" },
+        { label: "Terminal UI", caption: "The DataOps Copilot TUI: pick a failed Jenkins log and the agents start investigating.", src: "/projects/dataops-copilot/tui.png" },
       ],
       challenges: [
         "Log volume overwhelmed context windows — solved with a two-layer, structure-aware compression stage.",
@@ -275,70 +276,108 @@ export const projects: Project[] = [
     slug: "deeptest-agent",
     title: "DeepTest Agent",
     tagline:
-      "GraphRAG code-debugging agent for automated bug detection and test-case generation.",
+      "A GraphRAG bug-hunting agent that maps a codebase into a knowledge graph, reasons over it, and verifies its findings by running code in a sandbox.",
     year: "2025",
     type: "Academic",
     categories: ["Agentic AI", "RAG", "LLM"],
     problem:
-      "Automated testing tools struggle to reason about how a bug propagates through a codebase, and generic RAG loses the structural relationships between functions.",
+      "Linters follow fixed rules and miss logic bugs that span files, and flat RAG loses the structural links (calls, imports, inheritance) that explain how a bug travels through a codebase.",
     solution:
-      "A GraphRAG testing agent that fuses FAISS vector search with a Neo4j knowledge graph to model code structure, driven by a LangGraph agent that executes code safely inside a Docker sandbox.",
+      "A LangGraph ReAct agent with GraphRAG retrieval: a Neo4j knowledge graph for code structure plus ChromaDB embeddings for meaning. It can execute code in a Docker sandbox to back up its findings, and streams its reasoning live to a React UI.",
     tech: [
       "GraphRAG",
-      "FAISS",
-      "Neo4j",
       "LangGraph",
+      "Neo4j",
+      "ChromaDB",
+      "LibCST",
+      "Llama 3.1 70B (NVIDIA NIM)",
       "Docker",
-      "LLM",
+      "Flask",
+      "React",
       "Python",
     ],
     results: [
-      "Automated bug detection and test-case generation",
-      "GraphRAG models structural code relationships",
-      "Secure Docker-sandboxed code execution",
+      "Found all 4 seeded bug classes (ZeroDivision, IndexError, TypeError, KeyError) across a multi-file test project, with a fix for each",
+      "Builds a Neo4j code graph (folders → files → classes → functions, CALLS / IMPORTS / INHERITS) with LibCST and writes it to ChromaDB in the same pass",
+      "8-tool ReAct agent: semantic search, file reads, caller and import graph queries, and sandboxed run_file / run_test",
+      "Live agent reasoning streamed over SSE, ending in a downloadable bug report",
     ],
-    github: "https://github.com/karim12348585",
+    github: "https://github.com/karim12348585/Code-Intelligence-BugHunter-Agent",
     featured: true,
     accent: "from-purple-500 to-indigo-400",
     caseStudy: {
       overview:
-        "DeepTest Agent is an academic project exploring enterprise-scale AI testing: an agent that finds bugs and writes tests by combining semantic retrieval with a graph model of code structure, then verifies its own hypotheses by running code in a sandbox.",
+        "DeepTest Agent (Bug Hunter) is an academic project that gives an LLM agent the two kinds of memory a developer uses when exploring unfamiliar code. A Neo4j knowledge graph holds the structure (what defines, calls, imports and inherits from what). ChromaDB holds meaning, for questions like \"where is authentication handled?\". The agent explores the project through tools, can run code in an isolated Docker container to back up its suspicions, and writes a structured bug report with suggested fixes. A Flask + React web app shows every step of its reasoning live.",
       problemStatement:
-        "Bugs rarely live in a single function; they emerge from interactions. Flat retrieval misses those relationships, and letting an LLM run arbitrary code is a security risk.",
+        "Bugs rarely live in a single function; they come from interactions across files. Rule-based static analysis can't reason about intent, flat vector retrieval loses the call graph, and letting an LLM run arbitrary code on the host is a security risk.",
       businessValue: [
-        "Higher-coverage, structurally-aware test generation.",
-        "Safer automation via sandboxed execution.",
-        "Earlier bug detection in the development cycle.",
+        "Finds logic bugs that span files, which rule-based linters miss.",
+        "Every claim can be traced: the reasoning and tool calls are visible step by step.",
+        "Generated code runs in a container, never on the host.",
+        "The ingested knowledge graph doubles as a map for onboarding onto unfamiliar code.",
       ],
       architecture:
-        "GraphRAG unifies FAISS (semantic similarity) with Neo4j (call graphs and dependencies). A LangGraph agent plans, retrieves relevant structure, generates candidate tests, and executes them inside an isolated Docker container to observe real behaviour.",
+        "An ingestion pipeline built on LibCST walks the project and writes it to two stores in one pass. Neo4j receives the structural graph: Folder, File, Class, Function and Module nodes, with CONTAINS, DEFINES, CALLS, INHERITS and IMPORTS edges. ChromaDB receives function- and class-level chunks embedded with all-MiniLM-L6-v2. A LangGraph ReAct agent (Llama 3.1 70B via NVIDIA NIM) reasons over both through a tool suite, and a Docker sandbox (python:3.9-slim) runs files and tests in isolation. A Flask backend streams reasoning, actions and tool outputs to the React front end over Server-Sent Events.",
       systemDesign: [
-        "Index code into FAISS embeddings and a Neo4j graph.",
-        "GraphRAG retrieval blends semantic + structural neighbours.",
-        "Agent generates targeted test cases.",
-        "Docker sandbox executes and reports pass/fail safely.",
+        "LibCST parser: recursive project walk that skips build and VCS artifacts.",
+        "Neo4j graph: code structure, call graph and inheritance hierarchy, all queryable with Cypher.",
+        "ChromaDB: semantic search over function- and class-level chunks.",
+        "ReAct agent with 8 tools: search_code, read_file, get_project_structure, list_files, get_imports, get_callers, run_file, run_test.",
+        "Custom regex parser for Llama 3.1's tool-call output format, so tool calls run reliably.",
+        "Web app: project dashboard with graph insights, Monaco file explorer, live agent trace and a report viewer.",
       ],
       pipeline: [
-        "Ingest and index codebase (FAISS + Neo4j)",
-        "GraphRAG retrieval for a target function",
-        "Generate candidate tests",
-        "Execute in Docker sandbox",
-        "Report bugs and passing tests",
+        "Ingest the project (LibCST → Neo4j + ChromaDB)",
+        "Explore the structure and the graph",
+        "Retrieve suspicious code semantically and structurally",
+        "Execute files and tests in the Docker sandbox",
+        "Write a bug report with suggested fixes",
       ],
-      screenshots: [],
+      screenshots: [
+        {
+          label: "Project dashboard",
+          caption:
+            "Project insights from the knowledge graph (files, nodes, relationships, functions, classes) next to a Monaco-powered file explorer.",
+          src: "/projects/deeptest/dashboard.png",
+        },
+        {
+          label: "Live agent execution",
+          caption:
+            "The agent maps the project structure, runs main_app.py in the sandbox, and decides which file to inspect next.",
+          src: "/projects/deeptest/agent-execution.png",
+        },
+        {
+          label: "Tool calls & reasoning",
+          caption:
+            "Step-by-step read_file calls showing the agent finding the unsafe division and the empty-string index bug.",
+          src: "/projects/deeptest/agent-file-reads.png",
+        },
+        {
+          label: "Bug report",
+          caption:
+            "The final bug analysis report, with a description, location and fix for each issue, ready to download.",
+          src: "/projects/deeptest/bug-report.png",
+        },
+      ],
       challenges: [
-        "Designing a retrieval score that balances semantic and graph proximity.",
-        "Hardening the Docker sandbox against untrusted generated code.",
+        "Llama 3.1 emits tool calls in its own format, so a custom parser was needed to run them reliably.",
+        "Balancing structural (graph) and semantic (vector) context without overflowing the prompt.",
+        "Keeping generated code isolated while still giving the sandbox enough project context to run integration tests.",
       ],
       tradeoffs: [
-        "GraphRAG added indexing overhead but produced far better structural context than flat RAG.",
+        "Dual-writing to Neo4j and ChromaDB costs extra ingestion time but gives far richer context than flat RAG.",
+        "Chose a transparent ReAct loop over single-shot prompting, so every conclusion can be traced to a tool call.",
+        "Suggests fixes rather than applying them, so a human stays in control.",
       ],
       lessons: [
-        "Verification-by-execution grounds an agent in reality instead of plausible-sounding guesses.",
+        "Running the code keeps an agent honest: execution results beat plausible-sounding guesses.",
+        "Showing the agent's reasoning matters as much as the verdict when developers need to trust it.",
       ],
       futureWork: [
-        "Coverage-guided test generation.",
-        "Support for more languages and build systems.",
+        "Mount the full project into the sandbox for integration-level verification.",
+        "Active patching (write_file / apply_patch) on a git safe-mode branch.",
+        "A hypothesise → reproduce → fix → verify loop that retries on failure.",
+        "Ship as a GitHub Action that scans pull requests and comments on bugs.",
       ],
     },
   },
@@ -347,68 +386,237 @@ export const projects: Project[] = [
     slug: "market-skill-insights",
     title: "AI Market Skill Insights & Roadmap",
     tagline:
-      "Scrapes job descriptions, extracts in-demand skills with LLMs, and generates personalized upskilling roadmaps.",
+      "Mines local job postings for in-demand skills, compares them with your CV, and generates a personalized learning roadmap.",
     year: "2024",
     type: "Academic",
     categories: ["NLP", "LLM", "Machine Learning", "Data Engineering"],
     problem:
       "Job seekers struggle to know which skills the market actually demands and how their own resume measures up against it.",
     solution:
-      "A pipeline that scrapes LinkedIn job descriptions, extracts skills via LLMs, clusters them with HDBSCAN to surface demand, and generates personalized upskilling roadmaps tailored to a candidate's resume.",
+      "A pipeline that scrapes job descriptions and extracts skills with an LLM. It embeds and clusters the skills (HDBSCAN), names each cluster with an NVIDIA NIM LLM, then compares the market's top skill categories with the skills in your CV and turns the gap into a learning roadmap.",
     tech: [
       "LLM",
+      "NVIDIA NIM",
       "HDBSCAN",
+      "Embeddings",
+      "PCA",
       "Selenium",
       "BeautifulSoup",
       "Python",
       "Pandas",
     ],
     results: [
-      "Surfaces the most in-demand skills from real job postings",
-      "HDBSCAN clustering groups related skills automatically",
-      "Personalized roadmap generated per candidate resume",
+      "Ranks the top 10 in-demand skill categories by mentions in real postings (MENA & Sub-Saharan market)",
+      "HDBSCAN clusters semantically related skills; an LLM gives each cluster a readable name",
+      "Extracts skills from an uploaded CV and flags the categories the candidate is missing",
+      "Generates a personalized career-insights report and learning roadmap",
     ],
     github: "https://github.com/karim12348585",
     featured: true,
     accent: "from-violet-400 to-indigo-500",
     caseStudy: {
       overview:
-        "An end-to-end NLP pipeline that answers a practical question: given today's job market, what should I learn next? It scrapes postings, extracts and clusters skills, then maps the gap against your resume into an actionable roadmap.",
+        "An end-to-end NLP pipeline that answers a practical question: given today's job market, what should I learn next? It works in three stages. First it scrapes postings for a target role and turns them into ranked skill categories. Next it extracts the skills already in your CV. Finally it compares the two and turns the gap into a focused learning plan.",
       problemStatement:
-        "Skill demand is buried in unstructured job descriptions and changes constantly. Manually tracking it is impractical.",
+        "Skill demand is buried in unstructured job descriptions, named inconsistently, and changes constantly. Tracking it by hand and mapping it against your own profile is impractical.",
       businessValue: [
         "Data-driven career guidance instead of guesswork.",
-        "Reusable market-intelligence pipeline for any role.",
+        "Region-specific insight: demand is measured on the local market, not global averages.",
+        "Reusable market-intelligence pipeline for any target role.",
       ],
       architecture:
-        "Selenium + BeautifulSoup scrape postings; an LLM extracts normalized skills; HDBSCAN clusters embeddings to reveal demand structure; a generation step diffs demand against resume skills to produce a roadmap.",
+        "Market demand: a web scraper collects postings for the target role, an LLM extracts the skills, the skills are embedded as semantic vectors, and HDBSCAN groups them into clusters. An NVIDIA NIM LLM names each cluster, and the clusters are ranked by how often they're mentioned. Personal skills: the uploaded resume (PDF/DOCX) goes through the same LLM extraction to build a skill profile. Gap analysis: the two skill sets are compared, missing high-demand categories are flagged, and an LLM writes the personalized roadmap.",
+      diagrams: [
+        {
+          src: "/projects/market-skill-insights/architecture.svg",
+          caption:
+            "Three stages: market demand analysis, personal skill extraction, then gap analysis and roadmap generation.",
+        },
+      ],
       systemDesign: [
-        "Scrape LinkedIn job descriptions at scale.",
+        "Scrape job descriptions for a chosen target role.",
         "LLM-based skill extraction and normalization.",
-        "Embed and cluster skills with HDBSCAN.",
-        "Diff against resume; generate roadmap.",
+        "Embed skills, cluster with HDBSCAN, and name the clusters with an NVIDIA NIM LLM.",
+        "Rank skill categories by how often they're mentioned in the market.",
+        "Extract CV skills, compute the gap, and generate the roadmap.",
       ],
       pipeline: [
-        "Scrape postings",
-        "Extract skills (LLM)",
-        "Cluster with HDBSCAN",
-        "Compare to resume",
-        "Generate personalized roadmap",
+        "Choose a target role",
+        "Scrape job postings",
+        "Extract & embed skills",
+        "Cluster, name & rank",
+        "Compare with the CV",
+        "Generate a personalized roadmap",
       ],
-      screenshots: [],
+      screenshots: [
+        {
+          label: "Dashboard",
+          caption:
+            "Home view: the top 10 market skills next to the upload area.",
+          src: "/projects/market-skill-insights/dashboard.png",
+        },
+        {
+          label: "CV skill extraction",
+          caption:
+            "Top skills demanded for Data Scientist roles, with mention counts, next to the skills extracted from an uploaded CV.",
+          src: "/projects/market-skill-insights/cv-analysis.png",
+        },
+        {
+          label: "Skill gap analysis",
+          caption:
+            "Gap analysis against the MENA & Sub-Saharan market: three high-demand categories flagged as learning priorities.",
+          src: "/projects/market-skill-insights/skill-gap.png",
+        },
+        {
+          label: "Roadmap generation",
+          caption:
+            "The generated career-insights report: a personalized learning roadmap for the missing skills.",
+          src: "/projects/market-skill-insights/roadmap.png",
+        },
+        {
+          label: "Skill clusters",
+          caption:
+            "2D PCA view of the top 10 skill clusters found in local job descriptions.",
+          src: "/projects/market-skill-insights/skill-clusters.png",
+        },
+        {
+          label: "LLM cluster labelling",
+          caption:
+            "Backend log: NVIDIA NIM giving each HDBSCAN cluster a readable skill-category name.",
+          src: "/projects/market-skill-insights/cluster-labeling.png",
+        },
+      ],
       challenges: [
-        "Noisy, inconsistent skill naming across postings required LLM normalization.",
+        "Postings name the same skill in many different ways, so the LLM had to normalize them before clustering.",
         "HDBSCAN parameter tuning to get meaningful clusters.",
+        "Raw clusters aren't readable, so an LLM labelling step turns them into named categories.",
       ],
       tradeoffs: [
-        "HDBSCAN over K-means to avoid pre-committing to a cluster count.",
+        "HDBSCAN over K-means, so the number of clusters doesn't have to be fixed in advance.",
+        "Ranking by mention frequency is simple and explainable, at the cost of ignoring seniority and salary signals.",
       ],
       lessons: [
-        "LLMs are excellent normalizers of messy real-world text before classical ML.",
+        "LLMs are excellent at normalizing messy real-world text before classical ML.",
+        "Clusters only become useful insight once they have human-readable names.",
       ],
       futureWork: [
         "Track demand trends over time.",
         "Broaden sources beyond a single job board.",
+        "Weight skills by seniority and salary signals.",
+      ],
+    },
+  },
+  {
+    id: "bitcoin-gnn",
+    slug: "bitcoin-transaction-gnn",
+    title: "Bitcoin Transaction Analysis with GNNs",
+    tagline:
+      "Detecting illicit Bitcoin transactions on the Elliptic graph by comparing graph-metric ML, Node2Vec embeddings, and GCN / GAT networks.",
+    year: "2025",
+    type: "Academic",
+    categories: ["Graph ML", "Deep Learning", "Machine Learning"],
+    problem:
+      "Illicit Bitcoin flows hide in a graph of 200k+ transactions, and only a small fraction are known to be illicit. Per-transaction features alone miss how money actually moves between transactions.",
+    solution:
+      "A head-to-head comparison of three families of node classifiers on the Elliptic dataset: centrality features with a Random Forest, Node2Vec embeddings, and GCN / GAT networks in PyTorch Geometric. All are trained on early time steps and tested on later ones.",
+    tech: [
+      "PyTorch Geometric",
+      "GCN",
+      "GAT",
+      "Node2Vec",
+      "NetworkX",
+      "scikit-learn",
+      "PyTorch",
+      "Python",
+    ],
+    results: [
+      "Modelled 203,769 transactions and 234,355 Bitcoin flows as one directed graph",
+      "GCN: 92% accuracy on unseen future time steps (illicit recall 0.53)",
+      "GAT catches 91% of illicit transactions, at the cost of many false alarms",
+      "Centrality features + Random Forest reached 0.78 illicit F1 on a sampled subgraph",
+    ],
+    notebook:
+      "https://www.kaggle.com/code/karimsouissi/gnn-academic-project-bitcoin-transaction-analysis",
+    featured: true,
+    accent: "from-amber-500 to-violet-500",
+    caseStudy: {
+      overview:
+        "An academic graph-ML study on Kaggle's Elliptic Bitcoin dataset, where each node is a transaction with 166 features and each edge is a flow of bitcoins between two transactions. The goal is anti-money-laundering: classify transactions as licit or illicit. The notebook compares three generations of graph learning (hand-made graph metrics, shallow random-walk embeddings, and message-passing GNNs) to see what the network structure actually adds.",
+      problemStatement:
+        "Only about 23% of the 203k transactions carry a label, and illicit ones are a small minority of those. Fraud patterns depend on who transacts with whom, which a tabular model looking at one transaction at a time cannot see.",
+      businessValue: [
+        "Anti-money-laundering triage: ranks suspicious transactions for compliance analysts.",
+        "Testing on later time steps mirrors real deployment, where models score future activity.",
+        "Shows clear precision/recall trade-offs between models, so the choice can match the investigation budget.",
+      ],
+      architecture:
+        "The three CSVs (features, classes, edge list) are merged into a NetworkX directed graph and a PyTorch Geometric Data object. Unlabelled nodes stay in the graph so it stays connected, but are excluded from the loss. Approach 1 adds degree, closeness, betweenness, PageRank, clustering and triangle-count features to the raw features and trains a class-balanced Random Forest. Approach 2 learns 64-dimensional Node2Vec embeddings from random walks. Approach 3 trains two-layer GCN and GAT models (multi-head attention, dropout) with class-weighted cross-entropy (illicit weight ×7.6) on time steps ≤ 34, and tests them on later steps.",
+      systemDesign: [
+        "Data: 203,769 nodes, 234,355 edges, 165 features per node plus its time step.",
+        "Graph analytics: centrality metrics on the giant connected component.",
+        "Shallow embeddings: Node2Vec (64-d, walk length 10) fed to a Random Forest.",
+        "GNNs: GCN (128 hidden) and 2-head GAT (64 hidden) in PyTorch Geometric.",
+        "Imbalance handling: class weights and balanced Random Forests.",
+        "Evaluation: per-class precision / recall / F1 and confusion matrices.",
+      ],
+      pipeline: [
+        "Load & merge Elliptic features, labels and edges",
+        "Build the transaction graph (NetworkX + PyG)",
+        "Approach 1: graph metrics + Random Forest",
+        "Approach 2: Node2Vec embeddings + Random Forest",
+        "Approach 3: GCN & GAT trained on time steps ≤ 34",
+        "Compare on held-out later time steps",
+      ],
+      screenshots: [
+        {
+          label: "Transaction subgraph",
+          caption:
+            "The 10 transactions with the highest betweenness centrality and their neighbours: the bridges money flows through.",
+          src: "/projects/bitcoin-gnn/betweenness-graph.png",
+        },
+        {
+          label: "GCN vs GAT confusion matrices",
+          caption:
+            "On future time steps, GCN is more precise while GAT catches 989 of 1,083 illicit transactions but raises more false alarms.",
+          src: "/projects/bitcoin-gnn/confusion-matrices.png",
+        },
+        {
+          label: "GNN training loss",
+          caption:
+            "Training loss over 100 epochs: GCN converges lower and more smoothly than the attention-based GAT.",
+          src: "/projects/bitcoin-gnn/training-loss.png",
+        },
+        {
+          label: "Node2Vec t-SNE",
+          caption:
+            "t-SNE of sampled Node2Vec embeddings. Illicit nodes (yellow) don't separate from structure alone.",
+          src: "/projects/bitcoin-gnn/node2vec-tsne.png",
+        },
+        {
+          label: "Degree centrality",
+          caption:
+            "The 10 most connected transactions, coloured by degree centrality.",
+          src: "/projects/bitcoin-gnn/degree-centrality.png",
+        },
+      ],
+      challenges: [
+        "Severe class imbalance: handled with class-weighted loss for the GNNs and balanced Random Forests.",
+        "Exact betweenness and closeness centrality don't scale to 200k nodes, so graph metrics were computed on a sampled subgraph.",
+        "Avoiding look-ahead: models are trained on earlier time steps and tested only on later ones.",
+      ],
+      tradeoffs: [
+        "GCN favours precision (fewer false alarms); GAT favours recall (fewer missed illicit transactions). Which is better depends on the review budget.",
+        "Keeping unlabelled nodes in the graph keeps message passing intact but adds compute.",
+      ],
+      lessons: [
+        "Structure alone isn't enough: Node2Vec embeddings without node features barely detected illicit nodes (F1 0.04).",
+        "Rich node features plus graph metrics make a strong baseline that GNNs have to beat.",
+        "On temporal fraud data, how you split train and test matters as much as the model.",
+      ],
+      futureWork: [
+        "Temporal GNNs (e.g. EvolveGCN) to model how the graph changes over time.",
+        "Combine GNN embeddings with the Random Forest in a hybrid model.",
+        "Tune the decision threshold to hit a target precision or recall.",
       ],
     },
   },
@@ -480,6 +688,118 @@ export const projects: Project[] = [
       futureWork: [
         "Generalize across newer generative models.",
         "Robustness testing against adversarial inputs.",
+      ],
+    },
+  },
+  {
+    id: "malaria-classification",
+    slug: "malaria-cell-classification",
+    title: "Malaria Cell Classification",
+    tagline:
+      "Detecting malaria-infected blood cells three ways (classical CV + ML, a custom CNN, and ResNet50 transfer learning), with a custom CNN reaching 94% accuracy.",
+    year: "2025",
+    type: "Academic",
+    categories: ["Computer Vision", "Deep Learning", "Machine Learning"],
+    problem:
+      "Diagnosing malaria from blood smears depends on trained microscopists counting parasitized cells by hand, which is slow, tiring and hard to scale where the disease is most common.",
+    solution:
+      "A comparison on 27,558 cell images of three approaches. The first engineers OpenCV features (edges plus colour statistics) for a Random Forest. The second trains a custom CNN with augmentation. The third fine-tunes only the head on a frozen ResNet50.",
+    tech: [
+      "OpenCV",
+      "TensorFlow / Keras",
+      "CNN",
+      "ResNet50",
+      "scikit-learn",
+      "Random Forest",
+      "Python",
+    ],
+    results: [
+      "Custom CNN: 94.07% validation accuracy (F1 0.94) on 5,510 held-out cells",
+      "Classical CV + Random Forest: 84.4% from only 9 handcrafted features",
+      "Edge density was the strongest handcrafted signal (≈50% of feature importance)",
+      "Frozen ResNet50 plateaued at 66.5%, a clear lesson on when transfer learning fails",
+    ],
+    notebook: "/projects/malaria-classification/malaria-classification.ipynb",
+    featured: true,
+    accent: "from-rose-500 to-violet-500",
+    caseStudy: {
+      overview:
+        "A computer-vision study on the NIH malaria cell-image dataset (13,780 parasitized and 13,780 uninfected cells). Instead of jumping straight to deep learning, it compares classical image processing, a CNN trained from scratch, and transfer learning on the same task. The goal is to measure what each approach actually contributes.",
+      problemStatement:
+        "Manual smear reading is the diagnostic gold standard, but it needs expert time that is scarce where malaria is endemic. An accurate automatic cell classifier could pre-screen slides and let experts focus on the uncertain cases.",
+      businessValue: [
+        "Pre-screening support that cuts microscopist workload.",
+        "A lightweight CNN (64×64 input) is cheap enough for low-resource hardware.",
+        "The side-by-side comparison shows which modelling effort is actually worth it for this task.",
+      ],
+      architecture:
+        "Classical track: OpenCV grayscale and Gaussian blur, Canny edge detection, and HSV colour segmentation that isolates the stained parasite. Nine features (grayscale mean/std, edge density, per-channel RGB mean/std) feed a Random Forest. Deep-learning track: a three-block CNN (Conv → BatchNorm → MaxPool, 32/64/128 filters, dense head with dropout) trained on 64×64 inputs with rotation, flip and zoom augmentation. Transfer-learning track: an ImageNet ResNet50 kept frozen, with a new pooling + dense head.",
+      systemDesign: [
+        "Data: 27,558 RGB cell images, balanced classes, 80/20 train/validation split.",
+        "Classical CV: Canny edges for shape, colour masks for the parasite stain.",
+        "ML: Random Forest (100 trees) on 9 handcrafted features from 5,000 images.",
+        "CNN: 3 conv blocks + BatchNorm, Adam, binary cross-entropy, 6 epochs.",
+        "Transfer learning: frozen ResNet50 + GlobalAveragePooling + dense head, 20 epochs.",
+        "Evaluation: accuracy, classification reports, and a confusion matrix per model.",
+      ],
+      pipeline: [
+        "Load the parasitized / uninfected cell images",
+        "Classical CV: edge detection vs colour segmentation",
+        "Handcrafted features → Random Forest",
+        "Custom CNN with data augmentation",
+        "ResNet50 transfer learning",
+        "Compare accuracy and confusion matrices",
+      ],
+      screenshots: [
+        {
+          label: "Classical CV pipeline",
+          caption:
+            "An infected cell through the classical pipeline: grayscale, Canny edges, and a colour mask that isolates the parasite.",
+          src: "/projects/malaria-classification/color-segmentation.png",
+        },
+        {
+          label: "Model comparison",
+          caption:
+            "Final accuracy: custom CNN 94.07%, classical ML 84.40%, frozen ResNet50 66.46%.",
+          src: "/projects/malaria-classification/model-comparison.png",
+        },
+        {
+          label: "CNN confusion matrix",
+          caption:
+            "Custom CNN on 5,510 validation cells: only 202 infected cells missed and 118 false alarms.",
+          src: "/projects/malaria-classification/cnn-confusion.png",
+        },
+        {
+          label: "Random Forest confusion matrix",
+          caption:
+            "Classical ML baseline: balanced errors across both classes at 84.4% accuracy.",
+          src: "/projects/malaria-classification/rf-confusion.png",
+        },
+        {
+          label: "ResNet50 confusion matrix",
+          caption:
+            "Frozen ResNet50: ImageNet features at 64×64 don't transfer well to stained-cell microscopy.",
+          src: "/projects/malaria-classification/resnet-confusion.png",
+        },
+      ],
+      challenges: [
+        "Choosing handcrafted features that capture the parasite stain rather than the cell outline.",
+        "CNN validation accuracy swung sharply early on (down to 50% at epoch 2) before settling at about 94%, so the full curve has to be watched, not one epoch.",
+        "Diagnosing why transfer learning underperformed instead of assuming bigger is better.",
+      ],
+      tradeoffs: [
+        "Small 64×64 inputs keep training fast and models light, at the cost of fine detail; this hurt ResNet50 most.",
+        "Freezing the ResNet50 backbone saves compute but stops it adapting to microscopy images.",
+      ],
+      lessons: [
+        "A small task-specific CNN can beat a large pretrained network when the domain gap is wide.",
+        "Classical CV makes a strong, interpretable baseline: 84% with just 9 features.",
+        "Always benchmark simple baselines before reaching for heavier models.",
+      ],
+      futureWork: [
+        "Unfreeze and fine-tune ResNet50 / EfficientNet at higher resolution.",
+        "Grad-CAM saliency to check the CNN focuses on the parasite.",
+        "Optimize for recall on infected cells, the clinically costly error.",
       ],
     },
   },

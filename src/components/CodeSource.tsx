@@ -23,6 +23,9 @@ export function CodeSource({
 }: CodeSourceProps) {
   const [open, setOpen] = useState(false);
 
+  // No repo and not confidential (e.g. notebook-only work) → render nothing.
+  if (!href && !confidential) return null;
+
   // Public repository → plain link out.
   if (!confidential && href) {
     if (variant === "icon") {

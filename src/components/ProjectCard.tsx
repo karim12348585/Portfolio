@@ -4,6 +4,7 @@ import { ArrowUpRight, Target, Lightbulb } from "lucide-react";
 import type { Project } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { CodeSource } from "@/components/CodeSource";
+import { NotebookLink } from "@/components/NotebookLink";
 import { projectTypeStyles } from "@/utils/projectType";
 import { getHeroImage } from "@/utils/projectImage";
 import { cn } from "@/utils/cn";
@@ -144,11 +145,14 @@ export function ProjectCard({ project }: { project: Project }) {
             Case study
             <ArrowUpRight size={15} />
           </Link>
-          <CodeSource
-            href={project.github}
-            confidential={project.codeConfidential}
-            variant="icon"
-          />
+          <div className="flex items-center gap-3">
+            <NotebookLink href={project.notebook} variant="icon" />
+            <CodeSource
+              href={project.github}
+              confidential={project.codeConfidential}
+              variant="icon"
+            />
+          </div>
         </div>
       </div>
     </motion.article>

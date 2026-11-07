@@ -30,8 +30,8 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: "RAG Pipelines", years: 2, level: 5, projects: ["Agentic Code Intelligence", "DeepTest Agent"], description: "Retrieval-augmented generation over enterprise data." },
       { name: "GraphRAG", years: 1, level: 4, projects: ["DeepTest Agent"], description: "Fusing vector search with knowledge-graph structure." },
-      { name: "FAISS", years: 2, level: 4, projects: ["DataOps Copilot", "DeepTest Agent"], description: "Vector similarity search and golden-case memory." },
-      { name: "ChromaDB", years: 1, level: 4, projects: ["Agentic Code Intelligence"], description: "Vector database for semantic retrieval." },
+      { name: "FAISS", years: 2, level: 4, projects: ["DataOps Copilot"], description: "Vector similarity search and golden-case memory." },
+      { name: "ChromaDB", years: 1, level: 4, projects: ["Agentic Code Intelligence", "DeepTest Agent"], description: "Vector database for semantic retrieval." },
     ],
   },
   {
@@ -51,7 +51,7 @@ export const skillCategories: SkillCategory[] = [
     icon: "Eye",
     skills: [
       { name: "Vision Transformers", years: 1, level: 4, projects: ["AI-Generated Face Detection"], description: "ViT fine-tuning with LoRA and XAI." },
-      { name: "CNNs", years: 2, level: 4, projects: [], description: "Convolutional architectures for image tasks." },
+      { name: "CNNs", years: 2, level: 4, projects: ["Malaria Cell Classification"], description: "Convolutional architectures for image tasks." },
       { name: "XAI", years: 1, level: 3, projects: ["AI-Generated Face Detection"], description: "Explainable, interpretable model predictions." },
     ],
   },
@@ -59,10 +59,10 @@ export const skillCategories: SkillCategory[] = [
     name: "Machine & Deep Learning",
     icon: "BrainCircuit",
     skills: [
-      { name: "Supervised Learning", years: 3, level: 5, projects: ["AI-Generated Face Detection", "ATS Resume Filtering"], description: "Classification & regression — from linear models and trees to gradient boosting and neural nets." },
+      { name: "Supervised Learning", years: 3, level: 5, projects: ["AI-Generated Face Detection", "ATS Resume Filtering", "Malaria Cell Classification", "Bitcoin Transaction GNN"], description: "Classification & regression — from linear models and trees to gradient boosting and neural nets." },
       { name: "Unsupervised Learning", years: 2, level: 4, projects: ["Market Skill Insights"], description: "Clustering, dimensionality reduction, and density estimation." },
       { name: "Reinforcement Learning", years: 1, level: 3, projects: [], description: "Policy and value methods, reward-driven agents, and RLHF foundations." },
-      { name: "PyTorch", years: 2, level: 4, projects: ["AI-Generated Face Detection"], description: "Deep learning model development and training." },
+      { name: "PyTorch", years: 2, level: 4, projects: ["AI-Generated Face Detection", "Bitcoin Transaction GNN"], description: "Deep learning model development and training." },
       { name: "HDBSCAN", years: 1, level: 4, projects: ["Market Skill Insights"], description: "Density-based clustering without preset cluster counts." },
       { name: "Optuna", years: 1, level: 4, projects: ["AI-Generated Face Detection"], description: "Automated hyperparameter optimization." },
     ],
@@ -97,7 +97,7 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: "Python", years: 4, level: 5, projects: ["DataOps Copilot", "DeepTest Agent"], description: "Primary language for AI/ML systems." },
       { name: "FastAPI", years: 1, level: 4, projects: [], description: "High-performance async Python APIs for serving models and agents." },
-      { name: "Flask", years: 2, level: 4, projects: ["DataOps Copilot"], description: "APIs backing agent UIs and services." },
+      { name: "Flask", years: 2, level: 4, projects: ["DataOps Copilot", "DeepTest Agent"], description: "APIs backing agent UIs and services." },
       { name: "Neo4j", years: 2, level: 4, projects: ["Agentic Code Intelligence", "DeepTest Agent"], description: "Knowledge graphs for structured reasoning." },
       { name: "SQL / SQLAlchemy", years: 3, level: 4, projects: ["Data Pipeline Monitoring"], description: "Relational data access and quality monitoring." },
     ],
@@ -106,7 +106,7 @@ export const skillCategories: SkillCategory[] = [
     name: "Frontend & Tools",
     icon: "LayoutDashboard",
     skills: [
-      { name: "React", years: 2, level: 3, projects: ["DataOps Copilot"], description: "Agent UIs with live reasoning streams." },
+      { name: "React", years: 2, level: 3, projects: ["DataOps Copilot", "DeepTest Agent"], description: "Agent UIs with live reasoning streams." },
       { name: "Pandas / NumPy", years: 3, level: 5, projects: ["Market Skill Insights", "Data Pipeline Monitoring"], description: "Data wrangling and analysis." },
       { name: "Selenium / BeautifulSoup", years: 2, level: 4, projects: ["Market Skill Insights"], description: "Web scraping and data collection." },
       { name: "Power BI", years: 1, level: 3, projects: [], description: "Dashboards and data visualization." },
