@@ -32,7 +32,10 @@ export function ProjectCard({ project }: { project: Project }) {
               src={hero.src}
               alt={project.title}
               loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105",
+                hero.isCover ? "object-[center_30%]" : "object-top",
+              )}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-panel via-panel/25 to-black/25" />
           </>
@@ -150,6 +153,7 @@ export function ProjectCard({ project }: { project: Project }) {
             <CodeSource
               href={project.github}
               confidential={project.codeConfidential}
+              note={project.sourceNote}
               variant="icon"
             />
           </div>

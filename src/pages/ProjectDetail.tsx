@@ -14,6 +14,9 @@ import {
   Rocket,
   Image as ImageIcon,
   Maximize2,
+  Gauge,
+  CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 import { getProjectBySlug, projects } from "@/data/projects";
 import { PageTransition } from "@/layout/PageTransition";
@@ -69,39 +72,171 @@ function BulletList({ items }: { items: string[] }) {
   );
 }
 
-/** Compact bordered card used in the reflection grid to keep the page scannable. */
-function MiniCard({
-  icon: Icon,
-  title,
-  items,
-}: {
+interface ReflectionTab {
   icon: React.ElementType;
   title: string;
   items: string[];
-}) {
+}
+
+/**
+ * Tradeoffs / lessons / next steps as one tabbed card: a single list is shown
+ * at a time, so the section is shorter than a grid of cards while every item
+ * stays one click away.
+ */
+function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
+  const [active, setActive] = useState(0);
+  const current = tabs[Math.min(active, tabs.length - 1)];
+  const CurrentIcon = current.icon;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.4 }}
-      className="rounded-2xl border border-line bg-panel p-5 sm:p-6"
+      className="overflow-hidden rounded-2xl border border-line bg-panel"
     >
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent">
-          <Icon size={16} />
-        </div>
-        <h3 className="font-semibold tracking-tight">{title}</h3>
+      <div role="tablist" className="flex border-b border-line bg-panel-2">
+        {tabs.map((t, i) => {
+          const TabIcon = t.icon;
+          const isActive = t === current;
+          return (
+            <button
+              key={t.title}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => setActive(i)}
+              className={cn(
+                "relative flex flex-1 items-center justify-center gap-2 px-2 py-3 text-xs font-medium transition-colors sm:text-sm",
+                isActive ? "text-fg" : "text-faint hover:text-muted",
+              )}
+            >
+              <TabIcon
+                size={15}
+                className={cn("hidden sm:block", isActive && "text-accent")}
+              />
+              {t.title}
+              <span
+                className={cn(
+                  "rounded-full px-1.5 text-[10px] leading-4",
+                  isActive ? "bg-accent/15 text-accent" : "bg-line/60 text-faint",
+                )}
+              >
+                {t.items.length}
+              </span>
+              {isActive && (
+                <motion.span
+                  layoutId="reflection-tab"
+                  className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-accent-gradient"
+                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
-      <ul className="space-y-2.5 text-sm leading-relaxed text-muted">
-        {items.map((it) => (
-          <li key={it} className="flex gap-2.5">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-gradient" />
+
+      <ul role="tabpanel" className="divide-y divide-line">
+        {current.items.map((it) => (
+          <li
+            key={it}
+            className="flex gap-3 px-4 py-3 text-sm leading-relaxed text-muted sm:px-5"
+          >
+            <CurrentIcon size={15} className="mt-0.5 shrink-0 text-accent" />
             <span>{it}</span>
           </li>
         ))}
       </ul>
     </motion.div>
+  );
+}
+
+/**
+ * Compact challenge → solution table. Rows show only the challenge; the
+ * solution expands on click, so the section stays short until the reader
+ * wants detail. "Expand all" opens everything at once.
+ */
+function SolvedChallengesTable({
+  items,
+}: {
+  items: { challenge: string; solution: string }[];
+}) {
+  const [open, setOpen] = useState<Set<number>>(() => new Set());
+  const allOpen = open.size === items.length;
+
+  const toggle = (i: number) =>
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-line bg-panel">
+      <div className="flex items-center justify-between gap-3 border-b border-line bg-panel-2 px-4 py-2.5">
+        <span className="text-xs font-medium uppercase tracking-wide text-faint">
+          {items.length} challenges · click a row for the solution
+        </span>
+        <button
+          type="button"
+          onClick={() =>
+            setOpen(allOpen ? new Set() : new Set(items.map((_, i) => i)))
+          }
+          className="shrink-0 text-xs font-medium text-accent transition-colors hover:text-accent-soft"
+        >
+          {allOpen ? "Collapse all" : "Expand all"}
+        </button>
+      </div>
+
+      <ul className="divide-y divide-line">
+        {items.map((c, i) => {
+          const isOpen = open.has(i);
+          return (
+            <li key={c.challenge}>
+              <button
+                type="button"
+                onClick={() => toggle(i)}
+                aria-expanded={isOpen}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-panel-2"
+              >
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-accent/10 text-xs font-semibold text-accent">
+                  {i + 1}
+                </span>
+                <span className="flex-1 text-sm font-medium text-fg">
+                  {c.challenge}
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={cn(
+                    "shrink-0 text-faint transition-transform duration-200",
+                    isOpen && "rotate-180 text-accent",
+                  )}
+                />
+              </button>
+              {/* grid-rows trick animates height without measuring */}
+              <div
+                className={cn(
+                  "grid transition-[grid-template-rows] duration-200 ease-out",
+                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                )}
+              >
+                <div className="overflow-hidden">
+                  <p className="flex gap-2.5 px-4 pb-4 pl-[3.25rem] text-sm leading-relaxed text-muted">
+                    <CheckCircle2
+                      size={16}
+                      className="mt-0.5 shrink-0 text-emerald-400"
+                    />
+                    <span>{c.solution}</span>
+                  </p>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
@@ -116,18 +251,23 @@ export function ProjectDetail() {
   const idx = projects.findIndex((p) => p.id === project.id);
   const next = projects[(idx + 1) % projects.length];
 
-  // Only render reflection cards that actually have content.
-  const reflections = [
-    { icon: ListChecks, title: "Engineering Challenges", items: cs.challenges },
+  const hasSolved = (cs.solvedChallenges?.length ?? 0) > 0;
+  // Reflection tabs with content. Plain challenges only appear as a tab when
+  // the project has no solved-challenges table.
+  const reflections: ReflectionTab[] = [
+    { icon: ListChecks, title: "Challenges", items: hasSolved ? [] : cs.challenges },
     { icon: Scale, title: "Tradeoffs", items: cs.tradeoffs },
-    { icon: GraduationCap, title: "Lessons Learned", items: cs.lessons },
-    { icon: Rocket, title: "Future Improvements", items: cs.futureWork },
+    { icon: GraduationCap, title: "Lessons learned", items: cs.lessons },
+    { icon: Rocket, title: "What's next", items: cs.futureWork },
   ].filter((r) => r.items.length > 0);
 
   // Lead with a real image (shared with the project cards). The gallery below
   // still shows every visual, including the one used as the hero.
   const allDiagrams = cs.diagrams ?? [];
-  const heroImage: LightboxImage | null = getHeroImage(project);
+  const hero = getHeroImage(project);
+  const heroImage: LightboxImage | null = hero
+    ? { src: hero.src, caption: hero.caption }
+    : null;
   const galleryShots = cs.screenshots;
   const hasGallery = galleryShots.length > 0;
 
@@ -196,6 +336,7 @@ export function ProjectDetail() {
               <CodeSource
                 href={project.github}
                 confidential={project.codeConfidential}
+                note={project.sourceNote}
                 variant="button"
               />
               <NotebookLink href={project.notebook} variant="button" />
@@ -220,7 +361,10 @@ export function ProjectDetail() {
               <img
                 src={heroImage.src}
                 alt={project.title}
-                className="aspect-[21/9] w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                className={cn(
+                  "aspect-[21/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]",
+                  hero?.isCover ? "object-[center_30%]" : "object-top",
+                )}
               />
               <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
                 <Maximize2 size={16} />
@@ -295,6 +439,67 @@ export function ProjectDetail() {
             </Block>
           )}
 
+          {/* Benchmarks — headline numbers, then the charts behind them */}
+          {cs.benchmarks && (
+            <Block icon={Gauge} title="Benchmarks & Evaluation">
+              {cs.benchmarks.intro && (
+                <p className="mb-5">{cs.benchmarks.intro}</p>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2">
+                {cs.benchmarks.stats.map((s) => (
+                  <div
+                    key={s.metric}
+                    className="rounded-xl border border-line bg-panel p-4"
+                  >
+                    <p className="text-xs font-medium uppercase tracking-wide text-faint">
+                      {s.metric}
+                    </p>
+                    <p className="mt-1.5 text-2xl font-semibold tracking-tight text-fg">
+                      {s.value}
+                    </p>
+                    {s.detail && (
+                      <p className="mt-1 text-xs leading-relaxed text-faint">
+                        {s.detail}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {cs.benchmarks.charts?.map((c) => (
+                <figure
+                  key={c.src}
+                  className="group mt-5 overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+                >
+                  <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
+                    <Gauge size={13} className="text-accent" />
+                    <span className="ml-1 truncate text-[11px] font-medium text-faint">
+                      Benchmark
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setZoom({ src: c.src, caption: c.caption })}
+                    className="relative block w-full cursor-zoom-in bg-white"
+                  >
+                    <img
+                      src={c.src}
+                      alt={c.caption}
+                      loading="lazy"
+                      className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    />
+                    <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                      <Maximize2 size={15} />
+                    </span>
+                  </button>
+                  <figcaption className="px-4 py-3 text-xs text-faint">
+                    {c.caption}
+                  </figcaption>
+                </figure>
+              ))}
+            </Block>
+          )}
+
           {/* Architecture + system design, with the diagram in context */}
           <Block icon={Boxes} title="Architecture & System Design">
             <p>{cs.architecture}</p>
@@ -344,18 +549,19 @@ export function ProjectDetail() {
             <BulletList items={cs.businessValue} />
           </Block>
 
-          {/* Reflection — compact 2-col grid keeps the page scannable */}
+          {/* Challenges solved — problem → fix pairs in an expandable table */}
+          {hasSolved && (
+            <Block icon={ListChecks} title="Challenges & How They Were Solved">
+              <SolvedChallengesTable
+                key={project.id}
+                items={cs.solvedChallenges ?? []}
+              />
+            </Block>
+          )}
+
+          {/* Tradeoffs / lessons / next steps — one tabbed card */}
           {reflections.length > 0 && (
-            <div className="grid gap-5 sm:grid-cols-2">
-              {reflections.map((r) => (
-                <MiniCard
-                  key={r.title}
-                  icon={r.icon}
-                  title={r.title}
-                  items={r.items}
-                />
-              ))}
-            </div>
+            <ReflectionTabs key={project.id} tabs={reflections} />
           )}
         </div>
 

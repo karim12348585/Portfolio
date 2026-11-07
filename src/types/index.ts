@@ -11,7 +11,21 @@ export type ProjectCategory =
   | "Deep Learning"
   | "Graph ML";
 
-export type ProjectType = "Academic" | "Industrial";
+export type ProjectType = "Academic" | "Industrial" | "Freelance";
+
+/** Overrides the default "confidential / NDA" note on a private-source badge. */
+export interface SourceNote {
+  /** Button label, e.g. "Client-owned". */
+  label: string;
+  title: string;
+  body: string;
+}
+
+export interface BenchmarkStat {
+  metric: string;
+  value: string;
+  detail?: string;
+}
 
 export interface CaseStudy {
   overview: string;
@@ -22,6 +36,14 @@ export interface CaseStudy {
   diagrams?: { src: string; caption: string }[];
   systemDesign: string[];
   pipeline: string[];
+  /** Replaces the challenges/tradeoffs/lessons/future grid with problem → fix pairs. */
+  solvedChallenges?: { challenge: string; solution: string }[];
+  /** Headline evaluation numbers plus optional benchmark charts. */
+  benchmarks?: {
+    intro?: string;
+    stats: BenchmarkStat[];
+    charts?: { src: string; caption: string }[];
+  };
   /** Real captures only — empty array hides the section (no placeholders). */
   screenshots: { label: string; caption: string; src: string }[];
   challenges: string[];
@@ -49,10 +71,14 @@ export interface Project {
   github?: string;
   /** When true, the source is proprietary — show a red "confidential" GitHub badge. */
   codeConfidential?: boolean;
+  /** Custom wording for the private-source badge (e.g. client-owned code). */
+  sourceNote?: SourceNote;
   /** Notebook link — a Kaggle URL or a local .ipynb under /public. */
   notebook?: string;
   demo?: string;
   featured: boolean;
+  /** Dedicated cover image for the card + banner; overrides the first screenshot. */
+  cover?: string;
   accent: string; // gradient hint, e.g. "from-indigo-500 to-violet-400"
   caseStudy: CaseStudy;
 }

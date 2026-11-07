@@ -2,13 +2,22 @@ import { useState } from "react";
 import { Github, Lock } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/utils/cn";
+import type { SourceNote } from "@/types";
 
 interface CodeSourceProps {
   href?: string;
   confidential?: boolean;
+  /** Custom wording for the private-source badge; defaults to NDA wording. */
+  note?: SourceNote;
   variant?: "button" | "icon";
   className?: string;
 }
+
+const defaultNote: SourceNote = {
+  label: "Private source",
+  title: "Source code is confidential",
+  body: "Proprietary / enterprise project — the code is under NDA and not publicly available.",
+};
 
 /**
  * Source-code affordance. For public repos it links out; for confidential
@@ -18,6 +27,7 @@ interface CodeSourceProps {
 export function CodeSource({
   href,
   confidential,
+  note = defaultNote,
   variant = "button",
   className,
 }: CodeSourceProps) {
@@ -67,7 +77,7 @@ export function CodeSource({
     setOpen((v) => !v);
   };
 
-  const note = (
+  const popover = (
     <AnimatePresence>
       {open && (
         <motion.div
@@ -83,12 +93,9 @@ export function CodeSource({
           <div className="glass rounded-xl p-3 text-xs leading-relaxed text-fg/90 shadow-glow">
             <span className="inline-flex items-center gap-1.5 font-medium text-red-300">
               <Lock size={12} />
-              Source code is confidential
+              {note.title}
             </span>
-            <p className="mt-1 text-faint">
-              Proprietary / enterprise project — the code is under NDA and not
-              publicly available.
-            </p>
+            <p className="mt-1 text-faint">{note.body}</p>
           </div>
         </motion.div>
       )}
@@ -102,12 +109,12 @@ export function CodeSource({
           type="button"
           onClick={toggle}
           onBlur={() => setOpen(false)}
-          aria-label="Source code is confidential"
+          aria-label={note.title}
           className="text-red-500 transition-colors hover:text-red-400"
         >
           <Github size={17} />
         </button>
-        {note}
+        {popover}
       </div>
     );
   }
@@ -121,10 +128,10 @@ export function CodeSource({
         className="inline-flex h-9 items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-4 text-sm font-medium text-red-300 transition-colors hover:bg-red-500/15"
       >
         <Github size={15} />
-        Private source
+        {note.label}
         <Lock size={12} />
       </button>
-      {note}
+      {popover}
     </div>
   );
 }

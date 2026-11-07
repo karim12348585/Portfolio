@@ -12,3 +12,6 @@ npm-debug.log*
 yarn-error.log*
 .vscode/*
 !.vscode/extensions.json
+
+# Private source material (never deployed)
+private/

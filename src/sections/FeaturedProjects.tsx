@@ -12,6 +12,7 @@ type TypeFilter = "All" | ProjectType;
 const typeTabs: { key: TypeFilter; label: string; pill: string }[] = [
   { key: "All", label: "All work", pill: "bg-accent-gradient" },
   { key: "Industrial", label: "Industrial", pill: "bg-violet-500" },
+  { key: "Freelance", label: "Freelance", pill: "bg-amber-500" },
   { key: "Academic", label: "Academic", pill: "bg-emerald-500" },
 ];
 
@@ -32,6 +33,7 @@ export function FeaturedProjects() {
   const counts = useMemo(
     () => ({
       Industrial: projects.filter((p) => p.type === "Industrial").length,
+      Freelance: projects.filter((p) => p.type === "Freelance").length,
       Academic: projects.filter((p) => p.type === "Academic").length,
     }),
     [],
@@ -42,7 +44,7 @@ export function FeaturedProjects() {
       <SectionHeading
         eyebrow="Featured Projects"
         title="Systems that ship, not just notebooks"
-        description="Real-world AI systems from industry internships and applied research — each with a full engineering case study."
+        description="Real-world AI systems from industry internships, freelance client work and applied research — each with a full engineering case study."
       />
 
       {/* Industrial vs Academic segmented toggle */}
@@ -60,7 +62,7 @@ export function FeaturedProjects() {
                   key={tab.key}
                   onClick={() => setTypeFilter(tab.key)}
                   className={cn(
-                    "relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors sm:px-5",
+                    "relative rounded-full px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-5",
                     active ? "text-accent-fg" : "text-muted hover:text-fg",
                   )}
                 >
@@ -72,7 +74,7 @@ export function FeaturedProjects() {
                     />
                   )}
                   {tab.label}
-                  <span className={cn("ml-1.5 text-xs", active ? "text-accent-fg/60" : "text-faint")}>
+                  <span className={cn("ml-1.5 hidden text-xs sm:inline", active ? "text-accent-fg/60" : "text-faint")}>
                     {count}
                   </span>
                 </button>

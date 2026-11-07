@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1310" height="900" viewBox="0 0 1310 900" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,5 L0,9 z" fill="#B9B6AD"/>
+    </marker>
+    <style>
+      .box { fill: #FFFFFF; stroke: #D6D3CB; stroke-width: 2; }
+      .hl { fill: #E8F1FC; stroke: #2F74D0; stroke-width: 2.5; }
+      .t { font-size: 20px; font-weight: 600; fill: #1B1B1B; text-anchor: middle; }
+      .s { font-size: 16px; fill: #5A5A5A; text-anchor: middle; }
+      .lbl { font-size: 18px; font-weight: 600; fill: #555555; }
+      .ln { fill: none; stroke: #B9B6AD; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1310" height="900" fill="#FFFFFF"/>
+
+  <text x="52" y="52" font-size="26" font-weight="700" fill="#141414">Two training stages take Gemma 4 E2B to Tounsi Chat v1.1</text>
+  <text x="52" y="84" font-size="18" fill="#5A5A5A">Stage 1 teaches the language · Stage 2 teaches the behaviour</text>
+
+  <!-- Stage 1 -->
+  <text class="lbl" x="52" y="134">Stage 1 · Continued pretraining (from base Gemma 4 E2B)</text>
+  <rect class="box" x="52" y="155" width="278" height="90" rx="14"/>
+  <text class="t" x="191" y="193">Corpus curation</text>
+  <text class="s" x="191" y="221">130M Tunisian tokens</text>
+  <rect class="box" x="364" y="155" width="278" height="90" rx="14"/>
+  <text class="t" x="503" y="193">Continued pretraining</text>
+  <text class="s" x="503" y="221">LoRA r=128 · 993 steps</text>
+  <rect class="box" x="676" y="155" width="278" height="90" rx="14"/>
+  <text class="t" x="815" y="193">Strength sweep</text>
+  <text class="s" x="815" y="221">4 adapter strengths scored</text>
+  <rect class="box" x="988" y="155" width="278" height="90" rx="14"/>
+  <text class="t" x="1127" y="193">CPT merge</text>
+  <text class="s" x="1127" y="221">merged at α 0.5</text>
+  <line class="ln" x1="332" y1="200" x2="362" y2="200" marker-end="url(#arrow)"/>
+  <line class="ln" x1="644" y1="200" x2="674" y2="200" marker-end="url(#arrow)"/>
+  <line class="ln" x1="956" y1="200" x2="986" y2="200" marker-end="url(#arrow)"/>
+
+  <!-- SFT data -->
+  <text class="lbl" x="52" y="324">Instruction data</text>
+  <rect class="box" x="52" y="345" width="278" height="90" rx="14"/>
+  <text class="t" x="191" y="383">Translation pairs</text>
+  <text class="s" x="191" y="411">15.3k sentences · EN / FR / MSA</text>
+  <rect class="box" x="364" y="345" width="278" height="90" rx="14"/>
+  <text class="t" x="503" y="383">Tunisian conversations</text>
+  <text class="s" x="503" y="411">20k, judge-reviewed</text>
+  <rect class="box" x="676" y="345" width="278" height="90" rx="14"/>
+  <text class="t" x="815" y="383">Targeted generation</text>
+  <text class="s" x="815" y="411">12 task types, LLM-judged</text>
+  <path class="ln" d="M191,435 V497 H815"/>
+  <path class="ln" d="M503,435 V497"/>
+  <path class="ln" d="M815,435 V541" marker-end="url(#arrow)"/>
+
+  <!-- Stage 2 -->
+  <text class="lbl" x="52" y="594">Stage 2 · SFT</text>
+  <rect class="box" x="676" y="543" width="278" height="90" rx="14"/>
+  <text class="t" x="815" y="581">SFT build</text>
+  <text class="s" x="815" y="609">mix + quality filters</text>
+  <rect class="box" x="988" y="543" width="278" height="90" rx="14"/>
+  <text class="t" x="1127" y="581">Instruction tuning</text>
+  <text class="s" x="1127" y="609">LoRA r=32 · 2 epochs</text>
+  <line class="ln" x1="956" y1="588" x2="986" y2="588" marker-end="url(#arrow)"/>
+  <path class="ln" d="M1127,245 V541" marker-end="url(#arrow)"/>
+
+  <!-- Evaluate & release -->
+  <text class="lbl" x="52" y="801">Evaluate &amp; release</text>
+  <path class="ln" d="M1127,633 V705 H503 V748" marker-end="url(#arrow)"/>
+  <rect class="box" x="364" y="750" width="278" height="90" rx="14"/>
+  <text class="t" x="503" y="788">Evaluation</text>
+  <text class="s" x="503" y="816">benchmarks + 62 behaviour checks</text>
+  <rect class="box" x="676" y="750" width="278" height="90" rx="14"/>
+  <text class="t" x="815" y="788">SFT merge</text>
+  <text class="s" x="815" y="816">merged at α 1.0</text>
+  <rect class="hl" x="988" y="750" width="278" height="90" rx="14"/>
+  <text class="t" x="1127" y="788">Tounsi Chat v1.1</text>
+  <text class="s" x="1127" y="816">released model</text>
+  <line class="ln" x1="644" y1="795" x2="674" y2="795" marker-end="url(#arrow)"/>
+  <line class="ln" x1="956" y1="795" x2="986" y2="795" marker-end="url(#arrow)"/>
+</svg>

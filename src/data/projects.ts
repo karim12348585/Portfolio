@@ -77,11 +77,29 @@ export const projects: Project[] = [
         { label: "Log parser", caption: "Two-layer parser compressing raw Jenkins logs before reasoning.", src: "/projects/dataops-copilot/parser.png" },
         { label: "Terminal UI", caption: "The DataOps Copilot TUI: pick a failed Jenkins log and the agents start investigating.", src: "/projects/dataops-copilot/tui.png" },
       ],
-      challenges: [
-        "Log volume overwhelmed context windows — solved with a two-layer, structure-aware compression stage.",
-        "Preventing agents from looping indefinitely required explicit confidence gates and self-correction limits.",
-        "Safely exposing enterprise SQL and repos to an LLM demanded MCP's controlled-access model.",
+      solvedChallenges: [
+        {
+          challenge: "Raw Jenkins logs overflowed the LLM context window",
+          solution:
+            "Built a two-layer, structure-aware parser that compresses logs by up to 83% in tokens before any agent reasons over them.",
+        },
+        {
+          challenge: "Stopping agents from looping indefinitely",
+          solution:
+            "Added explicit confidence gates and capped self-correction loops in the LangGraph router, so every run converges on a final report.",
+        },
+        {
+          challenge: "Giving an LLM safe access to enterprise SQL and repositories",
+          solution:
+            "Exposed internal repos, configs and SQL Server only through MCP servers, as controlled and scoped tools instead of direct access.",
+        },
+        {
+          challenge: "Proving the agents' answers can be trusted",
+          solution:
+            "Built an LLM-as-a-Judge evaluation harness that scores every run on correctness, latency and cost, plus a human-in-the-loop review step.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "Chose LangGraph's explicit state machine over a free-form agent loop for debuggability and reproducibility.",
         "Accepted extra latency from evidence-gathering steps in exchange for far higher RCA precision.",
@@ -179,12 +197,24 @@ export const projects: Project[] = [
           src: "/projects/agentic-code-intelligence/knowledge-graph.png",
         },
       ],
-      challenges: [
-        "Combining graph traversal with vector retrieval without the agent losing focus.",
-        "Keeping the knowledge graph in sync with fast-moving repositories.",
-        "Scoping context so the agent stays within token budgets on large repos.",
-        "Making the agent's reasoning legible — every tool call had to be traceable for reviewers to trust the verdict.",
+      solvedChallenges: [
+        {
+          challenge: "Combining graph traversal with vector retrieval without the agent losing focus",
+          solution:
+            "Split retrieval into two layers, Neo4j for structure (files, symbols, call edges) and Chroma for meaning, each exposed as a separate tool the ReAct agent calls step by step.",
+        },
+        {
+          challenge: "Staying within token budgets on large repositories",
+          solution:
+            "The agent retrieves only the context relevant to each PR, orchestrating 6 tools inside a 128k-token window.",
+        },
+        {
+          challenge: "Making the agent's verdict trustworthy for reviewers",
+          solution:
+            "Every tool call is surfaced in a transparent 5-step ReAct trace in the UI, so each finding can be audited.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "Hybrid Neo4j + Chroma retrieval added complexity but captured both structure and semantics.",
         "ReAct's transparency was preferred over opaque single-shot prompting.",
@@ -265,6 +295,212 @@ export const projects: Project[] = [
         "Email alert on any violation",
       ],
       screenshots: [],
+      challenges: [],
+      tradeoffs: [],
+      lessons: [],
+      futureWork: [],
+    },
+  },
+  {
+    id: "tounsi-chat",
+    slug: "tounsi-chat",
+    title: "Tounsi Chat",
+    tagline:
+      "A Tunisian Derja assistant built on Gemma 4 E2B. It speaks real Tunisian with natural French code-switching, translates out of Derja, and won't make up live facts.",
+    year: "2026",
+    type: "Freelance",
+    company: "Client project",
+    categories: ["LLM", "NLP", "Deep Learning"],
+    problem:
+      "Arabic LLMs answer in Modern Standard Arabic, Egyptian or Moroccan. Tunisian Derja, with its French code-switching and Arabizi, is barely served, and small models confidently make up facts.",
+    solution:
+      "Gemma 4 E2B (~2B parameters) adapted in two stages: continued pretraining on a curated 130M-token Tunisian corpus, then instruction tuning on a judged mix of conversations, translations and targeted tasks. Each stage was benchmarked before merging.",
+    tech: [
+      "Gemma 4 E2B",
+      "Continued Pretraining",
+      "LoRA / rsLoRA",
+      "SFT",
+      "LLM-as-a-Judge",
+      "Synthetic Data",
+      "vLLM",
+      "PyTorch",
+    ],
+    results: [
+      "Speaks real Tunisian Derja with natural French code-switching, and answers French and English users in their own language",
+      "chrF 55.4 Tunisian→English and 52.2 Tunisian→French on held-out text",
+      "Fact checks up from 7/20 to 16/20; 6/6 on live-data questions, with no invented scores or prices",
+      "6/6 on crisis prompts, with Tunisian emergency numbers (190 / 197 / 198)",
+      "Gave up only 2.3 ArabicMMLU and 2.6 MMLU points of general knowledge to learn the dialect",
+    ],
+    codeConfidential: true,
+    sourceNote: {
+      label: "Client-owned",
+      title: "Source code belongs to the client",
+      body: "Freelance project. The code, data and trained model are the client's property and aren't publicly available.",
+    },
+    featured: true,
+    cover: "/projects/freelance/tounsi-chat/cover.jpg",
+    accent: "from-amber-500 to-rose-500",
+    caseStudy: {
+      overview:
+        "Tounsi Chat is a freelance project: a compact assistant that talks the way Tunisians actually talk. I adapted Google's Gemma 4 E2B in two stages. Continued pretraining teaches the model the language; instruction tuning teaches it to behave like a helpful, honest assistant. That means short replies when the question is short, French and English answers for French and English users, plain refusals when it has no live data, and calm, safe answers in a crisis. Every stage was benchmarked before it was merged.",
+      problemStatement:
+        "Tunisian Derja is spoken by about 12 million people but is a low-resource language for AI. It mixes Arabic with French, is often written in Latin script (Arabizi), and sits between dialects that general models blend together. Off-the-shelf models reply in MSA or Moroccan, and small models make up prices, match results and facts with confidence.",
+      businessValue: [
+        "Customer-facing chat in the language Tunisian users actually speak, French code-switching included.",
+        "About 2B parameters: cheap to serve and small enough for modest or on-premise hardware.",
+        "Safe for real users: it won't make up live data and handles distress with local emergency numbers.",
+        "Two-way translation: Tunisian Derja into English, French and MSA (even long texts into all three at once) for search, support and analytics.",
+        "And the reverse: English, French and MSA into natural Tunisian Derja, in Arabic script or Arabizi, to localize content for Tunisian audiences.",
+      ],
+      architecture:
+        "Stage 1 curates a 130M-token Tunisian corpus. Dialect filters drop Egyptian, Levantine and Moroccan text but keep French code-switching. A rank-128 rsLoRA adapter is trained on it, then a strength sweep scores four merge strengths on ArabicMMLU, MMLU and perplexity. Merging at α 0.5 keeps most of the Tunisian gain for under half a point of general knowledge. Stage 2 builds an instruction set from Tunisian conversations, three-language translation pairs, and 12 targeted generation tasks (fact checks, live-data refusals, crisis handling, Arabizi, grounded answers, Tunisian vocabulary and more). Every record is scored by an LLM judge and filtered for wrong dialect, so only good ones are kept. A rank-32 LoRA is trained on the answers only, then the release is evaluated, merged and shipped.",
+      diagrams: [
+        {
+          src: "/projects/freelance/tounsi-chat/pipeline.svg",
+          caption:
+            "Two training stages: continued pretraining teaches the Tunisian language, instruction tuning teaches assistant behaviour, and each stage is evaluated before it's merged.",
+        },
+      ],
+      systemDesign: [
+        "Corpus curation: Arabic-script ratio, length, wrong-dialect and duplicate filters (67% of rows kept).",
+        "Continued pretraining: rsLoRA r=128 on attention and MLP layers, 993 steps of 131k tokens.",
+        "Adapter-strength sweep: picks the merge α that best trades Tunisian fluency against general knowledge.",
+        "Instruction mix: conversations, translations in both directions, transliteration, and 12 targeted task types.",
+        "Quality gates: LLM judge (naturalness, correctness, helpfulness), wrong-dialect filters, maths re-checks.",
+        "Instruction tuning: LoRA r=32, 3,072-token context, loss on assistant tokens only.",
+        "Evaluation harness: ArabicMMLU / MMLU with bootstrap intervals, chrF in 7 directions, a 62-prompt behaviour suite.",
+      ],
+      pipeline: [
+        "Curate the Tunisian corpus (130M tokens)",
+        "Continued pretraining + adapter-strength sweep",
+        "Build and judge the instruction mix",
+        "Instruction tuning on the Tunisian base",
+        "Benchmarks + behaviour suite + manual review",
+        "Merge and release Tounsi Chat v1.1",
+      ],
+      benchmarks: {
+        intro:
+          "No stage was merged until it passed benchmarks: 3,000-question ArabicMMLU and MMLU runs with 95% bootstrap intervals, chrF translation scores on held-out text, and a 62-prompt behaviour suite. v1.1 was built specifically to fix the weak points v1's manual testing exposed.",
+        stats: [
+          {
+            metric: "Tunisian perplexity (pretraining)",
+            value: "19.7 → 9.1",
+            detail: "Continued pretraining halved perplexity on held-out Tunisian text.",
+          },
+          {
+            metric: "Tunisian → English",
+            value: "55.4 chrF",
+            detail: "Tunisian → French 52.2 · Tunisian → MSA 47.0 · Arabizi → English 46.8",
+          },
+          {
+            metric: "Fact-check prompts",
+            value: "16 / 20",
+            detail: "Up from 7/20 in v1: 9/10 true claims confirmed, 7/10 false claims rejected.",
+          },
+          {
+            metric: "Live-data honesty",
+            value: "6 / 6",
+            detail: "Doesn't make up scores, prices, weather or the time. v1 had invented a football score.",
+          },
+          {
+            metric: "Crisis & self-harm",
+            value: "6 / 6",
+            detail: "Calm, supportive answers with Tunisian emergency numbers 190 / 197 / 198.",
+          },
+          {
+            metric: "Clean stops",
+            value: "62 / 62",
+            detail: "No looping or drift across the suite; 8/8 French & English replies, 6/6 Arabizi prompts understood.",
+          },
+          {
+            metric: "General knowledge kept",
+            value: "−2.3 / −2.6",
+            detail: "ArabicMMLU 53.5% and MMLU 54.1% against the Tunisian base, within the 3.5-point budget.",
+          },
+          {
+            metric: "Answer loss (instruction tuning)",
+            value: "2.26 → 1.32",
+            detail: "Validation perplexity on assistant answers fell from 9.55 to 3.73.",
+          },
+        ],
+        charts: [
+          {
+            src: "/projects/freelance/tounsi-chat/translation-benchmark.webp",
+            caption:
+              "chrF on held-out text in 7 directions, v1 vs v1.1. Translating out of Tunisian scores 8–17 chrF higher than translating into it.",
+          },
+        ],
+      },
+      screenshots: [
+        {
+          label: "Translation · Derja → EN / FR / MSA",
+          caption:
+            "A long Derja paragraph translated into English, French and MSA in one labelled answer, then English and MSA into Derja, and English into Arabizi.",
+          src: "/projects/freelance/tounsi-chat/translation.png",
+        },
+        {
+          label: "Multilingual Q&A",
+          caption:
+            "Djerba travel tips from an Arabizi question, job-interview advice in Derja, a French question answered in French, an English question about the louage answered in English, and a fact check.",
+          src: "/projects/freelance/tounsi-chat/multilingual-qa.png",
+        },
+        {
+          label: "Explaining tech in Derja",
+          caption:
+            "Machine learning explained step by step and quantum computing in plain Derja, from prompts typed in Arabizi.",
+          src: "/projects/freelance/tounsi-chat/explanations.png",
+        },
+        {
+          label: "Conversation · everyday Derja",
+          caption:
+            "A live chat in Derja: it introduces itself, gives a fish-couscous recipe, honestly says it has no live prices, then translates the same sentence into English and French.",
+          src: "/projects/freelance/tounsi-chat/conversation-1.png",
+        },
+        {
+          label: "Conversation · facts, safety & memory",
+          caption:
+            "Rejects a false claim (Kairouan isn't the capital), won't make up a match result, points to SAMU 190 when the user feels unwell, and remembers the first topic.",
+          src: "/projects/freelance/tounsi-chat/conversation-2.png",
+        },
+      ],
+      solvedChallenges: [
+        {
+          challenge: "Teaching the dialect without losing general knowledge",
+          solution:
+            "Swept four adapter strengths before merging and kept the one that held most of the Tunisian gain for under half a point on ArabicMMLU and MMLU.",
+        },
+        {
+          challenge: "Keeping the language purely Tunisian",
+          solution:
+            "Filtered Moroccan, Egyptian and Levantine phrasing out record by record, while keeping the French code-switching Tunisians actually use.",
+        },
+        {
+          challenge: "Stopping a small model from inventing facts",
+          solution:
+            "Added dedicated training tasks for live data, fact checks and crisis situations. The model now says when it has no live access (6/6) and fact-check accuracy rose from 7/20 to 16/20.",
+        },
+        {
+          challenge: "Catching errors that metrics alone don't show",
+          solution:
+            "Added a manual review pass on top of the automatic suite. It surfaced cases like an invented match score and unknown Tunisian words, which v1.1 fixed with about 2,700 targeted training records.",
+        },
+        {
+          challenge: "Translating long texts in full instead of summarising them",
+          solution:
+            "Introduced a labelled three-language answer format and a dedicated translator prompt, and raised the training context to 3,072 tokens. Long paragraphs now come back fully translated into English, French and MSA at once.",
+        },
+        {
+          challenge: "Guaranteeing the quality of generated training data",
+          solution:
+            "Every generated record was scored by an LLM judge for naturalness, correctness and helpfulness, and only well-rated records made it into training.",
+        },
+        {
+          challenge: "Keeping GPU time efficient",
+          solution:
+            "Ran every data and build step against fake model outputs first, so pipeline bugs were caught in minutes, before any GPU run.",
+        },
+      ],
       challenges: [],
       tradeoffs: [],
       lessons: [],
@@ -359,11 +595,24 @@ export const projects: Project[] = [
           src: "/projects/deeptest/bug-report.png",
         },
       ],
-      challenges: [
-        "Llama 3.1 emits tool calls in its own format, so a custom parser was needed to run them reliably.",
-        "Balancing structural (graph) and semantic (vector) context without overflowing the prompt.",
-        "Keeping generated code isolated while still giving the sandbox enough project context to run integration tests.",
+      solvedChallenges: [
+        {
+          challenge: "Llama 3.1 emits tool calls in its own format",
+          solution:
+            "Wrote a custom regex parser for its tool-call output, so tool calls run reliably.",
+        },
+        {
+          challenge: "Balancing graph and semantic context without overflowing the prompt",
+          solution:
+            "Chunked code at function and class level and gave the agent separate graph and semantic tools, so it pulls only the context it needs.",
+        },
+        {
+          challenge: "Running untrusted, generated code safely",
+          solution:
+            "All execution happens in an isolated Docker container (python:3.9-slim), never on the host.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "Dual-writing to Neo4j and ChromaDB costs extra ingestion time but gives far richer context than flat RAG.",
         "Chose a transparent ReAct loop over single-shot prompting, so every conclusion can be traced to a tool call.",
@@ -486,11 +735,24 @@ export const projects: Project[] = [
           src: "/projects/market-skill-insights/cluster-labeling.png",
         },
       ],
-      challenges: [
-        "Postings name the same skill in many different ways, so the LLM had to normalize them before clustering.",
-        "HDBSCAN parameter tuning to get meaningful clusters.",
-        "Raw clusters aren't readable, so an LLM labelling step turns them into named categories.",
+      solvedChallenges: [
+        {
+          challenge: "The same skill is named many different ways across postings",
+          solution:
+            "An LLM normalizes skill names before embedding, so variants of the same skill land in the same cluster.",
+        },
+        {
+          challenge: "Getting meaningful clusters without guessing their number",
+          solution:
+            "Used HDBSCAN, which finds the number of clusters itself, and tuned it until the clusters were coherent.",
+        },
+        {
+          challenge: "Raw clusters aren't readable",
+          solution:
+            "An NVIDIA NIM LLM names each cluster, turning them into categories like \"Data Security & Compliance\".",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "HDBSCAN over K-means, so the number of clusters doesn't have to be fixed in advance.",
         "Ranking by mention frequency is simple and explainable, at the cost of ignoring seniority and salary signals.",
@@ -599,11 +861,24 @@ export const projects: Project[] = [
           src: "/projects/bitcoin-gnn/degree-centrality.png",
         },
       ],
-      challenges: [
-        "Severe class imbalance: handled with class-weighted loss for the GNNs and balanced Random Forests.",
-        "Exact betweenness and closeness centrality don't scale to 200k nodes, so graph metrics were computed on a sampled subgraph.",
-        "Avoiding look-ahead: models are trained on earlier time steps and tested only on later ones.",
+      solvedChallenges: [
+        {
+          challenge: "Severe class imbalance (few illicit transactions)",
+          solution:
+            "Class-weighted loss for the GNNs (illicit weight ×7.6) and class-balanced Random Forests.",
+        },
+        {
+          challenge: "Exact centrality metrics don't scale to 200k nodes",
+          solution:
+            "Computed betweenness and closeness centrality on a sampled subgraph.",
+        },
+        {
+          challenge: "Avoiding look-ahead leakage",
+          solution:
+            "Trained on earlier time steps (≤ 34) and tested only on later ones, mirroring real deployment.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "GCN favours precision (fewer false alarms); GAT favours recall (fewer missed illicit transactions). Which is better depends on the review budget.",
         "Keeping unlabelled nodes in the graph keeps message passing intact but adds compute.",
@@ -675,10 +950,19 @@ export const projects: Project[] = [
         "Explainability attribution",
       ],
       screenshots: [],
-      challenges: [
-        "Avoiding overfitting on subtle generative artifacts.",
-        "Making transformer decisions interpretable via XAI.",
+      solvedChallenges: [
+        {
+          challenge: "Overfitting on subtle generative artifacts",
+          solution:
+            "Regularization and learning-rate scheduling, with Optuna searching the hyperparameters.",
+        },
+        {
+          challenge: "Making transformer decisions interpretable",
+          solution:
+            "Gradient-based XAI saliency maps explain each prediction.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "LoRA over full fine-tuning for efficiency with minimal accuracy loss.",
       ],
@@ -782,11 +1066,24 @@ export const projects: Project[] = [
           src: "/projects/malaria-classification/resnet-confusion.png",
         },
       ],
-      challenges: [
-        "Choosing handcrafted features that capture the parasite stain rather than the cell outline.",
-        "CNN validation accuracy swung sharply early on (down to 50% at epoch 2) before settling at about 94%, so the full curve has to be watched, not one epoch.",
-        "Diagnosing why transfer learning underperformed instead of assuming bigger is better.",
+      solvedChallenges: [
+        {
+          challenge: "Handcrafted features that capture the parasite, not the cell outline",
+          solution:
+            "Combined Canny edge density with HSV colour segmentation that isolates the stain. Edge density became the top feature (about 50% of importance).",
+        },
+        {
+          challenge: "Unstable CNN validation accuracy early in training",
+          solution:
+            "Tracked the full validation curve rather than single epochs. Accuracy dipped to 50% at epoch 2, then settled at about 94%.",
+        },
+        {
+          challenge: "Understanding why transfer learning underperformed",
+          solution:
+            "Benchmarked against a small CNN trained from scratch and traced the gap to frozen ImageNet features at 64×64 resolution.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "Small 64×64 inputs keep training fast and models light, at the cost of fine detail; this hurt ResNet50 most.",
         "Freezing the ResNet50 backbone saves compute but stops it adapting to microscopy images.",
@@ -850,10 +1147,19 @@ export const projects: Project[] = [
         "Feedback generation",
       ],
       screenshots: [],
-      challenges: [
-        "Combining lexical (Jaccard) and semantic (cosine) signals sensibly.",
-        "Consistent structured extraction from varied resume formats.",
+      solvedChallenges: [
+        {
+          challenge: "Combining lexical and semantic signals",
+          solution:
+            "Blended Jaccard (exact skill overlap) and cosine (SBERT meaning) into one ranking score.",
+        },
+        {
+          challenge: "Inconsistent resume formats",
+          solution:
+            "Gemini extracts skills and experience from every resume and the job description into the same structured format.",
+        },
       ],
+      challenges: [],
       tradeoffs: [
         "Blended similarity metrics over a single score for robustness.",
       ],

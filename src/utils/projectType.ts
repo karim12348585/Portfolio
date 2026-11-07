@@ -14,8 +14,8 @@ interface TypeStyle {
 
 /**
  * Distinct colour per project category. Industrial carries the brand violet;
- * Academic uses emerald — both cool, clearly separable, and neither collides
- * with the red "confidential source" indicator.
+ * Academic uses emerald; Freelance uses amber — all clearly separable, and
+ * none collides with the red "confidential source" indicator.
  */
 export const projectTypeStyles: Record<ProjectType, TypeStyle> = {
   Industrial: {
@@ -31,5 +31,12 @@ export const projectTypeStyles: Record<ProjectType, TypeStyle> = {
     text: "text-emerald-400",
     dot: "bg-emerald-400",
     overlay: "border-emerald-300/40 bg-zinc-950/55 text-emerald-100",
+  },
+  Freelance: {
+    label: "Freelance",
+    badge: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+    text: "text-amber-400",
+    dot: "bg-amber-400",
+    overlay: "border-amber-300/40 bg-zinc-950/55 text-amber-100",
   },
 };
