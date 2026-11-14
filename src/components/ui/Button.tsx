@@ -9,20 +9,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
 }
 
+/**
+ * Buttons are typeset controls: square, mono, uppercase. The primary is an
+ * ink fill; the accent appears only on hover.
+ */
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-accent-gradient text-accent-fg font-semibold btn-glow hover:brightness-110",
-  secondary:
-    "bg-panel-2 text-fg border border-line hover:border-accent/50 hover:bg-panel",
-  outline:
-    "border border-accent/40 text-fg hover:bg-accent/10 hover:border-accent",
-  ghost: "text-muted hover:text-fg hover:bg-panel-2",
+  primary: "bg-fg text-bg hover:bg-accent hover:text-accent-fg",
+  secondary: "border border-fg/70 text-fg hover:border-accent hover:text-accent",
+  outline: "border border-line text-fg hover:border-fg",
+  ghost: "text-muted hover:text-fg",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-4 text-sm",
-  md: "h-11 px-5 text-sm",
-  lg: "h-12 px-7 text-base",
+  sm: "h-9 px-3.5 text-[11px]",
+  md: "h-11 px-5 text-[12px]",
+  lg: "h-12 px-6 text-[12px]",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -30,9 +31,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full font-medium",
-        "transition-all duration-200 active:scale-[0.97]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+        "inline-flex items-center justify-center gap-2 rounded-[2px] font-mono font-medium uppercase tracking-[0.1em]",
+        "transition-colors duration-200",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         "disabled:cursor-not-allowed disabled:opacity-50",
         variants[variant],
         sizes[size],

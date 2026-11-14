@@ -5,6 +5,8 @@ import { scrollToId } from "@/utils/scroll";
 import { navLinks } from "@/constants";
 import { useLocation, useNavigate } from "react-router-dom";
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
 export function Footer() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,29 +17,34 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative mt-24 border-t border-line">
+    <footer className="relative mt-24 border-t border-fg">
       <div className="section py-14">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
-          <div>
-            <div className="flex items-center gap-2.5 font-semibold">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-6">
+            <div className="flex items-center gap-2.5 font-mono text-[12px] font-medium uppercase tracking-[0.12em]">
               <Logo />
               {profile.name}
             </div>
-            <p className="mt-4 max-w-sm text-sm text-muted">
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">
               {profile.tagline}
             </p>
-            <p className="mt-3 text-sm text-faint">{profile.location}</p>
+            <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+              {profile.location}
+            </p>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold">Navigate</h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
-              {navLinks.map((l) => (
+          <div className="md:col-span-3">
+            <h4 className="mono-label">Navigate</h4>
+            <ul className="mt-4 space-y-2">
+              {navLinks.map((l, i) => (
                 <li key={l.id}>
                   <button
                     onClick={() => go(l.id)}
-                    className="text-muted transition-colors hover:text-accent"
+                    className="link-underline flex items-baseline gap-2 text-sm text-muted transition-colors hover:text-fg"
                   >
+                    <span className="font-mono text-[10px] text-faint">
+                      {pad(i + 1)}
+                    </span>
                     {l.label}
                   </button>
                 </li>
@@ -45,18 +52,18 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold">Connect</h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+          <div className="md:col-span-3">
+            <h4 className="mono-label">Connect</h4>
+            <ul className="mt-4 space-y-2">
               {socials.map((s) => (
                 <li key={s.label}>
                   <a
                     href={s.href}
                     target={s.href.startsWith("http") ? "_blank" : undefined}
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-muted transition-colors hover:text-accent"
+                    className="link-underline inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-fg"
                   >
-                    <Icon name={s.icon} size={15} />
+                    <Icon name={s.icon} size={14} />
                     {s.label}
                   </a>
                 </li>
@@ -65,12 +72,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-xs text-faint sm:flex-row">
+        <div className="mt-14 flex flex-col justify-between gap-3 border-t border-line pt-5 font-mono text-[11px] uppercase tracking-[0.1em] text-faint sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {profile.name}. Built with React,
-            TypeScript & Framer Motion.
+            © {new Date().getFullYear()} {profile.name} · React, TypeScript &
+            Framer Motion
           </p>
-          <p>Designed & engineered end-to-end.</p>
+          <p>Designed & engineered end-to-end</p>
         </div>
       </div>
     </footer>

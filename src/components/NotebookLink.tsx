@@ -32,9 +32,9 @@ export function NotebookLink({
         {...linkProps}
         aria-label={label}
         title={label}
-        className={cn("text-fg transition-colors hover:text-accent", className)}
+        className={cn("text-muted transition-colors hover:text-accent", className)}
       >
-        <BookOpen size={17} />
+        <BookOpen size={16} />
       </a>
     );
   }
@@ -44,11 +44,11 @@ export function NotebookLink({
       href={href}
       {...linkProps}
       className={cn(
-        "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-panel-2 px-4 text-sm font-medium text-fg transition-colors hover:border-accent/50",
+        "inline-flex h-9 items-center gap-2 rounded-[2px] border border-fg/70 px-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-fg transition-colors hover:border-accent hover:text-accent",
         className,
       )}
     >
-      <BookOpen size={15} />
+      <BookOpen size={14} />
       {label}
     </a>
   );

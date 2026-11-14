@@ -4,18 +4,12 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
-  ExternalLink,
-  Target,
-  TrendingUp,
-  Boxes,
+  ArrowUpRight,
   ListChecks,
   Scale,
   GraduationCap,
   Rocket,
-  Image as ImageIcon,
   Maximize2,
-  Gauge,
-  CheckCircle2,
   ChevronDown,
 } from "lucide-react";
 import { getProjectBySlug, projects } from "@/data/projects";
@@ -25,35 +19,39 @@ import { Button } from "@/components/ui/Button";
 import { CodeSource } from "@/components/CodeSource";
 import { CompanyName } from "@/components/CompanyName";
 import { NotebookLink } from "@/components/NotebookLink";
-import { GradientMesh } from "@/components/GradientMesh";
 import { Lightbox, type LightboxImage } from "@/components/Lightbox";
 import { projectTypeStyles } from "@/utils/projectType";
 import { getHeroImage } from "@/utils/projectImage";
 import { NotFound } from "./NotFound";
 import { cn } from "@/utils/cn";
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** Numbered chapter block: ink rule, index in the margin, title, body. */
 function Block({
-  icon: Icon,
+  index,
   title,
   children,
 }: {
-  icon: React.ElementType;
+  index: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.45 }}
-      className="scroll-mt-28"
+      className="scroll-mt-28 border-t border-fg pt-4"
     >
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent/10 text-accent">
-          <Icon size={18} />
-        </div>
-        <h2 className="text-xl font-semibold">{title}</h2>
+      <div className="mb-5 flex items-baseline gap-3">
+        <span className="font-mono text-[11px] font-medium tracking-[0.14em] text-accent">
+          {index}
+        </span>
+        <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+          {title}
+        </h2>
       </div>
       <div className="text-[15px] leading-relaxed text-muted">{children}</div>
     </motion.section>
@@ -65,11 +63,59 @@ function BulletList({ items }: { items: string[] }) {
     <ul className="space-y-2.5">
       {items.map((it) => (
         <li key={it} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-gradient" />
+          <span aria-hidden className="mt-[0.75rem] h-px w-4 shrink-0 bg-fg/60" />
           <span>{it}</span>
         </li>
       ))}
     </ul>
+  );
+}
+
+/** A numbered figure plate: mono header, zoomable image, caption. */
+function Figure({
+  number,
+  label,
+  caption,
+  src,
+  onZoom,
+  fit = "natural",
+}: {
+  number: string;
+  label: string;
+  caption: string;
+  src: string;
+  onZoom: () => void;
+  /** "cover" crops to 16:10 for gallery grids; "natural" keeps the aspect. */
+  fit?: "cover" | "natural";
+}) {
+  return (
+    <figure className="group border border-line bg-panel">
+      <div className="flex items-center justify-between gap-3 border-b border-line px-3 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-faint">
+        <span className="shrink-0 text-fg">{number}</span>
+        <span className="truncate">{label}</span>
+      </div>
+      <button
+        type="button"
+        onClick={onZoom}
+        className="relative block w-full cursor-zoom-in overflow-hidden bg-white"
+      >
+        <img
+          src={src}
+          alt={caption}
+          loading="lazy"
+          className={cn(
+            "w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]",
+            fit === "cover" ? "aspect-[16/10] object-cover object-top" : "h-auto",
+          )}
+        />
+        <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center border border-line bg-bg/90 text-fg opacity-0 transition-opacity group-hover:opacity-100">
+          <Maximize2 size={14} />
+        </span>
+      </button>
+      <figcaption className="px-3 py-2.5 text-xs leading-relaxed text-muted">
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -80,9 +126,9 @@ interface ReflectionTab {
 }
 
 /**
- * Tradeoffs / lessons / next steps as one tabbed card: a single list is shown
- * at a time, so the section is shorter than a grid of cards while every item
- * stays one click away.
+ * Tradeoffs / lessons / next steps as one tabbed table: a single list is
+ * shown at a time, so the section stays short while every item is a click
+ * away.
  */
 function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
   const [active, setActive] = useState(0);
@@ -95,11 +141,10 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.4 }}
-      className="overflow-hidden rounded-2xl border border-line bg-panel"
+      className="border-t border-fg pt-4"
     >
-      <div role="tablist" className="flex border-b border-line bg-panel-2">
+      <div role="tablist" className="flex gap-6 overflow-x-auto border-b border-line no-scrollbar">
         {tabs.map((t, i) => {
-          const TabIcon = t.icon;
           const isActive = t === current;
           return (
             <button
@@ -109,19 +154,15 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
               aria-selected={isActive}
               onClick={() => setActive(i)}
               className={cn(
-                "relative flex flex-1 items-center justify-center gap-2 px-2 py-3 text-xs font-medium transition-colors sm:text-sm",
-                isActive ? "text-fg" : "text-faint hover:text-muted",
+                "relative flex shrink-0 items-baseline gap-1.5 pb-3 font-mono text-[11px] font-medium uppercase tracking-[0.12em] transition-colors",
+                isActive ? "text-fg" : "text-muted hover:text-fg",
               )}
             >
-              <TabIcon
-                size={15}
-                className={cn("hidden sm:block", isActive && "text-accent")}
-              />
               {t.title}
               <span
                 className={cn(
-                  "rounded-full px-1.5 text-[10px] leading-4",
-                  isActive ? "bg-accent/15 text-accent" : "bg-line/60 text-faint",
+                  "text-[10px]",
+                  isActive ? "text-accent" : "text-faint",
                 )}
               >
                 {t.items.length}
@@ -129,8 +170,8 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
               {isActive && (
                 <motion.span
                   layoutId="reflection-tab"
-                  className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-accent-gradient"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  className="absolute inset-x-0 -bottom-px h-px bg-accent"
+                  transition={{ type: "spring", stiffness: 380, damping: 34 }}
                 />
               )}
             </button>
@@ -142,9 +183,9 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
         {current.items.map((it) => (
           <li
             key={it}
-            className="flex gap-3 px-4 py-3 text-sm leading-relaxed text-muted sm:px-5"
+            className="flex gap-3 py-3 text-sm leading-relaxed text-muted"
           >
-            <CurrentIcon size={15} className="mt-0.5 shrink-0 text-accent" />
+            <CurrentIcon size={14} className="mt-1 shrink-0 text-accent" />
             <span>{it}</span>
           </li>
         ))}
@@ -155,8 +196,7 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
 
 /**
  * Compact challenge → solution table. Rows show only the challenge; the
- * solution expands on click, so the section stays short until the reader
- * wants detail. "Expand all" opens everything at once.
+ * solution expands on click. "Expand all" opens everything at once.
  */
 function SolvedChallengesTable({
   items,
@@ -175,9 +215,9 @@ function SolvedChallengesTable({
     });
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-panel">
-      <div className="flex items-center justify-between gap-3 border-b border-line bg-panel-2 px-4 py-2.5">
-        <span className="text-xs font-medium uppercase tracking-wide text-faint">
+    <div className="border-b border-line">
+      <div className="flex items-center justify-between gap-3 border-b border-line py-2">
+        <span className="mono-label">
           {items.length} challenges · click a row for the solution
         </span>
         <button
@@ -185,7 +225,7 @@ function SolvedChallengesTable({
           onClick={() =>
             setOpen(allOpen ? new Set() : new Set(items.map((_, i) => i)))
           }
-          className="shrink-0 text-xs font-medium text-accent transition-colors hover:text-accent-soft"
+          className="shrink-0 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent hover:text-accent-soft"
         >
           {allOpen ? "Collapse all" : "Expand all"}
         </button>
@@ -200,18 +240,18 @@ function SolvedChallengesTable({
                 type="button"
                 onClick={() => toggle(i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-panel-2"
+                className="flex w-full items-start gap-4 py-3.5 text-left transition-colors hover:bg-panel"
               >
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-accent/10 text-xs font-semibold text-accent">
-                  {i + 1}
+                <span className="w-6 shrink-0 pt-0.5 font-mono text-[11px] text-accent">
+                  {pad(i + 1)}
                 </span>
                 <span className="flex-1 text-sm font-medium text-fg">
                   {c.challenge}
                 </span>
                 <ChevronDown
-                  size={16}
+                  size={15}
                   className={cn(
-                    "shrink-0 text-faint transition-transform duration-200",
+                    "mt-0.5 shrink-0 text-faint transition-transform duration-200",
                     isOpen && "rotate-180 text-accent",
                   )}
                 />
@@ -224,11 +264,8 @@ function SolvedChallengesTable({
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="flex gap-2.5 px-4 pb-4 pl-[3.25rem] text-sm leading-relaxed text-muted">
-                    <CheckCircle2
-                      size={16}
-                      className="mt-0.5 shrink-0 text-emerald-400"
-                    />
+                  <p className="flex gap-3 pb-4 pl-10 pr-8 text-sm leading-relaxed text-muted">
+                    <span className="shrink-0 font-mono text-accent">→</span>
                     <span>{c.solution}</span>
                   </p>
                 </div>
@@ -251,6 +288,7 @@ export function ProjectDetail() {
   const cs = project.caseStudy;
   const idx = projects.findIndex((p) => p.id === project.id);
   const next = projects[(idx + 1) % projects.length];
+  const type = projectTypeStyles[project.type];
 
   const hasSolved = (cs.solvedChallenges?.length ?? 0) > 0;
   // Reflection tabs with content. Plain challenges only appear as a tab when
@@ -272,119 +310,131 @@ export function ProjectDetail() {
   const galleryShots = cs.screenshots;
   const hasGallery = galleryShots.length > 0;
 
+  // Running numbers for chapters and figures, assigned in reading order.
+  let chapter = 0;
+  const nextChapter = () => pad(++chapter);
+  let figure = hero ? 1 : 0;
+  const nextFigure = () => `Fig. ${pad(++figure)}`;
+
   return (
     <PageTransition>
-      {/* Hero */}
+      {/* Header */}
       <header className="relative overflow-hidden pt-28">
-        <GradientMesh />
-        <div className="absolute inset-0 grid-lines opacity-40" aria-hidden />
-        <div className="section relative z-10 pb-10">
+        <div
+          aria-hidden
+          className="dot-grid pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
+        />
+        <div className="section relative pb-10">
           <Link
             to="/"
             state={{ scrollTo: "projects" }}
-            className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
+            className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-fg"
           >
-            <ArrowLeft size={15} />
+            <ArrowLeft
+              size={13}
+              className="transition-transform group-hover:-translate-x-0.5"
+            />
             Back to projects
           </Link>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            {project.categories.map((c) => (
-              <Badge key={c} variant="accent">
-                {c}
-              </Badge>
-            ))}
-          </div>
+          <div className="mt-10 grid gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-10">
+              <div className="flex flex-wrap gap-1.5">
+                {project.categories.map((c) => (
+                  <Badge key={c} variant="accent">
+                    {c}
+                  </Badge>
+                ))}
+              </div>
 
-          <h1 className="mt-4 max-w-3xl text-balance text-4xl leading-[1.12] sm:text-5xl">
-            {project.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted">{project.tagline}</p>
+              <h1 className="font-condensed mt-5 max-w-4xl text-balance text-5xl font-semibold leading-[0.95] tracking-[-0.03em] sm:text-6xl lg:text-7xl">
+                {project.title}
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+                {project.tagline}
+              </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="inline-flex flex-wrap items-center gap-2 text-sm text-faint">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                  projectTypeStyles[project.type].badge,
+              <div className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+                <span className="inline-flex items-center gap-1.5 border border-line px-2 py-[3px] text-fg">
+                  <span className={cn("h-1.5 w-1.5", type.dot)} />
+                  {project.type}
+                </span>
+                {project.company && (
+                  <>
+                    <CompanyName project={project} />
+                    <span>·</span>
+                  </>
                 )}
-              >
-                <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    projectTypeStyles[project.type].dot,
-                  )}
+                <span>{project.year}</span>
+                {project.duration && (
+                  <>
+                    <span>·</span>
+                    <span>{project.duration}</span>
+                  </>
+                )}
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <CodeSource
+                  href={project.github}
+                  confidential={project.codeConfidential}
+                  note={project.sourceNote}
+                  variant="button"
                 />
-                {project.type}
-              </span>
-              {project.company && (
-                <>
-                  <CompanyName project={project} />
-                  <span className="text-line">·</span>
-                </>
-              )}
-              {project.year}
-              {project.duration && (
-                <>
-                  <span className="text-line">·</span>
-                  {project.duration}
-                </>
-              )}
-            </span>
-            <div className="flex items-center gap-2">
-              <CodeSource
-                href={project.github}
-                confidential={project.codeConfidential}
-                note={project.sourceNote}
-                variant="button"
-              />
-              <NotebookLink href={project.notebook} variant="button" />
-              {project.demo && (
-                <a href={project.demo} target="_blank" rel="noreferrer">
-                  <Button size="sm" variant="outline">
-                    <ExternalLink size={15} />
-                    Live Demo
-                  </Button>
-                </a>
-              )}
+                <NotebookLink href={project.notebook} variant="button" />
+                {project.demo && (
+                  <a href={project.demo} target="_blank" rel="noreferrer">
+                    <Button size="sm" variant="secondary">
+                      <ArrowUpRight size={13} />
+                      Live Demo
+                    </Button>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Hero image — a real capture, not a monogram */}
+          {/* Hero figure */}
           {heroImage && (
-            <button
-              type="button"
-              onClick={() => setZoom(heroImage)}
-              className="group relative mt-10 block w-full cursor-zoom-in overflow-hidden rounded-3xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
-            >
-              <img
-                src={heroImage.src}
-                alt={project.title}
-                className={cn(
-                  "aspect-[21/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]",
-                  hero?.isCover ? "object-[center_30%]" : "object-top",
-                )}
-              />
-              <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                <Maximize2 size={16} />
-              </span>
-            </button>
+            <figure className="group mt-12 border border-fg p-1.5">
+              <button
+                type="button"
+                onClick={() => setZoom(heroImage)}
+                className="relative block w-full cursor-zoom-in overflow-hidden bg-panel-2"
+              >
+                <img
+                  src={heroImage.src}
+                  alt={project.title}
+                  className={cn(
+                    "aspect-[21/9] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]",
+                    hero?.isCover ? "object-[center_30%]" : "object-top",
+                  )}
+                />
+                <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center border border-line bg-bg/90 text-fg opacity-0 transition-opacity group-hover:opacity-100">
+                  <Maximize2 size={15} />
+                </span>
+              </button>
+              <figcaption className="flex items-center justify-between gap-4 px-1 pb-0.5 pt-2.5 font-mono text-[10px] uppercase tracking-[0.1em] text-faint">
+                <span className="shrink-0 text-fg">Fig. 01</span>
+                <span className="truncate">{heroImage.caption}</span>
+              </figcaption>
+            </figure>
           )}
         </div>
       </header>
 
       {/* Body */}
-      <div className="section grid gap-14 py-6 lg:grid-cols-[1fr_260px]">
+      <div className="section grid gap-14 py-8 lg:grid-cols-[1fr_260px] lg:gap-16">
         <div className="space-y-14">
-          <Block icon={Target} title="Overview">
+          <Block index={nextChapter()} title="Overview">
             <p>{cs.problemStatement}</p>
             <p className="mt-4">{cs.overview}</p>
           </Block>
 
-          {/* Screenshots + diagrams — visual proof, high up for credibility */}
+          {/* Screenshots — visual proof, high up for credibility */}
           {hasGallery && (
-            <Block icon={ImageIcon} title="See it in action">
-              <p className="-mt-1 mb-5 text-sm text-faint">
+            <Block index={nextChapter()} title="See it in action">
+              <p className="-mt-1 mb-5 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
                 Real captures from the running system — click any to enlarge.
               </p>
               <div
@@ -394,70 +444,35 @@ export function ProjectDetail() {
                 )}
               >
                 {galleryShots.map((sc) => (
-                  <figure
-                    key={sc.label}
-                    className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
-                  >
-                    <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
-                      <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-                      <span className="ml-2 truncate text-[11px] font-medium text-faint">
-                        {sc.label}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setZoom({ src: sc.src, caption: sc.caption })
-                      }
-                      className="relative block w-full cursor-zoom-in overflow-hidden"
-                    >
-                      <img
-                        src={sc.src}
-                        alt={sc.label}
-                        loading="lazy"
-                        className={cn(
-                          "w-full transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-                          galleryShots.length > 1
-                            ? "aspect-[16/10] object-cover object-top"
-                            : "h-auto",
-                        )}
-                      />
-                      <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                        <Maximize2 size={15} />
-                      </span>
-                    </button>
-                    <figcaption className="px-4 py-3 text-xs text-faint">
-                      {sc.caption}
-                    </figcaption>
-                  </figure>
+                  <Figure
+                    key={sc.src}
+                    number={nextFigure()}
+                    label={sc.label}
+                    caption={sc.caption}
+                    src={sc.src}
+                    fit={galleryShots.length > 1 ? "cover" : "natural"}
+                    onZoom={() => setZoom({ src: sc.src, caption: sc.caption })}
+                  />
                 ))}
               </div>
-
             </Block>
           )}
 
           {/* Benchmarks — headline numbers, then the charts behind them */}
           {cs.benchmarks && (
-            <Block icon={Gauge} title="Benchmarks & Evaluation">
+            <Block index={nextChapter()} title="Benchmarks & Evaluation">
               {cs.benchmarks.intro && (
                 <p className="mb-5">{cs.benchmarks.intro}</p>
               )}
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="ruled-grid sm:grid-cols-2">
                 {cs.benchmarks.stats.map((s) => (
-                  <div
-                    key={s.metric}
-                    className="rounded-xl border border-line bg-panel p-4"
-                  >
-                    <p className="text-xs font-medium uppercase tracking-wide text-faint">
-                      {s.metric}
-                    </p>
-                    <p className="mt-1.5 text-2xl font-semibold tracking-tight text-fg">
+                  <div key={s.metric} className="p-4">
+                    <p className="mono-label">{s.metric}</p>
+                    <p className="font-condensed mt-2 text-3xl font-semibold tracking-[-0.02em] text-fg">
                       {s.value}
                     </p>
                     {s.detail && (
-                      <p className="mt-1 text-xs leading-relaxed text-faint">
+                      <p className="mt-1.5 text-xs leading-relaxed text-muted">
                         {s.detail}
                       </p>
                     )}
@@ -466,75 +481,34 @@ export function ProjectDetail() {
               </div>
 
               {cs.benchmarks.charts?.map((c) => (
-                <figure
-                  key={c.src}
-                  className="group mt-5 overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
-                >
-                  <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
-                    <Gauge size={13} className="text-accent" />
-                    <span className="ml-1 truncate text-[11px] font-medium text-faint">
-                      Benchmark
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setZoom({ src: c.src, caption: c.caption })}
-                    className="relative block w-full cursor-zoom-in bg-white"
-                  >
-                    <img
-                      src={c.src}
-                      alt={c.caption}
-                      loading="lazy"
-                      className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                    />
-                    <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                      <Maximize2 size={15} />
-                    </span>
-                  </button>
-                  <figcaption className="px-4 py-3 text-xs text-faint">
-                    {c.caption}
-                  </figcaption>
-                </figure>
+                <div key={c.src} className="mt-5">
+                  <Figure
+                    number={nextFigure()}
+                    label="Benchmark"
+                    caption={c.caption}
+                    src={c.src}
+                    onZoom={() => setZoom({ src: c.src, caption: c.caption })}
+                  />
+                </div>
               ))}
             </Block>
           )}
 
           {/* Architecture + system design, with the diagram in context */}
-          <Block icon={Boxes} title="Architecture & System Design">
+          <Block index={nextChapter()} title="Architecture & System Design">
             <p>{cs.architecture}</p>
 
             {allDiagrams.length > 0 && (
               <div className="mt-6 space-y-5">
                 {allDiagrams.map((d) => (
-                  <figure
+                  <Figure
                     key={d.src}
-                    className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
-                  >
-                    <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
-                      <Boxes size={13} className="text-accent" />
-                      <span className="ml-1 truncate text-[11px] font-medium text-faint">
-                        Architecture diagram
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setZoom({ src: d.src, caption: d.caption })}
-                      className="relative block w-full cursor-zoom-in bg-white"
-                    >
-                      <img
-                        src={d.src}
-                        alt={d.caption}
-                        loading="lazy"
-                        className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                      />
-                      <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                        <Maximize2 size={15} />
-                      </span>
-                    </button>
-                    <figcaption className="px-4 py-3 text-xs text-faint">
-                      {d.caption}
-                    </figcaption>
-                  </figure>
+                    number={nextFigure()}
+                    label="Architecture diagram"
+                    caption={d.caption}
+                    src={d.src}
+                    onZoom={() => setZoom({ src: d.src, caption: d.caption })}
+                  />
                 ))}
               </div>
             )}
@@ -544,13 +518,13 @@ export function ProjectDetail() {
             </div>
           </Block>
 
-          <Block icon={TrendingUp} title="Business Value">
+          <Block index={nextChapter()} title="Business Value">
             <BulletList items={cs.businessValue} />
           </Block>
 
           {/* Challenges solved — problem → fix pairs in an expandable table */}
           {hasSolved && (
-            <Block icon={ListChecks} title="Challenges & How They Were Solved">
+            <Block index={nextChapter()} title="Challenges & How They Were Solved">
               <SolvedChallengesTable
                 key={project.id}
                 items={cs.solvedChallenges ?? []}
@@ -558,38 +532,29 @@ export function ProjectDetail() {
             </Block>
           )}
 
-          {/* Tradeoffs / lessons / next steps — one tabbed card */}
+          {/* Tradeoffs / lessons / next steps — one tabbed table */}
           {reflections.length > 0 && (
             <ReflectionTabs key={project.id} tabs={reflections} />
           )}
         </div>
 
-        {/* Sticky sidebar */}
+        {/* Margin column */}
         <aside className="hidden lg:block">
-          <div className="sticky top-28 space-y-6">
-            <div className="rounded-2xl border border-line bg-panel p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">
-                Tech Stack
-              </h3>
+          <div className="sticky top-24 space-y-8">
+            <div className="border-t border-fg pt-3">
+              <h3 className="mono-label text-fg">Tech Stack</h3>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {project.tech.map((t) => (
-                  <Badge key={t} variant="accent">
-                    {t}
-                  </Badge>
+                  <Badge key={t}>{t}</Badge>
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl border border-line bg-panel p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">
-                Results
-              </h3>
-              <ul className="mt-3 space-y-2.5">
+            <div className="border-t border-fg pt-3">
+              <h3 className="mono-label text-fg">Results</h3>
+              <ul className="mt-3 divide-y divide-line">
                 {project.results.map((r) => (
-                  <li key={r} className="flex gap-2 text-sm text-muted">
-                    <TrendingUp
-                      size={15}
-                      className="mt-0.5 shrink-0 text-accent"
-                    />
+                  <li key={r} className="flex gap-2.5 py-2.5 text-sm text-muted">
+                    <span className="shrink-0 font-mono text-accent">+</span>
                     {r}
                   </li>
                 ))}
@@ -600,20 +565,20 @@ export function ProjectDetail() {
       </div>
 
       {/* Next project */}
-      <div className="section pb-10">
+      <div className="section pb-10 pt-6">
         <Link
           to={`/projects/${next.slug}`}
-          className="group flex items-center justify-between rounded-2xl border border-line bg-panel p-6 transition-all hover:border-accent/40 hover:shadow-glow"
+          className="group flex items-center justify-between gap-6 border-y border-fg py-6"
         >
           <div>
-            <span className="text-xs text-faint">Next project</span>
-            <p className="mt-1 text-lg font-semibold group-hover:text-accent">
-              {next.title}
+            <span className="mono-label">Next project</span>
+            <p className="font-condensed mt-1.5 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              <span className="link-underline">{next.title}</span>
             </p>
           </div>
           <ArrowRight
             size={22}
-            className="text-muted transition-transform group-hover:translate-x-1 group-hover:text-accent"
+            className="shrink-0 text-muted transition-transform group-hover:translate-x-1 group-hover:text-accent"
           />
         </Link>
       </div>

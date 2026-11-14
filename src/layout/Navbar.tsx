@@ -12,7 +12,12 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 
 const sectionIds = navLinks.map((l) => l.id);
+const pad = (n: number) => String(n).padStart(2, "0");
 
+/**
+ * Running head: a full-width bar that gains a hairline once the page
+ * scrolls. Links carry their section index like a table of contents.
+ */
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -40,65 +45,71 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled ? "py-2.5" : "py-4",
+        "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300",
+        scrolled || menuOpen
+          ? "border-b border-line bg-bg/90 backdrop-blur-md"
+          : "border-b border-transparent bg-transparent",
       )}
     >
-      <nav
-        className={cn(
-          "mx-auto flex max-w-6xl items-center justify-between rounded-full px-3 pl-5 transition-all duration-300",
-          scrolled
-            ? "glass h-14 shadow-soft"
-            : "h-14 border border-transparent",
-        )}
-        style={{ marginInline: "clamp(1rem, 4vw, 2rem)" }}
-      >
+      <nav className="section flex h-14 items-center justify-between">
         <button
-          onClick={() => go(onHome ? "hero" : "hero")}
-          className="group/logo flex items-center gap-2.5 font-semibold tracking-tight"
+          onClick={() => go("hero")}
+          className="group/logo flex items-center gap-2.5"
         >
-          <Logo className="transition-transform duration-300 group-hover/logo:scale-110" />
-          <span className="hidden sm:inline">{profile.name}</span>
+          <Logo className="transition-transform duration-300 group-hover/logo:-translate-y-0.5" />
+          <span className="hidden font-mono text-[12px] font-medium uppercase tracking-[0.12em] sm:inline">
+            {profile.name}
+          </span>
         </button>
 
-        <div className="hidden items-center gap-1 lg:flex">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => go(link.id)}
-              className={cn(
-                "relative rounded-full px-3.5 py-1.5 text-sm transition-colors",
-                onHome && active === link.id
-                  ? "text-fg"
-                  : "text-muted hover:text-fg",
-              )}
-            >
-              {onHome && active === link.id && (
-                <motion.span
-                  layoutId="nav-pill"
-                  className="absolute inset-0 -z-10 rounded-full bg-panel-2"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-              {link.label}
-            </button>
-          ))}
+        <div className="hidden items-center gap-6 lg:flex">
+          {navLinks.map((link, i) => {
+            const isActive = onHome && active === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => go(link.id)}
+                className={cn(
+                  "relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
+                  isActive ? "text-fg" : "text-muted hover:text-fg",
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-[10px]",
+                    isActive ? "text-accent" : "text-faint",
+                  )}
+                >
+                  {pad(i + 1)}
+                </span>
+                {link.label}
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-rule"
+                    className="absolute inset-x-0 -bottom-px h-px bg-accent"
+                    transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <a href={profile.cvPath} download className="hidden sm:block">
             <Button size="sm" variant="secondary" className="gap-1.5">
-              <Download size={15} />
+              <Download size={13} />
               CV
             </Button>
           </a>
           <button
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
-            className="grid h-9 w-9 place-items-center rounded-full border border-line bg-panel-2 text-muted lg:hidden"
+            aria-expanded={menuOpen}
+            className="grid h-9 w-9 place-items-center rounded-[2px] border border-line text-muted transition-colors hover:border-fg hover:text-fg lg:hidden"
           >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            {menuOpen ? <X size={16} /> : <Menu size={16} />}
           </button>
         </div>
       </nav>
@@ -106,23 +117,25 @@ export function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2 }}
-            className="mx-4 mt-2 lg:hidden"
+            className="section lg:hidden"
           >
-            <div className="glass grid gap-1 rounded-2xl p-3 shadow-soft">
-              {navLinks.map((link) => (
-                <button
-                  key={link.id}
-                  onClick={() => go(link.id)}
-                  className="rounded-xl px-4 py-2.5 text-left text-sm text-muted transition-colors hover:bg-panel-2 hover:text-fg"
-                >
-                  {link.label}
-                </button>
+            <ul className="divide-y divide-line border-t border-line pb-3">
+              {navLinks.map((link, i) => (
+                <li key={link.id}>
+                  <button
+                    onClick={() => go(link.id)}
+                    className="flex w-full items-baseline gap-3 py-3 text-left font-mono text-[12px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-fg"
+                  >
+                    <span className="text-[10px] text-accent">{pad(i + 1)}</span>
+                    {link.label}
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>

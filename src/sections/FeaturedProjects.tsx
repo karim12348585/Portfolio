@@ -9,11 +9,11 @@ import type { ProjectCategory, ProjectType } from "@/types";
 
 type TypeFilter = "All" | ProjectType;
 
-const typeTabs: { key: TypeFilter; label: string; pill: string }[] = [
-  { key: "All", label: "All work", pill: "bg-accent-gradient" },
-  { key: "Industrial", label: "Industrial", pill: "bg-violet-500" },
-  { key: "Freelance", label: "Freelance", pill: "bg-amber-500" },
-  { key: "Academic", label: "Academic", pill: "bg-emerald-500" },
+const typeTabs: { key: TypeFilter; label: string }[] = [
+  { key: "All", label: "All work" },
+  { key: "Industrial", label: "Industrial" },
+  { key: "Freelance", label: "Freelance" },
+  { key: "Academic", label: "Academic" },
 ];
 
 export function FeaturedProjects() {
@@ -42,90 +42,94 @@ export function FeaturedProjects() {
   return (
     <section id="projects" className="section scroll-mt-24 py-24">
       <SectionHeading
+        index="03"
         eyebrow="Featured Projects"
         title="Systems that ship, not just notebooks"
         description="Real-world AI systems from industry internships, freelance client work and applied research — each with a full engineering case study."
       />
 
-      {/* Industrial vs Academic segmented toggle */}
-      <div className="mt-10 flex justify-center">
-        {/* `isolate` keeps the -z-10 active pill above this container's background */}
-        <div className="isolate inline-flex rounded-full border border-line bg-panel-2 p-1">
-          <LayoutGroup id="type-toggle">
-            {typeTabs.map((tab) => {
-              const active = typeFilter === tab.key;
-              const count =
-                tab.key === "All"
-                  ? projects.length
-                  : counts[tab.key as ProjectType];
+      {/* Filters: type tabs on a rule, category toggles beside them */}
+      <div className="mt-12 border-b border-line">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div
+            role="tablist"
+            aria-label="Project type"
+            className="-mb-px flex gap-6 overflow-x-auto no-scrollbar [mask-image:linear-gradient(to_right,black_88%,transparent)] lg:[mask-image:none]"
+          >
+            <LayoutGroup id="type-toggle">
+              {typeTabs.map((tab) => {
+                const active = typeFilter === tab.key;
+                const count =
+                  tab.key === "All"
+                    ? projects.length
+                    : counts[tab.key as ProjectType];
+                return (
+                  <button
+                    key={tab.key}
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setTypeFilter(tab.key)}
+                    className={cn(
+                      "relative flex shrink-0 items-baseline gap-1.5 pb-3 font-mono text-[11px] font-medium uppercase tracking-[0.12em] transition-colors",
+                      active ? "text-fg" : "text-muted hover:text-fg",
+                    )}
+                  >
+                    {tab.label}
+                    <span
+                      className={cn(
+                        "text-[10px]",
+                        active ? "text-accent" : "text-faint",
+                      )}
+                    >
+                      {count}
+                    </span>
+                    {active && (
+                      <motion.span
+                        layoutId="type-rule"
+                        className="absolute inset-x-0 bottom-0 h-px bg-accent"
+                        transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </LayoutGroup>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 pb-3 lg:max-w-[62%] lg:justify-end">
+            {projectFilters.map((f) => {
+              const active = filter === f;
               return (
                 <button
-                  key={tab.key}
-                  onClick={() => setTypeFilter(tab.key)}
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  aria-pressed={active}
                   className={cn(
-                    "relative rounded-full px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-5",
-                    active ? "text-accent-fg" : "text-muted hover:text-fg",
+                    "rounded-[2px] border px-2 py-[3px] font-mono text-[11px] uppercase tracking-[0.08em] transition-colors",
+                    active
+                      ? "border-fg bg-fg text-bg"
+                      : "border-line text-muted hover:border-fg hover:text-fg",
                   )}
                 >
-                  {active && (
-                    <motion.span
-                      layoutId="type-pill"
-                      className={cn("absolute inset-0 -z-10 rounded-full", tab.pill)}
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    />
-                  )}
-                  {tab.label}
-                  <span className={cn("ml-1.5 hidden text-xs sm:inline", active ? "text-accent-fg/60" : "text-faint")}>
-                    {count}
-                  </span>
+                  {f}
                 </button>
               );
             })}
-          </LayoutGroup>
+          </div>
         </div>
       </div>
 
-      {/* Category filters */}
-      <div className="mt-5 flex flex-wrap justify-center gap-2">
-        <LayoutGroup id="cat-filter">
-          {projectFilters.map((f) => {
-            const active = filter === f;
-            return (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  "relative rounded-full border px-4 py-1.5 text-sm transition-colors",
-                  active
-                    ? "border-transparent text-accent-fg"
-                    : "border-line text-muted hover:border-accent/40 hover:text-fg",
-                )}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="filter-pill"
-                    className="absolute inset-0 -z-10 rounded-full bg-accent-gradient"
-                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                  />
-                )}
-                {f}
-              </button>
-            );
-          })}
-        </LayoutGroup>
-      </div>
-
-      {/* Grid */}
-      <motion.div layout className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* Index: one ruled row per project */}
+      <motion.div layout className="divide-y divide-line">
         <AnimatePresence mode="popLayout">
-          {filtered.map((p) => (
-            <ProjectCard key={p.id} project={p} />
+          {filtered.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} />
           ))}
         </AnimatePresence>
       </motion.div>
 
       {filtered.length === 0 && (
-        <p className="mt-12 text-center text-muted">
+        <p className="mt-12 font-mono text-[12px] uppercase tracking-[0.12em] text-muted">
           No projects match these filters yet.
         </p>
       )}

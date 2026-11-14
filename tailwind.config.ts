@@ -21,7 +21,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          "Inter",
+          "Archivo",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
@@ -29,6 +29,7 @@ const config: Config = {
           "sans-serif",
         ],
         mono: [
+          "IBM Plex Mono",
           "ui-monospace",
           "SFMono-Regular",
           "Menlo",
@@ -37,39 +38,30 @@ const config: Config = {
         ],
       },
       borderRadius: {
-        "2xl": "1.25rem",
-        "3xl": "1.75rem",
+        DEFAULT: "2px",
+        sm: "2px",
+        md: "2px",
+        lg: "2px",
+        xl: "2px",
+        "2xl": "2px",
+        "3xl": "2px",
       },
       boxShadow: {
-        soft: "0 1px 2px rgb(0 0 0 / 0.06), 0 8px 30px rgb(0 0 0 / 0.10)",
-        glow: "0 0 0 1px rgb(var(--accent) / 0.20), 0 8px 40px rgb(var(--accent) / 0.15)",
+        soft: "none",
+        glow: "none",
+        pop: "0 12px 40px -12px rgb(0 0 0 / 0.25)",
       },
-      backgroundImage: {
-        "accent-gradient":
-          "linear-gradient(135deg, rgb(var(--accent)) 0%, rgb(var(--accent-soft)) 100%)",
+      transitionTimingFunction: {
+        out: "cubic-bezier(0.22, 1, 0.36, 1)",
       },
       keyframes: {
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        float: {
-          "0%,100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        "gradient-pan": {
-          "0%,100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-        },
-        shimmer: {
-          "100%": { transform: "translateX(100%)" },
         },
       },
       animation: {
-        "fade-up": "fade-up 0.6s ease-out both",
-        float: "float 6s ease-in-out infinite",
-        "gradient-pan": "gradient-pan 8s ease infinite",
-        shimmer: "shimmer 1.8s infinite",
+        "fade-up": "fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

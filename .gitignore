@@ -15,3 +15,4 @@ yarn-error.log*
 
 # Private source material (never deployed)
 private/
+.idea/

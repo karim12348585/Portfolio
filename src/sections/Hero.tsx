@@ -1,84 +1,90 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Download, Mail, MapPin, Sparkles } from "lucide-react";
+import { ArrowDown, Download, Mail, MapPin } from "lucide-react";
 import { profile } from "@/data/profile";
 import { Button } from "@/components/ui/Button";
-import { ParticleField } from "@/components/ParticleField";
-import { GradientMesh } from "@/components/GradientMesh";
 import { scrollToId } from "@/utils/scroll";
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
 };
-const item = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+const rise = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } },
+};
+/* Each word of the name rises out of a clipped line, like type being set. */
+const lineReveal = {
+  hidden: { y: "110%" },
+  show: { y: 0, transition: { duration: 0.85, ease } },
 };
 
 export function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-[100svh] items-center overflow-hidden pt-24"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden pt-24"
     >
-      {/* Backgrounds */}
-      <GradientMesh />
-      <div className="absolute inset-0 grid-lines opacity-60" aria-hidden />
-      <ParticleField className="absolute inset-0 opacity-70" />
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent"
         aria-hidden
+        className="dot-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:linear-gradient(to_bottom,black_20%,transparent_92%)]"
       />
 
-      <div className="section relative z-10">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]"
-        >
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="section relative flex flex-1 flex-col"
+      >
+        <div className="grid flex-1 items-end gap-10 pb-12 pt-8 lg:grid-cols-12 lg:gap-8">
           {/* Left: copy */}
-          <div>
-            <motion.div variants={item}>
-              <span className="eyebrow">
-                <Sparkles size={13} className="text-accent" />
-                {profile.availability}
-              </span>
-            </motion.div>
-
-            <motion.h1
-              variants={item}
-              className="mt-6 text-balance text-5xl leading-[1.08] sm:text-7xl lg:text-[5.25rem]"
+          <div className="lg:col-span-8">
+            <motion.p
+              variants={rise}
+              className="flex items-center gap-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-muted"
             >
-              {profile.name}
-            </motion.h1>
+              <span className="blink inline-block h-2 w-2 bg-accent" aria-hidden />
+              {profile.availability}
+            </motion.p>
+
+            <h1 className="font-narrow mt-8 text-[clamp(4rem,14vw,11.5rem)] font-semibold leading-[0.86] tracking-[-0.02em]">
+              {profile.name.split(" ").map((word) => (
+                <span key={word} className="block overflow-hidden pb-[0.06em]">
+                  <motion.span variants={lineReveal} className="block">
+                    {word}
+                  </motion.span>
+                </span>
+              ))}
+            </h1>
 
             <motion.p
-              variants={item}
-              className="mt-3 text-xl font-semibold sm:text-2xl"
+              variants={rise}
+              className="mt-7 font-mono text-[12px] uppercase tracking-[0.14em] text-muted sm:text-[13px]"
             >
-              <span className="accent-gradient-text">{profile.title}</span>
-              <span className="text-muted"> · {profile.subtitle}</span>
+              <span className="text-accent">{profile.title}</span>
+              <span className="mx-2 text-faint">—</span>
+              {profile.subtitle}
             </motion.p>
 
             <motion.p
-              variants={item}
-              className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted"
+              variants={rise}
+              className="mt-6 max-w-md text-pretty text-lg leading-relaxed text-muted"
             >
               {profile.tagline}
             </motion.p>
 
             <motion.div
-              variants={item}
-              className="mt-8 flex flex-wrap items-center gap-3"
+              variants={rise}
+              className="mt-9 flex flex-wrap items-center gap-3"
             >
               <Button size="lg" onClick={() => scrollToId("projects")}>
                 View Projects
-                <ArrowRight size={18} />
+                <ArrowDown size={14} />
               </Button>
               <a href={profile.cvPath} download>
                 <Button size="lg" variant="secondary">
-                  <Download size={17} />
+                  <Download size={14} />
                   Download CV
                 </Button>
               </a>
@@ -87,31 +93,19 @@ export function Hero() {
                 variant="ghost"
                 onClick={() => scrollToId("contact")}
               >
-                <Mail size={17} />
+                <Mail size={14} />
                 Contact Me
               </Button>
             </motion.div>
-
-            <motion.div
-              variants={item}
-              className="mt-9 grid max-w-xl grid-cols-3 gap-x-6 gap-y-4 sm:grid-cols-5"
-            >
-              {profile.stats.map((s) => (
-                <div key={s.label}>
-                  <div className="text-gradient text-2xl font-extrabold">
-                    {s.value}
-                  </div>
-                  <div className="mt-0.5 text-xs text-muted">{s.label}</div>
-                </div>
-              ))}
-            </motion.div>
           </div>
 
-          {/* Right: portrait card */}
-          <motion.div variants={item} className="relative mx-auto lg:mx-0">
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-[2rem] bg-accent-gradient opacity-20 blur-2xl" />
-              <div className="glass relative aspect-[4/5] w-72 overflow-hidden rounded-[1.75rem] sm:w-80">
+          {/* Right: portrait plate with a figure caption */}
+          <motion.figure
+            variants={rise}
+            className="w-52 sm:w-64 lg:col-span-4 lg:w-72 lg:justify-self-end"
+          >
+            <div className="border border-fg p-1.5">
+              <div className="aspect-[4/5] overflow-hidden bg-panel-2">
                 {profile.photo ? (
                   <img
                     src={profile.photo}
@@ -119,25 +113,45 @@ export function Hero() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-gradient-to-b from-panel-2 to-panel">
-                    <div className="grid h-24 w-24 place-items-center rounded-3xl bg-accent-gradient text-3xl font-bold text-black">
+                  <div className="dot-grid flex h-full w-full flex-col items-center justify-center gap-4">
+                    <div className="font-narrow text-6xl font-semibold text-fg/20">
                       {profile.initials}
                     </div>
-                    <p className="px-6 text-center text-xs text-faint">
-                      Add a photo at{" "}
-                      <code className="text-muted">public/karim.jpg</code>
+                    <p className="px-6 text-center font-mono text-[11px] text-faint">
+                      Add a photo at public/karim.jpg
                     </p>
                   </div>
                 )}
               </div>
-              <div className="glass absolute -bottom-4 -left-5 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs shadow-glow">
-                <MapPin size={14} className="text-accent" />
-                {profile.location}
-              </div>
             </div>
-          </motion.div>
+            <figcaption className="mt-2.5 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-faint">
+              <span>Fig. 00</span>
+              <span className="inline-flex items-center gap-1">
+                <MapPin size={11} />
+                {profile.location}
+              </span>
+            </figcaption>
+          </motion.figure>
+        </div>
+
+        {/* Stats: one ruled row */}
+        <motion.div
+          variants={rise}
+          className="ruled-grid mb-10 grid-cols-2 md:grid-cols-5"
+        >
+          {profile.stats.map((s) => (
+            <div
+              key={s.label}
+              className="px-4 py-5 last:col-span-2 sm:px-5 md:last:col-span-1"
+            >
+              <div className="font-condensed text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+                {s.value}
+              </div>
+              <div className="mono-label mt-2">{s.label}</div>
+            </div>
+          ))}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

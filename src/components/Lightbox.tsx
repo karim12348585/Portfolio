@@ -40,7 +40,7 @@ export function Lightbox({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
+            className="absolute right-5 top-5 grid h-10 w-10 place-items-center border border-white/30 text-white transition-colors hover:bg-white/15"
           >
             <X size={18} />
           </button>
@@ -56,9 +56,9 @@ export function Lightbox({
             <img
               src={image.src}
               alt={image.caption}
-              className="max-h-[82vh] w-auto max-w-full rounded-xl border border-white/10 bg-white shadow-2xl"
+              className="max-h-[82vh] w-auto max-w-full border border-white/20 bg-white"
             />
-            <figcaption className="max-w-2xl text-center text-sm text-white/70">
+            <figcaption className="max-w-2xl text-center font-mono text-xs text-white/70">
               {image.caption}
             </figcaption>
           </motion.figure>

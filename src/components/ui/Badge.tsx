@@ -5,6 +5,7 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: "default" | "accent" | "outline";
 }
 
+/** Square mono tag. The accent variant is reserved for categories. */
 export function Badge({
   className,
   variant = "default",
@@ -13,11 +14,10 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
-        variant === "default" && "border border-line bg-panel-2 text-muted",
-        variant === "accent" &&
-          "border border-accent/30 bg-accent/10 text-accent",
-        variant === "outline" && "border border-line text-muted",
+        "inline-flex items-center gap-1.5 rounded-[2px] border px-2 py-[3px] font-mono text-[11px] uppercase tracking-[0.08em]",
+        variant === "default" && "border-line bg-panel text-muted",
+        variant === "accent" && "border-line text-fg",
+        variant === "outline" && "border-line text-faint",
         className,
       )}
       {...props}

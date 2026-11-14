@@ -21,8 +21,7 @@ const defaultNote: SourceNote = {
 
 /**
  * Source-code affordance. For public repos it links out; for confidential
- * (proprietary/enterprise) code it shows a red GitHub control that, on click,
- * reveals that the source is confidential.
+ * code it shows a struck-through control that, on click, explains why.
  */
 export function CodeSource({
   href,
@@ -46,11 +45,11 @@ export function CodeSource({
           rel="noreferrer"
           aria-label="Source code"
           className={cn(
-            "text-fg transition-colors hover:text-accent",
+            "text-muted transition-colors hover:text-accent",
             className,
           )}
         >
-          <Github size={17} />
+          <Github size={16} />
         </a>
       );
     }
@@ -60,17 +59,17 @@ export function CodeSource({
         target="_blank"
         rel="noreferrer"
         className={cn(
-          "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-panel-2 px-4 text-sm font-medium text-fg transition-colors hover:border-accent/50",
+          "inline-flex h-9 items-center gap-2 rounded-[2px] border border-fg/70 px-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-fg transition-colors hover:border-accent hover:text-accent",
           className,
         )}
       >
-        <Github size={15} />
+        <Github size={14} />
         Code
       </a>
     );
   }
 
-  // Confidential source → red GitHub + click reveals a note.
+  // Confidential source → click reveals a note.
   const toggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -81,21 +80,21 @@ export function CodeSource({
     <AnimatePresence>
       {open && (
         <motion.div
-          initial={{ opacity: 0, y: variant === "icon" ? 6 : -6, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, y: variant === "icon" ? 6 : -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.16 }}
           className={cn(
-            "absolute right-0 z-30 w-60",
+            "absolute right-0 z-30 w-64",
             variant === "icon" ? "bottom-full mb-2" : "top-full mt-2",
           )}
         >
-          <div className="glass rounded-xl p-3 text-xs leading-relaxed text-fg/90 shadow-glow">
-            <span className="inline-flex items-center gap-1.5 font-medium text-red-300">
-              <Lock size={12} />
+          <div className="glass p-3.5 text-xs leading-relaxed text-fg shadow-pop">
+            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-accent">
+              <Lock size={11} />
               {note.title}
             </span>
-            <p className="mt-1 text-faint">{note.body}</p>
+            <p className="mt-1.5 text-muted">{note.body}</p>
           </div>
         </motion.div>
       )}
@@ -110,9 +109,12 @@ export function CodeSource({
           onClick={toggle}
           onBlur={() => setOpen(false)}
           aria-label={note.title}
-          className="text-red-500 transition-colors hover:text-red-400"
+          className="relative text-muted transition-colors hover:text-accent"
         >
-          <Github size={17} />
+          <Github size={16} />
+          <span className="absolute -right-1 -top-1 grid h-3 w-3 place-items-center bg-bg text-accent">
+            <Lock size={9} />
+          </span>
         </button>
         {popover}
       </div>
@@ -125,11 +127,10 @@ export function CodeSource({
         type="button"
         onClick={toggle}
         onBlur={() => setOpen(false)}
-        className="inline-flex h-9 items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-4 text-sm font-medium text-red-300 transition-colors hover:bg-red-500/15"
+        className="inline-flex h-9 items-center gap-2 rounded-[2px] border border-dashed border-accent/70 px-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-accent transition-colors hover:border-accent hover:bg-accent/5"
       >
-        <Github size={15} />
-        {note.label}
         <Lock size={12} />
+        {note.label}
       </button>
       {popover}
     </div>

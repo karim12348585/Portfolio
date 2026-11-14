@@ -155,15 +155,23 @@ interface TechIconProps {
   brand?: string;
   /** Lucide icon name for concepts without a logo. */
   glyph?: string;
+  /** "brand" paints the logo in its own colour; "mono" inherits currentColor. */
+  tone?: "brand" | "mono";
   size?: number;
   className?: string;
 }
 
 /** Renders a real brand logo when available, otherwise a symbol icon. */
-export function TechIcon({ brand, glyph, size = 20, className }: TechIconProps) {
+export function TechIcon({
+  brand,
+  glyph,
+  tone = "brand",
+  size = 20,
+  className,
+}: TechIconProps) {
   const logo = getBrand(brand);
   if (logo) {
-    const color = brandColor(logo);
+    const color = tone === "brand" ? brandColor(logo) : undefined;
     return (
       <svg
         role="img"
@@ -171,7 +179,7 @@ export function TechIcon({ brand, glyph, size = 20, className }: TechIconProps) 
         viewBox="0 0 24 24"
         width={size}
         height={size}
-        className={cn(!color && "text-fg", className)}
+        className={cn(tone === "brand" && !color && "text-fg", className)}
         style={color ? { color } : undefined}
       >
         <path d={logo.path} fill="currentColor" />
