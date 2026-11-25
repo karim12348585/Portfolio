@@ -4,58 +4,53 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
+  Calendar,
+  Clock,
+  Compass,
   ExternalLink,
-  Target,
-  TrendingUp,
-  Boxes,
-  ListChecks,
-  Scale,
-  GraduationCap,
-  Rocket,
-  Image as ImageIcon,
+  Layers,
   Maximize2,
-  Gauge,
   CheckCircle2,
   ChevronDown,
+  Target,
 } from "lucide-react";
 import { getProjectBySlug, projects } from "@/data/projects";
 import { PageTransition } from "@/layout/PageTransition";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CodeSource } from "@/components/CodeSource";
 import { CompanyName } from "@/components/CompanyName";
 import { NotebookLink } from "@/components/NotebookLink";
-import { GradientMesh } from "@/components/GradientMesh";
 import { Lightbox, type LightboxImage } from "@/components/Lightbox";
-import { projectTypeStyles } from "@/utils/projectType";
 import { getHeroImage } from "@/utils/projectImage";
+import { projectTypeStyles } from "@/utils/projectType";
+import { getCaseStudySectionPlan } from "@/utils/portfolioLogic";
 import { NotFound } from "./NotFound";
 import { cn } from "@/utils/cn";
 
-function Block({
-  icon: Icon,
+function SectionBlock({
+  label,
   title,
   children,
 }: {
-  icon: React.ElementType;
+  label: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.45 }}
-      className="scroll-mt-28"
+      transition={{ duration: 0.35 }}
+      className="scroll-mt-24 border-t border-line pt-10 first:border-t-0 first:pt-0"
     >
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent/10 text-accent">
-          <Icon size={18} />
-        </div>
-        <h2 className="text-xl font-semibold">{title}</h2>
+      <p className="font-mono text-xs font-medium text-accent">{label}</p>
+      <h2 className="mt-1.5 font-display text-2xl font-bold tracking-tight text-fg">
+        {title}
+      </h2>
+      <div className="mt-5 text-[15px] leading-relaxed text-muted">
+        {children}
       </div>
-      <div className="text-[15px] leading-relaxed text-muted">{children}</div>
     </motion.section>
   );
 }
@@ -65,7 +60,9 @@ function BulletList({ items }: { items: string[] }) {
     <ul className="space-y-2.5">
       {items.map((it) => (
         <li key={it} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-gradient" />
+          <span aria-hidden="true" className="font-mono text-accent">
+            —
+          </span>
           <span>{it}</span>
         </li>
       ))}
@@ -74,32 +71,18 @@ function BulletList({ items }: { items: string[] }) {
 }
 
 interface ReflectionTab {
-  icon: React.ElementType;
   title: string;
   items: string[];
 }
 
-/**
- * Tradeoffs / lessons / next steps as one tabbed card: a single list is shown
- * at a time, so the section is shorter than a grid of cards while every item
- * stays one click away.
- */
 function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
   const [active, setActive] = useState(0);
   const current = tabs[Math.min(active, tabs.length - 1)];
-  const CurrentIcon = current.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.4 }}
-      className="overflow-hidden rounded-2xl border border-line bg-panel"
-    >
-      <div role="tablist" className="flex border-b border-line bg-panel-2">
+    <div className="overflow-hidden rounded-xl border border-line bg-panel">
+      <div role="tablist" className="flex border-b border-line bg-panel-2 p-1">
         {tabs.map((t, i) => {
-          const TabIcon = t.icon;
           const isActive = t === current;
           return (
             <button
@@ -109,30 +92,21 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
               aria-selected={isActive}
               onClick={() => setActive(i)}
               className={cn(
-                "relative flex flex-1 items-center justify-center gap-2 px-2 py-3 text-xs font-medium transition-colors sm:text-sm",
-                isActive ? "text-fg" : "text-faint hover:text-muted",
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors sm:text-sm",
+                isActive
+                  ? "bg-panel text-fg shadow-xs"
+                  : "text-muted hover:text-fg",
               )}
             >
-              <TabIcon
-                size={15}
-                className={cn("hidden sm:block", isActive && "text-accent")}
-              />
-              {t.title}
+              <span>{t.title}</span>
               <span
                 className={cn(
-                  "rounded-full px-1.5 text-[10px] leading-4",
-                  isActive ? "bg-accent/15 text-accent" : "bg-line/60 text-faint",
+                  "font-mono text-[11px] tabular-nums",
+                  isActive ? "text-accent" : "text-faint",
                 )}
               >
                 {t.items.length}
               </span>
-              {isActive && (
-                <motion.span
-                  layoutId="reflection-tab"
-                  className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-accent-gradient"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                />
-              )}
             </button>
           );
         })}
@@ -142,28 +116,25 @@ function ReflectionTabs({ tabs }: { tabs: ReflectionTab[] }) {
         {current.items.map((it) => (
           <li
             key={it}
-            className="flex gap-3 px-4 py-3 text-sm leading-relaxed text-muted sm:px-5"
+            className="flex gap-3 px-5 py-3.5 text-sm leading-relaxed text-muted"
           >
-            <CurrentIcon size={15} className="mt-0.5 shrink-0 text-accent" />
+            <span aria-hidden="true" className="font-mono text-accent">
+              ·
+            </span>
             <span>{it}</span>
           </li>
         ))}
       </ul>
-    </motion.div>
+    </div>
   );
 }
 
-/**
- * Compact challenge → solution table. Rows show only the challenge; the
- * solution expands on click, so the section stays short until the reader
- * wants detail. "Expand all" opens everything at once.
- */
 function SolvedChallengesTable({
   items,
 }: {
   items: { challenge: string; solution: string }[];
 }) {
-  const [open, setOpen] = useState<Set<number>>(() => new Set());
+  const [open, setOpen] = useState<Set<number>>(() => new Set([0]));
   const allOpen = open.size === items.length;
 
   const toggle = (i: number) =>
@@ -175,17 +146,17 @@ function SolvedChallengesTable({
     });
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-panel">
+    <div className="overflow-hidden rounded-xl border border-line bg-panel">
       <div className="flex items-center justify-between gap-3 border-b border-line bg-panel-2 px-4 py-2.5">
-        <span className="text-xs font-medium uppercase tracking-wide text-faint">
-          {items.length} challenges · click a row for the solution
+        <span className="font-mono text-xs text-faint tabular-nums">
+          {items.length} engineering challenges · select any row to inspect resolution
         </span>
         <button
           type="button"
           onClick={() =>
             setOpen(allOpen ? new Set() : new Set(items.map((_, i) => i)))
           }
-          className="shrink-0 text-xs font-medium text-accent transition-colors hover:text-accent-soft"
+          className="shrink-0 font-mono text-xs font-medium text-accent transition-colors hover:text-accent-soft"
         >
           {allOpen ? "Collapse all" : "Expand all"}
         </button>
@@ -200,23 +171,22 @@ function SolvedChallengesTable({
                 type="button"
                 onClick={() => toggle(i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-panel-2"
+                className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors hover:bg-panel-2/60"
               >
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-accent/10 text-xs font-semibold text-accent">
-                  {i + 1}
+                <span className="font-mono text-xs font-semibold text-accent tabular-nums">
+                  0{i + 1}
                 </span>
-                <span className="flex-1 text-sm font-medium text-fg">
+                <span className="flex-1 text-sm font-semibold text-fg">
                   {c.challenge}
                 </span>
                 <ChevronDown
                   size={16}
                   className={cn(
-                    "shrink-0 text-faint transition-transform duration-200",
+                    "shrink-0 text-faint transition-transform duration-150",
                     isOpen && "rotate-180 text-accent",
                   )}
                 />
               </button>
-              {/* grid-rows trick animates height without measuring */}
               <div
                 className={cn(
                   "grid transition-[grid-template-rows] duration-200 ease-out",
@@ -224,10 +194,10 @@ function SolvedChallengesTable({
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="flex gap-2.5 px-4 pb-4 pl-[3.25rem] text-sm leading-relaxed text-muted">
+                  <p className="flex gap-2.5 border-t border-line/50 bg-panel-2/30 px-4 py-3.5 pl-11 text-sm leading-relaxed text-muted">
                     <CheckCircle2
                       size={16}
-                      className="mt-0.5 shrink-0 text-emerald-400"
+                      className="mt-0.5 shrink-0 text-accent"
                     />
                     <span>{c.solution}</span>
                   </p>
@@ -250,20 +220,17 @@ export function ProjectDetail() {
 
   const cs = project.caseStudy;
   const idx = projects.findIndex((p) => p.id === project.id);
+  const prev = projects[(idx - 1 + projects.length) % projects.length];
   const next = projects[(idx + 1) % projects.length];
 
   const hasSolved = (cs.solvedChallenges?.length ?? 0) > 0;
-  // Reflection tabs with content. Plain challenges only appear as a tab when
-  // the project has no solved-challenges table.
   const reflections: ReflectionTab[] = [
-    { icon: ListChecks, title: "Challenges", items: hasSolved ? [] : cs.challenges },
-    { icon: Scale, title: "Tradeoffs", items: cs.tradeoffs },
-    { icon: GraduationCap, title: "Lessons learned", items: cs.lessons },
-    { icon: Rocket, title: "What's next", items: cs.futureWork },
+    { title: "Challenges", items: hasSolved ? [] : cs.challenges },
+    { title: "Tradeoffs", items: cs.tradeoffs },
+    { title: "Lessons learned", items: cs.lessons },
+    { title: "Future roadmap", items: cs.futureWork },
   ].filter((r) => r.items.length > 0);
 
-  // Lead with a real image (shared with the project cards). The gallery below
-  // still shows every visual, including the one used as the hero.
   const allDiagrams = cs.diagrams ?? [];
   const hero = getHeroImage(project);
   const heroImage: LightboxImage | null = hero
@@ -272,120 +239,136 @@ export function ProjectDetail() {
   const galleryShots = cs.screenshots;
   const hasGallery = galleryShots.length > 0;
 
+  const sectionPlan = getCaseStudySectionPlan(cs);
+  const sectionNumber = Object.fromEntries(
+    sectionPlan.map((s) => [s.id, s.number]),
+  );
+  const showPipeline = Boolean(sectionNumber.pipeline);
+
+  const typeStyle = projectTypeStyles[project.type];
+
   return (
     <PageTransition>
-      {/* Hero */}
-      <header className="relative overflow-hidden pt-28">
-        <GradientMesh />
-        <div className="absolute inset-0 grid-lines opacity-40" aria-hidden />
-        <div className="section relative z-10 pb-10">
+      {/* Case Study Header — generous top padding clears the fixed navbar */}
+      <header className="border-b border-line pt-24 pb-12 sm:pt-28">
+        <div className="section">
           <Link
             to="/"
             state={{ scrollTo: "projects" }}
-            className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
+            className="relative z-10 inline-flex items-center gap-2 rounded-lg border border-line bg-panel px-3.5 py-2 text-xs font-semibold text-fg transition-colors hover:border-accent/60 hover:text-accent dark:hover:text-accent-soft"
           >
-            <ArrowLeft size={15} />
-            Back to projects
+            <ArrowLeft size={14} />
+            <span>Back to all projects</span>
           </Link>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            {project.categories.map((c) => (
-              <Badge key={c} variant="accent">
-                {c}
-              </Badge>
+          <h1 className="mt-6 max-w-4xl text-balance font-display text-3xl font-bold tracking-tight text-fg sm:text-5xl">
+            {project.title}
+          </h1>
+
+          {/* Clear, Colored Normal-Font Metadata Under Title */}
+          <div className="mt-4 flex flex-wrap items-center gap-2.5 font-sans text-xs sm:text-sm">
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-semibold",
+                typeStyle.badge,
+              )}
+            >
+              <span className={cn("h-1.5 w-1.5 rounded-full", typeStyle.dot)} />
+              <span>{project.type}</span>
+            </span>
+
+            <CompanyName project={project} className="py-1 text-xs sm:text-sm" />
+
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-1 font-medium text-fg/85 tabular-nums">
+              <Calendar size={13} className="text-muted" />
+              <span>{project.year}</span>
+            </span>
+
+            {project.duration && (
+              <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-1 font-medium text-fg/85">
+                <Clock size={13} className="text-muted" />
+                <span>{project.duration}</span>
+              </span>
+            )}
+          </div>
+
+          {/* Domains Row */}
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            {project.categories.map((cat) => (
+              <span
+                key={cat}
+                className="rounded-md bg-panel-2 px-2.5 py-0.5 text-xs font-medium text-muted"
+              >
+                {cat}
+              </span>
             ))}
           </div>
 
-          <h1 className="mt-4 max-w-3xl text-balance text-4xl leading-[1.12] sm:text-5xl">
-            {project.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted">{project.tagline}</p>
+          <p className="mt-5 max-w-3xl text-pretty text-base leading-relaxed text-muted sm:text-lg">
+            {project.tagline}
+          </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="inline-flex flex-wrap items-center gap-2 text-sm text-faint">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                  projectTypeStyles[project.type].badge,
-                )}
-              >
-                <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    projectTypeStyles[project.type].dot,
-                  )}
-                />
-                {project.type}
-              </span>
-              {project.company && (
-                <>
-                  <CompanyName project={project} />
-                  <span className="text-line">·</span>
-                </>
-              )}
-              {project.year}
-              {project.duration && (
-                <>
-                  <span className="text-line">·</span>
-                  {project.duration}
-                </>
-              )}
-            </span>
-            <div className="flex items-center gap-2">
-              <CodeSource
-                href={project.github}
-                confidential={project.codeConfidential}
-                note={project.sourceNote}
-                variant="button"
-              />
-              <NotebookLink href={project.notebook} variant="button" />
-              {project.demo && (
-                <a href={project.demo} target="_blank" rel="noreferrer">
-                  <Button size="sm" variant="outline">
-                    <ExternalLink size={15} />
-                    Live Demo
-                  </Button>
-                </a>
-              )}
-            </div>
+          <div className="mt-6 flex flex-wrap items-center gap-2.5">
+            <CodeSource
+              href={project.github}
+              confidential={project.codeConfidential}
+              note={project.sourceNote}
+              variant="button"
+            />
+            <NotebookLink href={project.notebook} variant="button" />
+            {project.demo && (
+              <a href={project.demo} target="_blank" rel="noreferrer">
+                <Button size="sm" variant="outline">
+                  <ExternalLink size={14} />
+                  <span>Live Demo</span>
+                </Button>
+              </a>
+            )}
           </div>
 
-          {/* Hero image — a real capture, not a monogram */}
+          {/* Compact Hero Visual Frame */}
           {heroImage && (
             <button
               type="button"
               onClick={() => setZoom(heroImage)}
-              className="group relative mt-10 block w-full cursor-zoom-in overflow-hidden rounded-3xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+              className="group relative mt-7 block w-full max-w-2xl cursor-zoom-in overflow-hidden rounded-2xl border border-line bg-panel-2 text-left shadow-[0_14px_34px_-18px_rgba(15,23,42,0.18)] dark:shadow-[0_18px_38px_-18px_rgba(0,0,0,0.55)]"
             >
               <img
                 src={heroImage.src}
                 alt={project.title}
+                referrerPolicy="no-referrer"
                 className={cn(
-                  "aspect-[21/9] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]",
+                  "h-52 w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02] sm:h-60 md:h-64",
                   hero?.isCover ? "object-[center_30%]" : "object-top",
                 )}
               />
-              <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                <Maximize2 size={16} />
+              <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-lg bg-black/70 px-2.5 py-1.5 font-sans text-xs font-medium text-white backdrop-blur-xs">
+                <Maximize2 size={13} />
+                <span>Inspect</span>
               </span>
             </button>
           )}
         </div>
       </header>
 
-      {/* Body */}
-      <div className="section grid gap-14 py-6 lg:grid-cols-[1fr_260px]">
-        <div className="space-y-14">
-          <Block icon={Target} title="Overview">
-            <p>{cs.problemStatement}</p>
+      {/* Case Study Body */}
+      <div className="section grid gap-12 py-14 lg:grid-cols-[1fr_340px]">
+        <div className="space-y-12">
+          <SectionBlock
+            label={`${sectionNumber.overview} · Context & Motivation`}
+            title="Overview"
+          >
+            <p className="text-fg/90">{cs.problemStatement}</p>
             <p className="mt-4">{cs.overview}</p>
-          </Block>
+          </SectionBlock>
 
-          {/* Screenshots + diagrams — visual proof, high up for credibility */}
           {hasGallery && (
-            <Block icon={ImageIcon} title="See it in action">
-              <p className="-mt-1 mb-5 text-sm text-faint">
-                Real captures from the running system — click any to enlarge.
+            <SectionBlock
+              label={`${sectionNumber.gallery} · System Interface & Outputs`}
+              title="See It in Action"
+            >
+              <p className="mb-5 text-xs font-mono text-faint">
+                Captures from the running system — select any frame to enlarge.
               </p>
               <div
                 className={cn(
@@ -396,68 +379,63 @@ export function ProjectDetail() {
                 {galleryShots.map((sc) => (
                   <figure
                     key={sc.label}
-                    className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+                    className="group flex flex-col overflow-hidden rounded-xl border border-line bg-panel"
                   >
-                    <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
-                      <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-                      <span className="ml-2 truncate text-[11px] font-medium text-faint">
+                    <div className="flex items-center justify-between border-b border-line bg-panel-2 px-3.5 py-2">
+                      <span className="truncate font-mono text-xs font-medium text-fg">
                         {sc.label}
                       </span>
+                      <Maximize2 size={12} className="shrink-0 text-faint" />
                     </div>
                     <button
                       type="button"
                       onClick={() =>
                         setZoom({ src: sc.src, caption: sc.caption })
                       }
-                      className="relative block w-full cursor-zoom-in overflow-hidden"
+                      className="relative block w-full cursor-zoom-in overflow-hidden bg-panel-2"
                     >
                       <img
                         src={sc.src}
                         alt={sc.label}
                         loading="lazy"
+                        referrerPolicy="no-referrer"
                         className={cn(
-                          "w-full transition-transform duration-500 ease-out group-hover:scale-[1.04]",
+                          "w-full transition-transform duration-300 ease-out group-hover:scale-[1.02]",
                           galleryShots.length > 1
                             ? "aspect-[16/10] object-cover object-top"
                             : "h-auto",
                         )}
                       />
-                      <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                        <Maximize2 size={15} />
-                      </span>
                     </button>
-                    <figcaption className="px-4 py-3 text-xs text-faint">
+                    <figcaption className="border-t border-line px-4 py-3 text-xs leading-relaxed text-muted">
                       {sc.caption}
                     </figcaption>
                   </figure>
                 ))}
               </div>
-
-            </Block>
+            </SectionBlock>
           )}
 
-          {/* Benchmarks — headline numbers, then the charts behind them */}
           {cs.benchmarks && (
-            <Block icon={Gauge} title="Benchmarks & Evaluation">
+            <SectionBlock
+              label={`${sectionNumber.evaluation} · Quantitative Rigor`}
+              title="Benchmarks & Evaluation"
+            >
               {cs.benchmarks.intro && (
-                <p className="mb-5">{cs.benchmarks.intro}</p>
+                <p className="mb-6">{cs.benchmarks.intro}</p>
               )}
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3.5 sm:grid-cols-2">
                 {cs.benchmarks.stats.map((s) => (
                   <div
                     key={s.metric}
-                    className="rounded-xl border border-line bg-panel p-4"
+                    className="rounded-lg border border-line bg-panel p-4"
                   >
-                    <p className="text-xs font-medium uppercase tracking-wide text-faint">
-                      {s.metric}
-                    </p>
-                    <p className="mt-1.5 text-2xl font-semibold tracking-tight text-fg">
+                    <p className="font-mono text-xs text-faint">{s.metric}</p>
+                    <p className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-fg tabular-nums">
                       {s.value}
                     </p>
                     {s.detail && (
-                      <p className="mt-1 text-xs leading-relaxed text-faint">
+                      <p className="mt-1.5 text-xs leading-relaxed text-muted">
                         {s.detail}
                       </p>
                     )}
@@ -468,39 +446,39 @@ export function ProjectDetail() {
               {cs.benchmarks.charts?.map((c) => (
                 <figure
                   key={c.src}
-                  className="group mt-5 overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+                  className="group mt-6 overflow-hidden rounded-xl border border-line bg-panel"
                 >
-                  <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
-                    <Gauge size={13} className="text-accent" />
-                    <span className="ml-1 truncate text-[11px] font-medium text-faint">
-                      Benchmark
+                  <div className="flex items-center justify-between border-b border-line bg-panel-2 px-4 py-2.5">
+                    <span className="font-mono text-xs font-medium text-fg">
+                      Evaluation Chart
                     </span>
+                    <Maximize2 size={13} className="text-faint" />
                   </div>
                   <button
                     type="button"
                     onClick={() => setZoom({ src: c.src, caption: c.caption })}
-                    className="relative block w-full cursor-zoom-in bg-white"
+                    className="relative block w-full cursor-zoom-in bg-white p-2"
                   >
                     <img
                       src={c.src}
                       alt={c.caption}
                       loading="lazy"
-                      className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      referrerPolicy="no-referrer"
+                      className="w-full"
                     />
-                    <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                      <Maximize2 size={15} />
-                    </span>
                   </button>
-                  <figcaption className="px-4 py-3 text-xs text-faint">
+                  <figcaption className="border-t border-line px-4 py-3 text-xs text-muted">
                     {c.caption}
                   </figcaption>
                 </figure>
               ))}
-            </Block>
+            </SectionBlock>
           )}
 
-          {/* Architecture + system design, with the diagram in context */}
-          <Block icon={Boxes} title="Architecture & System Design">
+          <SectionBlock
+            label={`${sectionNumber.architecture} · Engineering Design`}
+            title="Architecture & System Design"
+          >
             <p>{cs.architecture}</p>
 
             {allDiagrams.length > 0 && (
@@ -508,30 +486,28 @@ export function ProjectDetail() {
                 {allDiagrams.map((d) => (
                   <figure
                     key={d.src}
-                    className="group overflow-hidden rounded-2xl border border-line bg-panel-2 shadow-soft transition-all hover:border-accent/40 hover:shadow-glow"
+                    className="group overflow-hidden rounded-xl border border-line bg-panel"
                   >
-                    <div className="flex items-center gap-1.5 border-b border-line bg-panel px-3.5 py-2.5">
-                      <Boxes size={13} className="text-accent" />
-                      <span className="ml-1 truncate text-[11px] font-medium text-faint">
-                        Architecture diagram
+                    <div className="flex items-center justify-between border-b border-line bg-panel-2 px-4 py-2.5">
+                      <span className="font-mono text-xs font-medium text-fg">
+                        System Architecture Diagram
                       </span>
+                      <Maximize2 size={13} className="text-faint" />
                     </div>
                     <button
                       type="button"
                       onClick={() => setZoom({ src: d.src, caption: d.caption })}
-                      className="relative block w-full cursor-zoom-in bg-white"
+                      className="relative block w-full cursor-zoom-in bg-white p-3"
                     >
                       <img
                         src={d.src}
                         alt={d.caption}
                         loading="lazy"
-                        className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                        referrerPolicy="no-referrer"
+                        className="w-full"
                       />
-                      <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
-                        <Maximize2 size={15} />
-                      </span>
                     </button>
-                    <figcaption className="px-4 py-3 text-xs text-faint">
+                    <figcaption className="border-t border-line px-4 py-3 text-xs text-muted">
                       {d.caption}
                     </figcaption>
                   </figure>
@@ -542,80 +518,182 @@ export function ProjectDetail() {
             <div className="mt-6">
               <BulletList items={cs.systemDesign} />
             </div>
-          </Block>
+          </SectionBlock>
 
-          <Block icon={TrendingUp} title="Business Value">
+          {showPipeline && (
+            <SectionBlock
+              label={`${sectionNumber.pipeline} · Execution Flow`}
+              title="End-to-End Pipeline"
+            >
+              <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {cs.pipeline.map((step, i) => (
+                  <li
+                    key={step}
+                    className="flex flex-col justify-between rounded-lg border border-line bg-panel p-4"
+                  >
+                    <span className="font-mono text-xs font-semibold text-accent tabular-nums">
+                      Step 0{i + 1}
+                    </span>
+                    <p className="mt-2 text-sm font-medium leading-snug text-fg">
+                      {step}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+          )}
+
+          <SectionBlock
+            label={`${sectionNumber.businessValue} · Practical Impact`}
+            title="Business Value"
+          >
             <BulletList items={cs.businessValue} />
-          </Block>
+          </SectionBlock>
 
-          {/* Challenges solved — problem → fix pairs in an expandable table */}
           {hasSolved && (
-            <Block icon={ListChecks} title="Challenges & How They Were Solved">
+            <SectionBlock
+              label={`${sectionNumber.solvedChallenges} · Technical Obstacles`}
+              title="Challenges & How They Were Solved"
+            >
               <SolvedChallengesTable
                 key={project.id}
                 items={cs.solvedChallenges ?? []}
               />
-            </Block>
+            </SectionBlock>
           )}
 
-          {/* Tradeoffs / lessons / next steps — one tabbed card */}
           {reflections.length > 0 && (
-            <ReflectionTabs key={project.id} tabs={reflections} />
+            <SectionBlock
+              label={`${sectionNumber.reflections} · Engineering Retrospectives`}
+              title="Tradeoffs, Lessons & Roadmap"
+            >
+              <ReflectionTabs key={project.id} tabs={reflections} />
+            </SectionBlock>
           )}
         </div>
 
-        {/* Sticky sidebar */}
-        <aside className="hidden lg:block">
-          <div className="sticky top-28 space-y-6">
-            <div className="rounded-2xl border border-line bg-panel p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">
-                Tech Stack
-              </h3>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {project.tech.map((t) => (
-                  <Badge key={t} variant="accent">
-                    {t}
-                  </Badge>
-                ))}
+        {/* Sticky Sidebar */}
+        <aside>
+          <div className="sticky top-24 space-y-5">
+            {/* Key Outcomes & Results Card */}
+            <div className="rounded-2xl border border-line bg-panel p-6 shadow-[0_12px_32px_-20px_rgba(15,23,42,0.14)] dark:shadow-none">
+              <div className="flex items-center gap-2.5 border-b border-line/80 pb-3.5">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent dark:border-accent-soft/25 dark:bg-accent/15 dark:text-accent-soft">
+                  <Target size={14} strokeWidth={2.1} aria-hidden="true" />
+                </span>
+                <h3 className="font-display text-[15px] font-bold tracking-tight text-fg">
+                  Key Outcomes &amp; Results
+                </h3>
               </div>
-            </div>
-            <div className="rounded-2xl border border-line bg-panel p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-faint">
-                Results
-              </h3>
-              <ul className="mt-3 space-y-2.5">
+
+              <ul className="mt-4 space-y-3">
                 {project.results.map((r) => (
-                  <li key={r} className="flex gap-2 text-sm text-muted">
-                    <TrendingUp
+                  <li
+                    key={r}
+                    className="flex items-start gap-2.5 font-sans text-[13.5px] leading-relaxed text-fg/90"
+                  >
+                    <CheckCircle2
                       size={15}
-                      className="mt-0.5 shrink-0 text-accent"
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-accent dark:text-accent-soft"
                     />
-                    {r}
+                    <span>{r}</span>
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Technology Stack & Domains Card */}
+            <div className="rounded-2xl border border-line bg-panel p-6 shadow-[0_12px_32px_-20px_rgba(15,23,42,0.14)] dark:shadow-none">
+              <div className="flex items-center justify-between gap-2 border-b border-line/80 pb-3.5">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent dark:border-accent-soft/25 dark:bg-accent/15 dark:text-accent-soft">
+                    <Layers size={14} strokeWidth={2.1} aria-hidden="true" />
+                  </span>
+                  <h3 className="font-display text-[15px] font-bold tracking-tight text-fg">
+                    Technology Stack
+                  </h3>
+                </div>
+                <span className="font-sans text-xs font-medium text-faint tabular-nums">
+                  {project.tech.length} tools
+                </span>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {project.tech.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-lg border border-line bg-panel-2/75 px-2.5 py-1 font-sans text-xs font-medium text-fg/90"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-5 border-t border-line/80 pt-4">
+                <div className="flex items-center gap-2">
+                  <Compass
+                    size={14}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className="text-accent dark:text-accent-soft"
+                  />
+                  <h4 className="font-display text-sm font-bold tracking-tight text-fg">
+                    Domains
+                  </h4>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {project.categories.map((cat) => (
+                    <span
+                      key={cat}
+                      className="rounded-lg border border-accent/20 bg-accent/8 px-2.5 py-1 font-sans text-xs font-semibold text-accent dark:border-accent-soft/25 dark:bg-accent/15 dark:text-accent-soft"
+                    >
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </aside>
       </div>
 
-      {/* Next project */}
-      <div className="section pb-10">
-        <Link
-          to={`/projects/${next.slug}`}
-          className="group flex items-center justify-between rounded-2xl border border-line bg-panel p-6 transition-all hover:border-accent/40 hover:shadow-glow"
-        >
-          <div>
-            <span className="text-xs text-faint">Next project</span>
-            <p className="mt-1 text-lg font-semibold group-hover:text-accent">
-              {next.title}
-            </p>
-          </div>
-          <ArrowRight
-            size={22}
-            className="text-muted transition-transform group-hover:translate-x-1 group-hover:text-accent"
-          />
-        </Link>
+      {/* Previous / Next Case Study Navigation */}
+      <div className="section border-t border-line pt-10 pb-8">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            to={`/projects/${prev.slug}`}
+            className="group flex items-center justify-between rounded-xl border border-line bg-panel p-5 transition-colors hover:border-faint/60"
+          >
+            <div>
+              <span className="font-mono text-xs text-faint">
+                ← Previous case study
+              </span>
+              <p className="mt-1 font-display text-base font-bold text-fg transition-colors group-hover:text-accent">
+                {prev.title}
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to={`/projects/${next.slug}`}
+            className="group flex items-center justify-between rounded-xl border border-line bg-panel p-5 text-right transition-colors hover:border-faint/60"
+          >
+            <div className="w-full">
+              <span className="font-mono text-xs text-faint">
+                Next case study →
+              </span>
+              <p className="mt-1 font-display text-base font-bold text-fg transition-colors group-hover:text-accent">
+                {next.title}
+              </p>
+            </div>
+            <ArrowRight
+              size={18}
+              className="ml-3 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
+            />
+          </Link>
+        </div>
       </div>
 
       <Lightbox image={zoom} onClose={() => setZoom(null)} />

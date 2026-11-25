@@ -15,28 +15,31 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative mt-24 border-t border-line">
-      <div className="section py-14">
-        <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
+    <footer className="mt-12 border-t border-line bg-panel/40">
+      <div className="section py-9">
+        <div className="grid gap-8 md:grid-cols-[1.6fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2.5 font-semibold">
-              <Logo />
-              {profile.name}
+            <div className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-fg">
+              <Logo className="h-5 w-5" />
+              <span>{profile.name}</span>
             </div>
-            <p className="mt-4 max-w-sm text-sm text-muted">
+            <p className="mt-2 max-w-md text-xs leading-relaxed text-muted sm:text-sm">
               {profile.tagline}
             </p>
-            <p className="mt-3 text-sm text-faint">{profile.location}</p>
+            <p className="mt-3 font-mono text-xs text-faint">
+              {profile.title} · {profile.subtitle} · {profile.location}
+            </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Navigate</h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <h3 className="text-xs font-semibold text-fg">Navigation</h3>
+            <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:text-sm">
               {navLinks.map((l) => (
                 <li key={l.id}>
                   <button
+                    type="button"
                     onClick={() => go(l.id)}
-                    className="text-muted transition-colors hover:text-accent"
+                    className="text-muted transition-colors hover:text-fg"
                   >
                     {l.label}
                   </button>
@@ -46,18 +49,23 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Connect</h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <h3 className="text-xs font-semibold text-fg">
+              Profiles &amp; Contact
+            </h3>
+            <ul className="mt-3 space-y-2 text-xs sm:text-sm">
               {socials.map((s) => (
                 <li key={s.label}>
                   <a
                     href={s.href}
                     target={s.href.startsWith("http") ? "_blank" : undefined}
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-muted transition-colors hover:text-accent"
+                    className="inline-flex items-center gap-2 text-muted transition-colors hover:text-fg"
                   >
-                    <Icon name={s.icon} size={15} />
-                    {s.label}
+                    <Icon name={s.icon} size={13} className="text-faint" />
+                    <span>{s.label}</span>
+                    <span className="font-mono text-xs text-faint">
+                      / {s.handle}
+                    </span>
                   </a>
                 </li>
               ))}
@@ -65,12 +73,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-xs text-faint sm:flex-row">
+        <div className="mt-8 flex flex-col items-start justify-between gap-2 border-t border-line pt-5 font-mono text-xs text-faint sm:flex-row sm:items-center">
           <p>
-            © {new Date().getFullYear()} {profile.name}. Built with React,
-            TypeScript & Framer Motion.
+            © {new Date().getFullYear()} {profile.name}
           </p>
-          <p>Designed & engineered end-to-end.</p>
+          <p>{profile.location}</p>
         </div>
       </div>
     </footer>

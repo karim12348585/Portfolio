@@ -10,6 +10,7 @@ export const projects: Project[] = [
     year: "2026",
     type: "Industrial",
     company: "KPIT Engineering",
+    companyUrl: "http://kpit.com/",
     duration: "End-of-Studies · 5 months",
     categories: ["Agentic AI", "LLM", "RAG", "MLOps"],
     problem:
@@ -128,6 +129,7 @@ export const projects: Project[] = [
     year: "2025",
     type: "Industrial",
     company: "KPIT Engineering",
+    companyUrl: "http://kpit.com/",
     duration: "Summer internship · 2 months",
     categories: ["Agentic AI", "LLM", "RAG"],
     problem:
@@ -241,6 +243,7 @@ export const projects: Project[] = [
     year: "2024",
     type: "Industrial",
     company: "PRIMATEC Engineering",
+    companyUrl: "https://fr.linkedin.com/company/primatec-engineering",
     duration: "Summer internship · 2 months",
     categories: ["Data Engineering", "MLOps"],
     problem:
@@ -310,8 +313,8 @@ export const projects: Project[] = [
     year: "2026",
     type: "Freelance",
     company: "DJO",
-    companyUrl: "https://www.linkedin.com/company/djo-assist/",
-    duration: "Client project",
+    companyUrl: "https://djoassist.com/",
+    duration: "Freelance · Oct – Nov 2026",
     categories: ["LLM", "NLP", "Deep Learning"],
     problem:
       "Arabic LLMs answer in Modern Standard Arabic, Egyptian or Moroccan. Tunisian Derja, with its French code-switching and Arabizi, is barely served, and small models confidently make up facts.",

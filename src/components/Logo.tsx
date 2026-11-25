@@ -1,27 +1,29 @@
 import { cn } from "@/utils/cn";
 
 /**
- * Brand mark: three nodes ascending along a path — a data pipeline resolving
- * into a decision. Deliberately not initials-in-a-box.
+ * Brand mark: crisp Deep Teal rounded square enclosing a geometric K-node emblem.
  */
 export function Logo({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
+    <span
       aria-hidden="true"
-      className={cn("h-[22px] w-[22px] text-accent", className)}
-      fill="none"
+      className={cn(
+        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-fg shadow-xs",
+        className,
+      )}
     >
-      <path
-        d="M5.9 16.4 10.4 12.3M13.6 10.1 18.1 6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        opacity="0.75"
-      />
-      <circle cx="4" cy="18" r="2.4" fill="currentColor" />
-      <circle cx="12" cy="11.2" r="2.4" fill="currentColor" opacity="0.85" />
-      <circle cx="20" cy="4.4" r="2.4" fill="currentColor" opacity="0.55" />
-    </svg>
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none">
+        <path
+          d="M8.25 6.25v11.5M15.75 6.75 9.75 12l6.25 5.25"
+          stroke="currentColor"
+          strokeWidth="2.1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="8.25" cy="6.25" r="1.65" fill="currentColor" />
+        <circle cx="15.75" cy="6.75" r="1.65" fill="currentColor" />
+        <circle cx="16" cy="17.25" r="1.65" fill="currentColor" />
+      </svg>
+    </span>
   );
 }

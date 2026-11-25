@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Download, FileText, Maximize2 } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/Button";
@@ -9,43 +8,38 @@ export function Resume() {
   const [failed, setFailed] = useState(false);
 
   return (
-    <section id="resume" className="section scroll-mt-24 py-24">
+    <section id="resume" className="section scroll-mt-24 py-12">
       <SectionHeading
+        index="07"
         eyebrow="Résumé"
-        title="The one-page version"
-        description="Prefer a PDF? View it inline or download a copy."
+        title="Curriculum Vitae"
+        description="View the compiled résumé inline or download a local PDF copy."
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.5 }}
-        className="mx-auto mt-12 max-w-4xl"
-      >
+      <div className="mx-auto mt-6 max-w-4xl">
         <div className="overflow-hidden rounded-2xl border border-line bg-panel shadow-soft">
-          <div className="flex items-center justify-between border-b border-line bg-panel-2 px-4 py-3">
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <FileText size={16} className="text-accent" />
-              {profile.name} — Résumé
+          <div className="flex items-center justify-between border-b border-line bg-panel-2 px-4 py-2.5">
+            <div className="flex items-center gap-2 font-mono text-xs text-muted">
+              <FileText size={14} className="text-accent dark:text-accent-soft" />
+              <span>{profile.name} — Résumé.pdf</span>
             </div>
             <div className="flex items-center gap-2">
               <a href={profile.cvPath} target="_blank" rel="noreferrer">
-                <Button size="sm" variant="ghost">
+                <Button size="sm" variant="ghost" asChild>
                   <Maximize2 size={14} />
                   <span className="hidden sm:inline">Open</span>
                 </Button>
               </a>
-              <a href={profile.cvPath} download>
-                <Button size="sm" variant="secondary">
+              <a href={profile.cvPath} download="Karim-Souissi-CV.pdf">
+                <Button size="sm" variant="secondary" asChild>
                   <Download size={14} />
-                  Download
+                  <span>Download</span>
                 </Button>
               </a>
             </div>
           </div>
 
-          <div className="relative aspect-[1/1.3] w-full bg-panel-2 sm:aspect-[1.4/1]">
+          <div className="relative h-[520px] w-full bg-panel-2 sm:h-[640px]">
             {!failed ? (
               <object
                 data={`${profile.cvPath}#toolbar=0&view=FitH`}
@@ -62,23 +56,21 @@ export function Resume() {
               </object>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-                <FileText size={40} className="text-accent" />
+                <FileText size={36} className="text-accent dark:text-accent-soft" />
                 <p className="text-sm text-muted">
-                  Add your résumé PDF at{" "}
-                  <code className="text-fg">public/karim-souissi-cv.pdf</code>{" "}
-                  to preview it here.
+                  Download the résumé PDF directly below.
                 </p>
-                <a href={profile.cvPath} download>
-                  <Button size="sm" variant="secondary">
+                <a href={profile.cvPath} download="Karim-Souissi-CV.pdf">
+                  <Button size="sm" variant="secondary" asChild>
                     <Download size={14} />
-                    Download CV
+                    <span>Download CV</span>
                   </Button>
                 </a>
               </div>
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

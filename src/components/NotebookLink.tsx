@@ -7,10 +7,6 @@ interface NotebookLinkProps {
   className?: string;
 }
 
-/**
- * Link to a project's notebook — a hosted Kaggle notebook or a local .ipynb.
- * Styled to sit alongside <CodeSource />.
- */
 export function NotebookLink({
   href,
   variant = "button",
@@ -19,8 +15,7 @@ export function NotebookLink({
   if (!href) return null;
 
   const isKaggle = href.includes("kaggle.com");
-  const label = isKaggle ? "Kaggle notebook" : "Notebook";
-  // Local notebooks download; hosted ones open in a new tab.
+  const label = isKaggle ? "Kaggle Notebook" : "Notebook";
   const linkProps = isKaggle
     ? { target: "_blank", rel: "noreferrer" }
     : { download: true };
@@ -32,9 +27,13 @@ export function NotebookLink({
         {...linkProps}
         aria-label={label}
         title={label}
-        className={cn("text-fg transition-colors hover:text-accent", className)}
+        className={cn(
+          "inline-flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-fg",
+          className,
+        )}
       >
-        <BookOpen size={17} />
+        <BookOpen size={14} />
+        <span>{label}</span>
       </a>
     );
   }
@@ -44,11 +43,11 @@ export function NotebookLink({
       href={href}
       {...linkProps}
       className={cn(
-        "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-panel-2 px-4 text-sm font-medium text-fg transition-colors hover:border-accent/50",
+        "inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-line bg-panel-2 px-3.5 text-xs font-medium text-fg whitespace-nowrap transition-colors hover:border-faint/60",
         className,
       )}
     >
-      <BookOpen size={15} />
+      <BookOpen size={14} />
       {label}
     </a>
   );

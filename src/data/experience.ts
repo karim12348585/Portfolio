@@ -2,9 +2,41 @@ import type { Experience } from "@/types";
 
 export const experiences: Experience[] = [
   {
+    id: "djo-tounsi-chat",
+    company: "DJO",
+    companyUrl: "https://djoassist.com/",
+    employmentType: "Freelance",
+    role: "Freelance AI Engineer",
+    projectLabel: "Tounsi Chat — Tunisian Derja LLM",
+    duration: "Oct – Nov 2026",
+    summary:
+      "Adapted Google's Gemma 4 E2B (~2B) for Tunisian Derja, French code-switching, and Arabizi through two-stage continued pretraining (130M tokens) and LLM-judged instruction tuning for DJO.",
+    responsibilities: [
+      "Curated a 130M-token Tunisian Derja corpus with dialect, script-ratio, and deduplication filters.",
+      "Trained rank-128 rsLoRA continued pretraining and ran adapter-strength sweeps across ArabicMMLU, MMLU, and perplexity.",
+      "Built an LLM-as-a-Judge filtered instruction mix covering chat, 3-language translation, fact-checking, live-data abstention, and crisis safety.",
+    ],
+    achievements: [
+      "Halved held-out Tunisian perplexity (19.7 → 9.1) while achieving 55.4 chrF (Tunisian→English) and 52.2 chrF (Tunisian→French).",
+      "Raised fact-check accuracy from 7/20 to 16/20 with 6/6 live-data honesty and 6/6 crisis-handling safety.",
+    ],
+    tech: [
+      "Gemma 4 E2B",
+      "LoRA / rsLoRA",
+      "SFT",
+      "LLM-as-a-Judge",
+      "vLLM",
+      "PyTorch",
+    ],
+    projectSlug: "tounsi-chat",
+  },
+  {
     id: "kpit-eos",
     company: "KPIT Engineering",
-    role: "AI Engineer Intern — DataOps Copilot (End-of-Studies Project)",
+    companyUrl: "http://kpit.com/",
+    employmentType: "Internship",
+    role: "AI Engineer Intern",
+    projectLabel: "DataOps Copilot (End-of-Studies Project)",
     duration: "Feb 2026 – Jul 2026",
     summary:
       "Building an autonomous multi-agent system for end-to-end root cause analysis of Jenkins data-pipeline failures.",
@@ -24,7 +56,10 @@ export const experiences: Experience[] = [
   {
     id: "kpit-code",
     company: "KPIT Engineering",
-    role: "AI Engineer Intern — Agentic Code Intelligence System",
+    companyUrl: "http://kpit.com/",
+    employmentType: "Internship",
+    role: "AI Engineer Intern",
+    projectLabel: "Agentic Code Intelligence System",
     duration: "Jun – Aug 2025",
     summary:
       "Built an agentic AI system for enterprise-scale code understanding and pull request analysis grounded in Jira context.",
@@ -43,7 +78,10 @@ export const experiences: Experience[] = [
   {
     id: "primatec",
     company: "PRIMATEC Engineering",
-    role: "Data Engineer Intern — Data Pipeline Monitoring & Alerting",
+    companyUrl: "https://fr.linkedin.com/company/primatec-engineering",
+    employmentType: "Internship",
+    role: "Data Engineer Intern",
+    projectLabel: "Data Pipeline Monitoring & Alerting",
     duration: "Jun – Aug 2024",
     summary:
       "Designed a Python-based data quality monitoring system comparing SQL Server data with multiple external sources.",

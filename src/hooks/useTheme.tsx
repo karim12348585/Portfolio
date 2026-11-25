@@ -17,17 +17,13 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = "portfolio-theme";
+const STORAGE_KEY = "portfolio-theme-v4";
 
 function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
+  if (typeof window === "undefined") return "light";
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
   if (stored === "dark" || stored === "light") return stored;
-  // Dark-first: default to dark unless the user explicitly prefers light.
-  const prefersLight = window.matchMedia(
-    "(prefers-color-scheme: light)",
-  ).matches;
-  return prefersLight ? "light" : "dark";
+  return "light";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

@@ -1,14 +1,12 @@
 import { useState, type CSSProperties } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { Clock, FolderGit2 } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Icon } from "@/components/Icon";
 import { TechIcon, brandColor, getBrand } from "@/components/TechIcon";
 import { skillCategories } from "@/data/skills";
-import type { Skill } from "@/types";
 import { cn } from "@/utils/cn";
+import type { Skill } from "@/types";
 
-/** Curated order for the logo wall; labels override the brand's own name. */
 const coreStack: { brand: string; label?: string }[] = [
   { brand: "python" },
   { brand: "pytorch" },
@@ -28,61 +26,47 @@ const coreStack: { brand: string; label?: string }[] = [
   { brand: "git" },
 ];
 
-/** Section label with a hairline rule, e.g. "Core stack ────". */
 function SubHeading({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div className="flex items-center gap-4">
-      <h3 className="shrink-0 text-xs font-semibold uppercase tracking-[0.18em] text-faint">
-        {title}
-      </h3>
-      <div className="h-px flex-1 bg-line" />
-      {hint && (
-        <span className="hidden shrink-0 text-xs text-faint sm:block">
-          {hint}
-        </span>
-      )}
+    <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
+      <h3 className="font-display text-lg text-fg">{title}</h3>
+      {hint && <span className="font-mono text-xs text-faint tabular-nums">{hint}</span>}
     </div>
   );
 }
 
-/** Wall of real tool logos in their brand colours. */
 function LogoWall() {
   return (
-    <div className="mt-6 grid grid-cols-4 gap-2.5 sm:grid-cols-6 sm:gap-3 lg:grid-cols-9">
-      {coreStack.map(({ brand, label }, i) => {
+    <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-8">
+      {coreStack.map(({ brand, label }) => {
         const logo = getBrand(brand);
         if (!logo) return null;
-        const color = brandColor(logo) ?? "rgb(var(--accent))";
+        const color = brandColor(logo) ?? "var(--accent)";
         return (
-          <motion.div
+          <div
             key={brand}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.35, delay: Math.min(i * 0.03, 0.4) }}
             style={{ "--brand": color } as CSSProperties}
-            className="group flex flex-col items-center gap-2 rounded-xl border border-line bg-panel px-1.5 py-3.5 transition-all duration-300 hover:-translate-y-1 hover:[border-color:var(--brand)] hover:[box-shadow:0_10px_30px_-14px_var(--brand)] sm:py-4"
+            className="group flex flex-col items-center gap-1.5 py-2 transition-transform duration-150 hover:-translate-y-0.5"
           >
             <TechIcon
               brand={brand}
-              size={28}
-              className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 sm:h-7 sm:w-7"
+              size={22}
+              className="h-5 w-5 sm:h-6 sm:w-6"
             />
-            <span className="w-full break-words text-center text-[10px] font-medium leading-tight text-muted transition-colors group-hover:text-fg sm:text-xs">
+            <span className="w-full break-words text-center text-[11px] font-medium leading-tight text-muted transition-colors group-hover:text-fg">
               {label ?? logo.title}
             </span>
-          </motion.div>
+          </div>
         );
       })}
     </div>
   );
 }
 
-/** Five-step proficiency meter. */
 function LevelMeter({ level }: { level: number }) {
   return (
     <div
-      className="flex gap-1"
+      className="flex gap-1 pt-1"
       role="img"
       aria-label={`Proficiency ${level} out of 5`}
     >
@@ -90,7 +74,7 @@ function LevelMeter({ level }: { level: number }) {
         <span
           key={n}
           className={cn(
-            "h-1.5 w-5 rounded-full",
+            "h-1 w-3.5 rounded-full",
             n <= level ? "bg-accent-gradient" : "bg-line",
           )}
         />
@@ -99,67 +83,50 @@ function LevelMeter({ level }: { level: number }) {
   );
 }
 
-function SkillTile({ skill }: { skill: Skill }) {
-  const logo = getBrand(skill.brand);
-  const color = logo ? brandColor(logo) : undefined;
-
+function SkillRow({ skill }: { skill: Skill }) {
   return (
-    <div className="flex flex-col rounded-xl border border-line bg-panel-2 p-4 transition-colors hover:border-accent/40">
-      <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            "grid h-10 w-10 shrink-0 place-items-center rounded-lg",
-            !color && "bg-accent/10 text-accent",
-          )}
-          // Tint the tile with the brand colour at ~10% opacity.
-          style={color ? { backgroundColor: `${color}1a` } : undefined}
-        >
-          <TechIcon brand={skill.brand} glyph={skill.glyph} size={20} />
+    <div className="flex flex-col justify-between border-b border-line py-3 last:border-b-0">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="grid h-7 w-7 shrink-0 place-items-center rounded border border-line bg-panel-2 text-fg">
+            <TechIcon brand={skill.brand} glyph={skill.glyph} size={14} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold leading-snug text-fg">{skill.name}</p>
+            <p className="font-mono text-[11px] text-faint tabular-nums">
+              {skill.years} {skill.years === 1 ? "yr" : "yrs"}
+            </p>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold tracking-tight text-fg">
-            {skill.name}
-          </p>
-          <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] text-faint">
-            <Clock size={11} />
-            {skill.years} {skill.years === 1 ? "yr" : "yrs"}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-3">
         <LevelMeter level={skill.level} />
       </div>
 
-      <p className="mt-3 line-clamp-2 flex-1 text-xs leading-relaxed text-muted">
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">
         {skill.description}
       </p>
 
       {skill.projects.length > 0 && (
         <p
-          className="mt-3 flex items-center gap-1.5 border-t border-line pt-2.5 text-[11px] text-faint"
+          className="mt-1.5 truncate font-mono text-[11px] text-faint"
           title={skill.projects.join(" · ")}
         >
-          <FolderGit2 size={12} className="shrink-0 text-accent" />
-          <span className="truncate">{skill.projects.join(" · ")}</span>
+          {skill.projects.join(" · ")}
         </p>
       )}
     </div>
   );
 }
 
-/** Category menu + skill panel; one category is shown at a time. */
 function SkillExplorer() {
   const [active, setActive] = useState(0);
   const cat = skillCategories[active];
 
   return (
-    <div className="mt-6 lg:grid lg:grid-cols-[240px_1fr] lg:gap-6">
-      {/* Category menu: chip row on mobile, vertical list on desktop */}
+    <div className="mt-4 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8">
       <div
         role="tablist"
         aria-label="Skill categories"
-        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3 [scrollbar-width:none] lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0"
+        className="flex w-full min-w-0 gap-1.5 overflow-x-auto pb-2 no-scrollbar lg:flex-col lg:gap-0.5 lg:overflow-visible lg:pb-0"
       >
         <LayoutGroup id="skill-cats">
           {skillCategories.map((c, i) => {
@@ -170,41 +137,27 @@ function SkillExplorer() {
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                onClick={(e) => {
-                  setActive(i);
-                  // Keep the chosen chip visible in the mobile chip row.
-                  e.currentTarget.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                    inline: "center",
-                  });
-                }}
+                onClick={() => setActive(i)}
                 className={cn(
-                  "relative flex shrink-0 items-center gap-2.5 rounded-xl border px-3 py-2 text-left text-sm transition-colors lg:w-full lg:border-transparent lg:py-2.5",
+                  "relative flex shrink-0 items-center gap-2 rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors sm:text-sm lg:w-full",
                   isActive
-                    ? "border-accent/40 text-fg"
-                    : "border-line text-muted hover:text-fg lg:hover:bg-panel",
+                    ? "border-accent/40 bg-accent/10 text-fg font-medium"
+                    : "border-line bg-panel text-muted hover:text-fg lg:border-transparent lg:bg-transparent lg:hover:bg-panel-2/60",
                 )}
               >
-                {isActive && (
-                  <motion.span
-                    layoutId="skill-cat-pill"
-                    className="absolute inset-0 -z-10 rounded-xl border border-accent/30 bg-accent/10"
-                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                  />
-                )}
                 <Icon
                   name={c.icon}
-                  size={16}
-                  className={cn("shrink-0", isActive ? "text-accent" : "text-faint")}
+                  size={14}
+                  className={cn(
+                    "shrink-0",
+                    isActive ? "text-accent" : "text-faint",
+                  )}
                 />
-                <span className="flex-1 whitespace-nowrap font-medium">
-                  {c.name}
-                </span>
+                <span className="flex-1 whitespace-nowrap">{c.name}</span>
                 <span
                   className={cn(
-                    "rounded-full px-1.5 text-[10px] leading-4",
-                    isActive ? "bg-accent/15 text-accent" : "bg-line/60 text-faint",
+                    "font-mono text-[11px] tabular-nums",
+                    isActive ? "text-accent" : "text-faint",
                   )}
                 >
                   {c.skills.length}
@@ -215,35 +168,29 @@ function SkillExplorer() {
         </LayoutGroup>
       </div>
 
-      {/* Skill panel */}
-      <div
-        role="tabpanel"
-        className="mt-3 rounded-2xl border border-line bg-panel p-4 sm:p-5 lg:mt-0"
-      >
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent/10 text-accent">
-              <Icon name={cat.icon} size={18} />
-            </div>
-            <h4 className="font-semibold tracking-tight">{cat.name}</h4>
+      {/* Open Skill List */}
+      <div role="tabpanel" className="mt-3 lg:mt-0">
+        <div className="mb-1.5 flex items-center justify-between gap-3 border-b border-line pb-2">
+          <div className="flex items-center gap-2">
+            <Icon name={cat.icon} size={15} className="text-accent" />
+            <h4 className="font-display text-base font-bold text-fg">{cat.name}</h4>
           </div>
-          <span className="shrink-0 text-xs text-faint">
-            {cat.skills.length} skills
-            <span className="hidden sm:inline"> · proficiency out of 5</span>
+          <span className="shrink-0 font-mono text-xs text-faint tabular-nums">
+            {cat.skills.length} skills · scale 1–5
           </span>
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div
             key={cat.name}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.16 }}
+            className="grid gap-x-8 sm:grid-cols-2"
           >
             {cat.skills.map((s) => (
-              <SkillTile key={s.name} skill={s} />
+              <SkillRow key={s.name} skill={s} />
             ))}
           </motion.div>
         </AnimatePresence>
@@ -252,26 +199,22 @@ function SkillExplorer() {
   );
 }
 
-/**
- * Expertise — the toolkit behind the projects: a wall of real tool logos,
- * then a category explorer with proficiency, experience and project usage.
- * Placed after the projects so the work comes first, then the skills.
- */
 export function Expertise() {
   return (
-    <section id="skills" className="section scroll-mt-24 py-24">
+    <section id="skills" className="section scroll-mt-24 py-12">
       <SectionHeading
+        index="04"
         eyebrow="Skills"
         title="The toolkit"
         description="The tools and techniques behind the projects, with proficiency, experience and where each one was used."
       />
 
-      <div className="mt-14">
+      <div className="mt-7">
         <SubHeading title="Core stack" />
         <LogoWall />
       </div>
 
-      <div className="mt-16">
+      <div className="mt-8">
         <SubHeading
           title="Explore by category"
           hint={`${skillCategories.reduce((n, c) => n + c.skills.length, 0)} skills across ${skillCategories.length} areas`}

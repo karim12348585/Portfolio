@@ -10,8 +10,7 @@ interface Node {
 
 /**
  * Lightweight neural-network background: floating nodes connected by lines
- * that brighten as they near each other. Throttled to ~40fps, pauses when
- * off-screen, and renders a static frame when reduced motion is requested.
+ * that brighten as they near each other.
  */
 export function ParticleField({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,10 +29,10 @@ export function ParticleField({ className }: { className?: string }) {
     let last = 0;
     let running = true;
 
-    const accent = () =>
+    const getAccentColor = () =>
       getComputedStyle(document.documentElement)
-        .getPropertyValue("--accent")
-        .trim() || "16 185 129";
+        .getPropertyValue("--accent-soft")
+        .trim() || "#0f766e";
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -43,7 +42,7 @@ export function ParticleField({ className }: { className?: string }) {
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const density = Math.min(70, Math.floor((width * height) / 22000));
+      const density = Math.min(65, Math.floor((width * height) / 22000));
       nodes = Array.from({ length: density }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -53,7 +52,7 @@ export function ParticleField({ className }: { className?: string }) {
     };
 
     const draw = () => {
-      const rgb = accent();
+      const color = getAccentColor();
       ctx.clearRect(0, 0, width, height);
 
       for (const n of nodes) {
@@ -72,37 +71,43 @@ export function ParticleField({ className }: { className?: string }) {
           const dy = a.y - b.y;
           const dist = Math.hypot(dx, dy);
           if (dist < 130) {
-            const alpha = (1 - dist / 130) * 0.35;
-            ctx.strokeStyle = `rgb(${rgb} / ${alpha})`;
+            const alpha = (1 - dist / 130) * 0.22;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
             ctx.stroke();
+            ctx.restore();
           }
         }
       }
 
       // nodes
       for (const n of nodes) {
-        ctx.fillStyle = `rgb(${rgb} / 0.6)`;
+        ctx.save();
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, 1.6, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
       }
     };
 
     const loop = (t: number) => {
       if (!running) return;
       raf = requestAnimationFrame(loop);
-      if (t - last < 25) return; // ~40fps
+      if (t - last < 25) return;
       last = t;
       draw();
     };
 
     resize();
     if (reduced) {
-      draw(); // single static frame
+      draw();
     } else {
       raf = requestAnimationFrame(loop);
     }

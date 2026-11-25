@@ -3,18 +3,27 @@ import { cn } from "@/utils/cn";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hover?: boolean;
+  interactive?: boolean;
 }
 
-export function Card({ className, hover = false, ...props }: CardProps) {
+export function Card({
+  className,
+  hover = false,
+  interactive = false,
+  children,
+  ...rest
+}: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-line bg-panel shadow-soft",
-        hover &&
-          "transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow",
+        "deck-frame transition-colors duration-200",
+        hover && "hover:border-accent",
+        interactive && "cursor-pointer",
         className,
       )}
-      {...props}
-    />
+      {...rest}
+    >
+      {children}
+    </div>
   );
 }

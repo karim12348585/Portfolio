@@ -10,11 +10,13 @@ import { PageSkeleton } from "@/components/PageSkeleton";
 const ProjectDetail = lazy(() =>
   import("@/pages/ProjectDetail").then((m) => ({ default: m.ProjectDetail })),
 );
+const BlogPostDetail = lazy(() =>
+  import("@/pages/BlogPostDetail").then((m) => ({ default: m.BlogPostDetail })),
+);
 const NotFound = lazy(() =>
   import("@/pages/NotFound").then((m) => ({ default: m.NotFound })),
 );
 
-/** Scroll to top on route change (unless a hash/section target is set). */
 function ScrollManager() {
   const location = useLocation();
   useEffect(() => {
@@ -33,17 +35,20 @@ export function RootLayout() {
       <ScrollProgress />
       <Navbar />
       <ScrollManager />
-      <main>
+
+      <main className="relative z-20">
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageSkeleton />}>
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Home />} />
               <Route path="/projects/:slug" element={<ProjectDetail />} />
+              <Route path="/blog/:slug" element={<BlogPostDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </AnimatePresence>
       </main>
+
       <Footer />
     </div>
   );

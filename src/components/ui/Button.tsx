@@ -4,42 +4,63 @@ import { cn } from "@/utils/cn";
 type Variant = "primary" | "secondary" | "ghost" | "outline";
 type Size = "sm" | "md" | "lg";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
+  asChild?: boolean;
 }
 
-const variants: Record<Variant, string> = {
+const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-accent-gradient text-accent-fg font-semibold btn-glow hover:brightness-110",
+    "bg-accent text-accent-fg border border-accent hover:bg-accent-soft hover:border-accent-soft font-semibold shadow-sm shadow-accent/15",
   secondary:
-    "bg-panel-2 text-fg border border-line hover:border-accent/50 hover:bg-panel",
+    "bg-panel text-fg border border-line hover:border-accent/55 hover:text-accent dark:hover:text-accent-soft font-semibold shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
   outline:
-    "border border-accent/40 text-fg hover:bg-accent/10 hover:border-accent",
-  ghost: "text-muted hover:text-fg hover:bg-panel-2",
+    "bg-transparent text-fg border border-line hover:bg-panel-2 hover:border-accent/50 font-medium",
+  ghost:
+    "bg-transparent text-muted hover:text-fg hover:bg-panel-2/70 border border-transparent font-medium",
 };
 
-const sizes: Record<Size, string> = {
-  sm: "h-9 px-4 text-sm",
-  md: "h-11 px-5 text-sm",
-  lg: "h-12 px-7 text-base",
+const sizeClasses: Record<Size, string> = {
+  sm: "h-8 px-3.5 text-xs gap-1.5 rounded-lg",
+  md: "h-10 px-4 text-xs sm:text-sm gap-2 rounded-xl",
+  lg: "h-11 px-5 text-sm gap-2 rounded-xl",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", ...props }, ref) => (
-    <button
-      ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full font-medium",
-        "transition-all duration-200 active:scale-[0.97]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        variants[variant],
-        sizes[size],
-        className,
-      )}
-      {...props}
-    />
-  ),
+  (
+    {
+      className,
+      variant = "primary",
+      size = "md",
+      asChild = false,
+      onClick,
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
+    const classes = cn(
+      "inline-flex items-center justify-center whitespace-nowrap shrink-0 transition-[background-color,border-color,color,transform] duration-150 select-none cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed active:translate-y-px",
+      variantClasses[variant],
+      sizeClasses[size],
+      className,
+    );
+
+    if (asChild) {
+      return <span className={classes}>{children}</span>;
+    }
+
+    return (
+      <button
+        ref={ref}
+        className={classes}
+        onClick={onClick}
+        {...rest}
+      >
+        {children}
+      </button>
+    );
+  },
 );
 Button.displayName = "Button";
