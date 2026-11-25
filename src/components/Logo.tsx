@@ -1,29 +1,41 @@
 import { cn } from "@/utils/cn";
 
+const sizes = {
+  sm: { box: "h-6 w-6 rounded-[7px] border-[1.5px]", letter: "text-[13px]" },
+  md: { box: "h-8 w-8 rounded-[9px] border-2", letter: "text-[17px]" },
+} as const;
+
 /**
- * Brand mark: crisp Deep Teal rounded square enclosing a geometric K-node emblem.
+ * Brand mark: an outlined rounded square holding a bold "K".
+ * Light mode: deep teal on a pale teal tint. Dark mode: luminous mint on a
+ * deep teal tint.
  */
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  size = "md",
+}: {
+  className?: string;
+  size?: keyof typeof sizes;
+}) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-fg shadow-xs",
+        "inline-flex shrink-0 items-center justify-center",
+        sizes[size].box,
+        "border-accent bg-accent/10 text-accent",
+        "dark:border-accent-soft dark:bg-accent-soft/10 dark:text-accent-soft",
         className,
       )}
     >
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none">
-        <path
-          d="M8.25 6.25v11.5M15.75 6.75 9.75 12l6.25 5.25"
-          stroke="currentColor"
-          strokeWidth="2.1"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="8.25" cy="6.25" r="1.65" fill="currentColor" />
-        <circle cx="15.75" cy="6.75" r="1.65" fill="currentColor" />
-        <circle cx="16" cy="17.25" r="1.65" fill="currentColor" />
-      </svg>
+      <span
+        className={cn(
+          "font-display font-semibold leading-none",
+          sizes[size].letter,
+        )}
+      >
+        K
+      </span>
     </span>
   );
 }

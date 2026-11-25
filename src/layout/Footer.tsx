@@ -20,7 +20,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.6fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-fg">
-              <Logo className="h-5 w-5" />
+              <Logo size="sm" />
               <span>{profile.name}</span>
             </div>
             <p className="mt-2 max-w-md text-xs leading-relaxed text-muted sm:text-sm">
