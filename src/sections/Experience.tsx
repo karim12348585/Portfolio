@@ -67,6 +67,8 @@ export function Experience() {
                     <h3 className="font-display text-lg font-bold tracking-tight text-fg sm:text-xl">
                       {exp.role}
                     </h3>
+                    {/* "@ Company" wraps as one unit so "@" never ends a line */}
+                    <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
                     <span
                       aria-hidden="true"
                       className="text-sm font-medium text-faint"
@@ -88,6 +90,7 @@ export function Experience() {
                         {exp.company}
                       </span>
                     )}
+                    </span>
                   </div>
 
                   {exp.projectLabel && (

@@ -112,9 +112,11 @@ export function ProjectGallery({
   return (
     <div className={cn("mt-4 border-t border-line pt-5", className)}>
       {/* Master-Detail Split Layout: compact searchable index on left, sticky editorial showcase card on right */}
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(320px,0.92fr)_1.28fr] lg:gap-7">
+      {/* grid-cols-1 (= minmax(0,1fr)) stops the horizontally scrolling chip
+          row from stretching the single phone column to its full content width */}
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(320px,0.92fr)_1.28fr] lg:gap-7">
         {/* Left: Full Searchable Project Index */}
-        <div className="rounded-2xl border border-line bg-panel/75 p-4 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.12)] dark:bg-panel/60 dark:shadow-none">
+        <div className="min-w-0 rounded-2xl border border-line bg-panel/75 p-4 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.12)] dark:bg-panel/60 dark:shadow-none">
           {/* Index Header */}
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-2">
@@ -282,7 +284,7 @@ export function ProjectGallery({
         </div>
 
         {/* Right: Sticky Editorial Showcase Card (tightly fitted, zero wasted space) */}
-        <div role="tabpanel" className="lg:sticky lg:top-24">
+        <div role="tabpanel" className="min-w-0 lg:sticky lg:top-24">
           {!activeProject ? (
             <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-line bg-panel p-8 text-center">
               <p className="font-display text-base font-bold text-fg">

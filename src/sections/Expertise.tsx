@@ -66,7 +66,7 @@ function LogoWall() {
 function LevelMeter({ level }: { level: number }) {
   return (
     <div
-      className="flex gap-1 pt-1"
+      className="flex shrink-0 gap-1 pt-1"
       role="img"
       aria-label={`Proficiency ${level} out of 5`}
     >
@@ -85,9 +85,9 @@ function LevelMeter({ level }: { level: number }) {
 
 function SkillRow({ skill }: { skill: Skill }) {
   return (
-    <div className="flex flex-col justify-between border-b border-line py-3 last:border-b-0">
+    <div className="flex min-w-0 flex-col justify-between border-b border-line py-3 last:border-b-0">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
           <div className="grid h-7 w-7 shrink-0 place-items-center rounded border border-line bg-panel-2 text-fg">
             <TechIcon brand={skill.brand} glyph={skill.glyph} size={14} />
           </div>
@@ -187,7 +187,7 @@ function SkillExplorer() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.16 }}
-            className="grid gap-x-8 sm:grid-cols-2"
+            className="grid grid-cols-1 gap-x-8 sm:grid-cols-2"
           >
             {cat.skills.map((s) => (
               <SkillRow key={s.name} skill={s} />

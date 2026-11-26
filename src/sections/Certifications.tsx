@@ -123,7 +123,7 @@ export function Certifications() {
                   return (
                     <li
                       key={item.id}
-                      className="flex items-center justify-between gap-4 py-4 first:pt-4 last:pb-0.5"
+                      className="flex items-center justify-between gap-3 py-4 first:pt-4 last:pb-0.5 sm:gap-4"
                     >
                       <div className="flex min-w-0 items-center gap-3.5">
                         {item.badge && (
@@ -156,8 +156,12 @@ export function Certifications() {
                       </div>
 
                       {item.status ? (
-                        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-700 dark:border-amber-400/30 dark:bg-amber-400/12 dark:text-amber-300">
-                          <Clock size={12} strokeWidth={2.2} />
+                        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-700 sm:px-3 sm:py-1 sm:text-xs dark:border-amber-400/30 dark:bg-amber-400/12 dark:text-amber-300">
+                          <Clock
+                            size={12}
+                            strokeWidth={2.2}
+                            className="hidden sm:block"
+                          />
                           <span>{item.status}</span>
                         </span>
                       ) : item.link ? (

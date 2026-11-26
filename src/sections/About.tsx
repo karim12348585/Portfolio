@@ -28,8 +28,9 @@ export function About({
 
       {/* Upper two-column editorial split: left framed portrait + right bio */}
       <div className="mt-4 grid items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-12">
-        {/* Left: Portrait docking slot */}
-        <div className="relative mx-auto lg:mx-0">
+        {/* Left: Portrait docking slot. Hidden below lg: the hero already shows
+            the photo there, and the gliding portrait only runs on desktop. */}
+        <div className="relative mx-auto hidden lg:mx-0 lg:block">
           <div className="relative">
             <div
               ref={portraitSlotRef}

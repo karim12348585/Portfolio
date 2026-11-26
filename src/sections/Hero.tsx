@@ -155,8 +155,8 @@ export function Hero({ portraitSlotRef, hideStaticPortrait = false }: HeroProps)
                 aria-hidden={hideStaticPortrait || undefined}
                 className={
                   hideStaticPortrait
-                    ? "pointer-events-none invisible aspect-[2/3] w-72 rounded-[1.75rem] border-[6px] sm:w-80 lg:w-[22.5rem]"
-                    : "relative aspect-[2/3] w-72 rounded-[1.75rem] border-[6px] border-panel bg-panel shadow-[0_24px_60px_-15px_rgba(15,23,42,0.16)] sm:w-80 lg:w-[22.5rem] dark:border-panel-2 dark:shadow-[0_24px_60px_-15px_rgba(0,0,0,0.6)]"
+                    ? "pointer-events-none invisible aspect-[2/3] w-60 rounded-[1.75rem] border-[6px] sm:w-80 lg:w-[22.5rem]"
+                    : "relative aspect-[2/3] w-60 rounded-[1.75rem] border-[6px] border-panel bg-panel shadow-[0_24px_60px_-15px_rgba(15,23,42,0.16)] sm:w-80 lg:w-[22.5rem] dark:border-panel-2 dark:shadow-[0_24px_60px_-15px_rgba(0,0,0,0.6)]"
                 }
               >
                 {!hideStaticPortrait && (
